@@ -7,8 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JezUtilities", "JezUtilitie
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FBAE0636-7A86-4CC3-9351-A2C8BB1FF587}"
 	ProjectSection(SolutionItems) = preProject
+		_licence.txt = _licence.txt
 		_readme.txt = _readme.txt
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_OtherLibs", "_OtherLibs", "{9833AA11-CE3B-4005-8EA1-753882E0C86E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,5 +30,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9833AA11-CE3B-4005-8EA1-753882E0C86E} = {FBAE0636-7A86-4CC3-9351-A2C8BB1FF587}
 	EndGlobalSection
 EndGlobal
