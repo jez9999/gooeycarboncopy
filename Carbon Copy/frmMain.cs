@@ -14,6 +14,7 @@ namespace Carbon_Copy {
 		#region Private vars
 		
 		private Jez.Utilities utils;
+		private CCOFunctions optFunc;
 		
 		#endregion
 		
@@ -30,6 +31,7 @@ namespace Carbon_Copy {
 			ttpQuick.SetToolTip(lblVerboseWarning, "'Verbose' can result in a very large amount of output for large backups; don't enable it unless you really want very detailed information!");
 			
 			this.utils = new Jez.Utilities();
+			this.optFunc = new CCOFunctions();
 		}
 		
 		#endregion
@@ -59,49 +61,11 @@ namespace Carbon_Copy {
 			// Initialize options information/default selections
 			radCarbon.Checked = true;
 			chkComments.Checked = true;
-			
-			// !!!!! TEMP FOR DEBUG !!!!!
-			chkVerbose.Checked = false;
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\testBackupDir\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\testBackupDir2\\")));
-			
-//			*** BEGIN original goodlist.dls listing, sans OpenTTD dir! ***
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\_all user access_\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\_minimal root files_\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\All Users\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\Application Data\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\Cookies\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\Desktop\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\Favorites\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\Local Settings\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\My Documents\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\NetHood\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\PrintHood\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\SendTo\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\Start Menu\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Documents and Settings\\Jeremy Morton\\Templates\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\games\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Jeremy\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Mozilla\\diffs\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\Program Files\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\windows\\fonts\\")));
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\WINDOWS\\system32\\config\\")));
-			
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("Z:\\fserve\\")));
-//			*** END original goodlist.dls listing, sans OpenTTD dir! ***
-			
-			// I like this 'un
-			lstSourceDirs.Items.Add(new CCODirinfoHolder(new DirectoryInfo("C:\\miscapps\\")));
-			
-			lblDestDir.Text = "X:\\backup\\";
-			lblDestDir.Tag = new DirectoryInfo(lblDestDir.Text);
-			// !!!!! TEMP FOR DEBUG !!!!!
 		}
 		
 		private void btnAddDir_Click(object sender, EventArgs e) {
 			DirectoryInfo fixedPath = null;
 			string errorHolder;
-			CCOFunctions optFunc = new CCOFunctions();
 			
 			// Is path string valid?
 			if (!optFunc.CheckDirValidity(txtSourceDir.Text, ref fixedPath, out errorHolder)) {
@@ -125,7 +89,6 @@ namespace Carbon_Copy {
 		private void btnDestSet_Click(object sender, EventArgs e) {
 			DirectoryInfo fixedPath = null;
 			string errorHolder;
-			CCOFunctions optFunc = new CCOFunctions();
 			
 			// Is path string valid?
 			if (!optFunc.CheckDirValidity(txtDestDir.Text, ref fixedPath, out errorHolder)) {
@@ -138,7 +101,7 @@ namespace Carbon_Copy {
 			txtDestDir.Text = "";
 		}
 		
-		private void btnDelDir_Click(object sender, EventArgs e) {
+		private void btnRemDir_Click(object sender, EventArgs e) {
 			if (lstSourceDirs.SelectedIndex >= 0) {
 				int oldIndex = lstSourceDirs.SelectedIndex;
 				lstSourceDirs.Items.RemoveAt(lstSourceDirs.SelectedIndex);
@@ -189,25 +152,77 @@ namespace Carbon_Copy {
 		}
 		
 		private void btnStart_Click(object sender, EventArgs e) {
-			CCO passingOptions = new CCO();
+			CCO passingOptions = genPassingOptions();
+			
+			string errors;
+			if (!optFunc.SanityCheck(passingOptions, out errors)) {
+				utils.ShowError("Error(s) found in backup profile:\r\n" + errors);
+			}
+			else {
+				frmBackup backupForm = new frmBackup(passingOptions);
+				
+				backupForm.ShowDialog();
+			}
+		}
+		
+		private CCO genPassingOptions() {
+			CCO options = new CCO();
 			
 			foreach (CCODirinfoHolder dirInfoHolder in lstSourceDirs.Items) {
-				passingOptions.SourceDirs.Add(dirInfoHolder.DirInfo);
+				options.SourceDirs.Add(dirInfoHolder.DirInfo);
 			}
 			
-			passingOptions.DestDir = (DirectoryInfo)lblDestDir.Tag;
+			options.DestDir = (DirectoryInfo)lblDestDir.Tag;
 			
-			if (radCarbon.Checked) { passingOptions.Type = CCOTypeOfBackup.CarbonCopy; }
-			else if (radIncremental.Checked) { passingOptions.Type = CCOTypeOfBackup.Incremental; }
+			if (radCarbon.Checked) { options.Type = CCOTypeOfBackup.CarbonCopy; }
+			else if (radIncremental.Checked) { options.Type = CCOTypeOfBackup.Incremental; }
 			
-			passingOptions.ToDisplay =
+			options.ToDisplay =
 				(chkComments.Checked ? CCOWhatToDisplay.Comments : 0) |
 				(CCOWhatToDisplay.Errors) |   // Errors always displayed
 				(chkVerbose.Checked ? CCOWhatToDisplay.Verbose : 0);
 			
-			frmBackup backupForm = new frmBackup(passingOptions);
+			return options;
+		}
+		
+		private void setupFromOptions(CCO options) {
+			// This method assumes 'options' has already been sanity checked (dupes, etc.)
+			// Setup source dir(s)
+			lstSourceDirs.Items.Clear();
+			foreach (DirectoryInfo di in options.SourceDirs) {
+				lstSourceDirs.Items.Add(new CCODirinfoHolder(di));
+			}
 			
-			backupForm.ShowDialog();
+			// Setup dest dir
+			lblDestDir.Text = "";
+			lblDestDir.Tag = null;
+			lblDestDir.Text = options.DestDir.FullName;
+			lblDestDir.Tag = options.DestDir;
+			
+			// Setup type of backup
+			if (options.Type == CCOTypeOfBackup.CarbonCopy) {
+				radCarbon.Checked = true;
+			}
+			else if (options.Type == CCOTypeOfBackup.Incremental) {
+				radIncremental.Checked = true;
+			}
+			
+			// Setup what to display
+			if ((options.ToDisplay & CCOWhatToDisplay.Comments) > 0) {
+				chkComments.Checked = true;
+			}
+			else {
+				chkComments.Checked = false;
+			}
+			
+			if ((options.ToDisplay & CCOWhatToDisplay.Verbose) > 0) {
+				chkVerbose.Checked = true;
+			}
+			else {
+				chkVerbose.Checked = false;
+			}
+			// (Currently, we always display errors.  We may make this configurable in
+			// future.)
 		}
 		
 		private void txtSourceDir_KeyPress(object sender, KeyPressEventArgs e) {
@@ -232,7 +247,7 @@ namespace Carbon_Copy {
 		
 		private void lstSourceDirs_KeyDown(object sender, KeyEventArgs e) {
 			if (e.KeyCode == Keys.Delete) {
-				btnDelDir.PerformClick();
+				btnRemDir.PerformClick();
 			}
 		}
 		
@@ -252,10 +267,60 @@ namespace Carbon_Copy {
 			blackPen.Dispose();
 		}
 		
-		#endregion
-
 		private void btnExit_Click(object sender, EventArgs e) {
 			Application.Exit();
 		}
+		
+		private void btnSave_Click(object sender, EventArgs e) {
+			// Save current profile settings to XML file
+			CCOSaveLoad saveloader = new CCOSaveLoad();
+			
+			// Dialog for selecting file path to save to
+			saveFileDialog1.Title = "Select a file to save backup profile to...";
+			saveFileDialog1.FileName = "";
+			// We purposely don't set the .InitialDirectory property.  When left unset,
+			// the dialog helpfully remembers the last directory the user was in, which
+			// is desired behaviour.
+			saveFileDialog1.Filter = "XML file (.xml)|*.xml";
+			saveFileDialog1.FilterIndex = 1;
+			if (saveFileDialog1.ShowDialog() == DialogResult.OK) {
+				string errorTxt;
+				string saveToPath = saveFileDialog1.FileName;
+				if (!saveloader.Save(genPassingOptions(), saveToPath, out errorTxt)) {
+					utils.ShowError("Error saving settings to '" + saveToPath + "': " + errorTxt);
+				}
+				else {
+					utils.ShowInfo("Settings saved to '" + saveToPath + "'.");
+				}
+			}
+		}
+		
+		private void btnLoad_Click(object sender, EventArgs e) {
+			// Load profile settings from selected XML file
+			CCOSaveLoad saveloader = new CCOSaveLoad();
+			
+			// Dialog for selecting file path to load from
+			openFileDialog1.Title = "Select a file to load backup profile from...";
+			openFileDialog1.FileName = "";
+			// We purposely don't set the .InitialDirectory property.  When left unset,
+			// the dialog helpfully remembers the last directory the user was in, which
+			// is desired behaviour.
+			openFileDialog1.Filter = "XML files (.xml)|*.xml|All files (*.*)|*.*";
+			openFileDialog1.FilterIndex = 1;
+			if (openFileDialog1.ShowDialog() == DialogResult.OK) {
+				CCO options;
+				string errorTxt;
+				string loadFromPath = openFileDialog1.FileName;
+				if (!saveloader.Load(out options, loadFromPath, out errorTxt)) {
+					utils.ShowError("Error loading settings from '" + loadFromPath + "': " + errorTxt);
+				}
+				else {
+					setupFromOptions(options);
+					utils.ShowInfo("Settings loaded from '" + loadFromPath + "'.");
+				}
+			}
+		}
+		
+		#endregion
 	}
 }

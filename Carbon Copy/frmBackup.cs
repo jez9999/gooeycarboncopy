@@ -13,6 +13,7 @@ namespace Carbon_Copy {
 		#region Private vars
 		
 		private Jez.Utilities utils;
+		private CCOFunctions optFunc;
 		private CCOColours ccColour;
 		private BackupEngine bkpEngine;
 		private CCO backupOptions;
@@ -24,8 +25,6 @@ namespace Carbon_Copy {
 		private int closeTopDiff = 0;
 		private bool closeOnStop = false;
 		private bool closeBtnClicked = false;
-//		// TODO: Probably delete the below if we find no use for it
-//		private bool backupStopped = false;
 		
 		#endregion
 		
@@ -38,6 +37,7 @@ namespace Carbon_Copy {
 			this.backupOptions = passedOptions;
 			
 			this.utils = new Jez.Utilities();
+			this.optFunc = new CCOFunctions();
 			this.ccColour = new CCOColours();
 			
 			this.bkpEngine = new BackupEngine(this.backupOptions);
@@ -180,6 +180,13 @@ namespace Carbon_Copy {
 		}
 		
 		private void startBackup() {
+			string errors;
+			if (!optFunc.SanityCheck(this.backupOptions, out errors)) {
+				addErrorMsg("Error(s) found in backup profile:\r\n" + errors);
+				backupFinished();
+				return;
+			}
+			
 			// We assume all options have now been checked for validity; start the
 			// backup process IF the backup engine exists and is not currently running
 			// a backup.

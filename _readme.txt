@@ -17,4 +17,9 @@ recommended that you use VS2008 if you want to modify its code.  However I'd be 
 to know how well anyone who want to use something like Eclipse gets on (no doubt you'll
 need to use that if you want to get this working on Linux with Mono).
 
+I'm trying to keep all functionality in this solution to using version 2.0 of the .NET
+framework; hopefully, that'll mean Mono does implement the vast majority, if not all, of
+the functionality being used.  If you spot something using features introduced after 2.0,
+please inform the developers.
+
 - Jez

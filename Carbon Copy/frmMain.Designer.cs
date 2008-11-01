@@ -28,7 +28,7 @@ namespace Carbon_Copy {
 			this.txtSourceDir = new System.Windows.Forms.TextBox();
 			this.btnSourceBrowse = new System.Windows.Forms.Button();
 			this.btnAddDir = new System.Windows.Forms.Button();
-			this.btnDelDir = new System.Windows.Forms.Button();
+			this.btnRemDir = new System.Windows.Forms.Button();
 			this.btnStart = new System.Windows.Forms.Button();
 			this.txtDestDir = new System.Windows.Forms.TextBox();
 			this.btnDestBrowse = new System.Windows.Forms.Button();
@@ -49,6 +49,8 @@ namespace Carbon_Copy {
 			this.btnExit = new System.Windows.Forms.Button();
 			this.btnSave = new System.Windows.Forms.Button();
 			this.btnLoad = new System.Windows.Forms.Button();
+			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.grpCarbonIncrement.SuspendLayout();
 			this.grpDisplay.SuspendLayout();
 			this.grpSource.SuspendLayout();
@@ -93,15 +95,15 @@ namespace Carbon_Copy {
 			this.btnAddDir.UseVisualStyleBackColor = true;
 			this.btnAddDir.Click += new System.EventHandler(this.btnAddDir_Click);
 			// 
-			// btnDelDir
+			// btnRemDir
 			// 
-			this.btnDelDir.Location = new System.Drawing.Point(6, 159);
-			this.btnDelDir.Name = "btnDelDir";
-			this.btnDelDir.Size = new System.Drawing.Size(170, 23);
-			this.btnDelDir.TabIndex = 104;
-			this.btnDelDir.Text = "&Delete directory";
-			this.btnDelDir.UseVisualStyleBackColor = true;
-			this.btnDelDir.Click += new System.EventHandler(this.btnDelDir_Click);
+			this.btnRemDir.Location = new System.Drawing.Point(6, 159);
+			this.btnRemDir.Name = "btnRemDir";
+			this.btnRemDir.Size = new System.Drawing.Size(170, 23);
+			this.btnRemDir.TabIndex = 104;
+			this.btnRemDir.Text = "&Remove directory";
+			this.btnRemDir.UseVisualStyleBackColor = true;
+			this.btnRemDir.Click += new System.EventHandler(this.btnRemDir_Click);
 			// 
 			// btnStart
 			// 
@@ -145,6 +147,7 @@ namespace Carbon_Copy {
 			// radIncremental
 			// 
 			this.radIncremental.AutoSize = true;
+			this.radIncremental.Enabled = false;
 			this.radIncremental.Location = new System.Drawing.Point(6, 42);
 			this.radIncremental.Name = "radIncremental";
 			this.radIncremental.Size = new System.Drawing.Size(80, 17);
@@ -245,7 +248,7 @@ namespace Carbon_Copy {
 			// 
 			this.grpSource.Controls.Add(this.lstSourceDirs);
 			this.grpSource.Controls.Add(this.txtSourceDir);
-			this.grpSource.Controls.Add(this.btnDelDir);
+			this.grpSource.Controls.Add(this.btnRemDir);
 			this.grpSource.Controls.Add(this.btnAddDir);
 			this.grpSource.Controls.Add(this.btnSourceBrowse);
 			this.grpSource.Location = new System.Drawing.Point(12, 12);
@@ -287,6 +290,7 @@ namespace Carbon_Copy {
 			this.btnSave.TabIndex = 1001;
 			this.btnSave.Text = "&Save";
 			this.btnSave.UseVisualStyleBackColor = true;
+			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
 			// 
 			// btnLoad
 			// 
@@ -296,6 +300,11 @@ namespace Carbon_Copy {
 			this.btnLoad.TabIndex = 1002;
 			this.btnLoad.Text = "&Load";
 			this.btnLoad.UseVisualStyleBackColor = true;
+			this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+			// 
+			// openFileDialog1
+			// 
+			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
 			// frmMain
 			// 
@@ -336,7 +345,7 @@ namespace Carbon_Copy {
 		private System.Windows.Forms.TextBox txtSourceDir;
 		private System.Windows.Forms.Button btnSourceBrowse;
 		private System.Windows.Forms.Button btnAddDir;
-		private System.Windows.Forms.Button btnDelDir;
+		private System.Windows.Forms.Button btnRemDir;
 		private System.Windows.Forms.Button btnStart;
 		private System.Windows.Forms.TextBox txtDestDir;
 		private System.Windows.Forms.Button btnDestBrowse;
@@ -357,6 +366,8 @@ namespace Carbon_Copy {
 		private System.Windows.Forms.Button btnExit;
 		private System.Windows.Forms.Button btnSave;
 		private System.Windows.Forms.Button btnLoad;
+		private System.Windows.Forms.OpenFileDialog openFileDialog1;
+		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
 
 
 	}

@@ -121,17 +121,6 @@ namespace Carbon_Copy {
 				return;
 			}
 			
-			// Check that we have valid options before starting the backup
-			if (
-				options.Type == CCOTypeOfBackup.None ||
-				options.SourceDirs.Count == 0 ||
-				options.DestDir == null
-			) {
-				AddMsg(new MsgDisplayInfo(CbErrorMsg, "Not all necessary options passed!"));
-				endBackupCleanup();
-				return;
-			}
-			
 			// List directory and configuration information
 			foreach (DirectoryInfo di in options.SourceDirs) {
 				AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Found source backup directory: " + di.FullName));
@@ -170,7 +159,7 @@ namespace Carbon_Copy {
 				}
 			}
 			
-			// Check that destination backup dir is valid
+			// Check that destination backup dir is valid and 'touch it up'
 			if (!optFunc.CheckDirValidity(options.DestDir.FullName, ref fixedPath, out errorHolder)) {
 				AddMsg(new MsgDisplayInfo(CbErrorMsg, errorHolder));
 				endBackupCleanup();
@@ -191,24 +180,7 @@ namespace Carbon_Copy {
 				// Backup this source directory tree
 				AddMsg(new MsgDisplayInfo(CbCommentMsg, "Synchronizing base source directory " + sourceDir.FullName));
 				
-				// TODO: Make this so we just call a func to backup S to S1
-				try {
-//					// Ensure that the base backup dir path exists
-//					string destDirBaseSourceDirName = Regex.Replace(sourceDir.FullName, @"^\\\\", @"\\_unc_\\");
-//					destDirBaseSourceDirName = options.DestDir.FullName + Regex.Replace(destDirBaseSourceDirName, @"\:", @"");
-//					DirectoryInfo destDirBaseSourceDir = null;
-//					try {
-//						// TODO: Fix this created date/time
-//						destDirBaseSourceDir = Directory.CreateDirectory(destDirBaseSourceDirName);
-//					}
-//					catch (Exception ex) {
-//						endBackupCleanup();
-//						AddMsg(new MsgDisplayInfo(CbErrorMsg, "Error creating base backup directory: " + ex.Message.ToString()));
-//						return;
-//					}
-					
-					traverseDir(sourceDir, options.DestDir);
-				}
+				try { traverseDir(sourceDir, options.DestDir); }
 				catch (StopBackupException) {
 					endBackupCleanup();
 					return;
@@ -295,50 +267,6 @@ namespace Carbon_Copy {
 				// Oh dear... just output error and move on.
 				AddMsg(new MsgDisplayInfo(CbErrorMsg, ex.Message));
 			}
-			
-			// TODO - I think we can get rid of the below comment, and code below the
-			// return; now.  :-)  It's just left in case we discover we need some of it
-			// for some reason.
-			// jez marker - WE WANT TO REMOVE THE CODE BELOW, AND SYNC CHILD DIRS ABOVE
-			return;
-			
-			
-			
-//			destDirPath = Regex.m
-//			synchronizeObjs
-			
-			
-			
-//			AddMsg(new MsgDisplayInfo(CbMsg, "Synchronizing " + sourceDir.FullName + " to " + destDir.FullName));
-//			
-//			List<DirectoryInfo> childDirs = synchronizeDir(sourceDir, destDir);
-//			if (stopBackup) {
-//				throw new StopBackupException();
-//			}
-			
-//			// Now synchronize its children recursively
-//			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Synchronizing children of " + sourceDir.FullName));
-//			foreach (DirectoryInfo childDir in childDirs) {
-//				if (stopBackup) {
-//					throw new StopBackupException();
-//				}
-//				
-//				DirectoryInfo cd = slashTerm(childDir);
-//				DirectoryInfo dd = new DirectoryInfo(destDir.FullName + childDir.Name);
-//				// .net doesn't, by default, put a backslash on the .FullName of a
-//				// DirectoryInfo when you get a list of them using something like
-//				// .GetDirectories(); however, if you manually create a DirectoryInfo
-//				// passing a path ending with a backslash as its path constructor,
-//				// the .FullName DOES have the backslash at the end.
-//				// We need to have a backslash at the end of all directory paths
-//				// (see CCOptions.cs for reasoning as to why), so we must manually
-//				// recreate the DirectoryInfo with the constructor string having the
-//				// backslash at the end.
-//				
-//				AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Child found: " + cd.FullName));
-//				
-//				traverseDir(cd, dd);
-//			}
 		}
 		
 		private DirectoryInfo slashTerm(DirectoryInfo inputDir) {
