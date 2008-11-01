@@ -1,6 +1,11 @@
 Carbon Copy README
 ==================
 
+NOTE: Please read _licence.txt for the licence under which this software and source code
+are distributed.
+
+-----
+
 This is where we'll be putting useful info like build information, dependencies, etc.
 
 Libraries (generally DLLs) that need to be packaged with the solution should go in a
