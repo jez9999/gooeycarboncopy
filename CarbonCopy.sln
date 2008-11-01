@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carbon Copy", "Carbon Copy\Carbon Copy.csproj", "{1902E694-7188-4ABE-89B0-88E27FBBC1CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JezUtilities", "JezUtilities\JezUtilities.csproj", "{D2CC8C86-22E3-410C-A4B7-F584CC618238}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FBAE0636-7A86-4CC3-9351-A2C8BB1FF587}"
+	ProjectSection(SolutionItems) = preProject
+		_readme.txt = _readme.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1902E694-7188-4ABE-89B0-88E27FBBC1CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1902E694-7188-4ABE-89B0-88E27FBBC1CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1902E694-7188-4ABE-89B0-88E27FBBC1CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1902E694-7188-4ABE-89B0-88E27FBBC1CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2CC8C86-22E3-410C-A4B7-F584CC618238}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2CC8C86-22E3-410C-A4B7-F584CC618238}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2CC8C86-22E3-410C-A4B7-F584CC618238}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2CC8C86-22E3-410C-A4B7-F584CC618238}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
