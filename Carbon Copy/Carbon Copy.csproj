@@ -129,4 +129,12 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "$(TargetDir)final"
+if errorlevel 1 goto CarryOn
+:CarryOn
+copy "$(TargetPath)" "$(TargetDir)final\CarbCopy.exe"
+copy "$(TargetDir)\JezUtilities.dll" "$(TargetDir)final\JezUtilities.dll"
+exit 0</PostBuildEvent>
+  </PropertyGroup>
 </Project>
