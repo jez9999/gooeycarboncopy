@@ -9,9 +9,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		_licence.txt = _licence.txt
 		_readme.txt = _readme.txt
+		_version.txt = _version.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_OtherLibs", "_OtherLibs", "{9833AA11-CE3B-4005-8EA1-753882E0C86E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_InnoSetup", "_InnoSetup", "{A0CECCD1-BE6A-44C9-9241-19CC1A9FA865}"
+	ProjectSection(SolutionItems) = preProject
+		_InnoSetup\install.iss = _InnoSetup\install.iss
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,5 +39,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9833AA11-CE3B-4005-8EA1-753882E0C86E} = {FBAE0636-7A86-4CC3-9351-A2C8BB1FF587}
+		{A0CECCD1-BE6A-44C9-9241-19CC1A9FA865} = {FBAE0636-7A86-4CC3-9351-A2C8BB1FF587}
 	EndGlobalSection
 EndGlobal

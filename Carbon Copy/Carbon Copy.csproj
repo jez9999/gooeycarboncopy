@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Carbon_Copy</RootNamespace>
-    <AssemblyName>Carbon Copy</AssemblyName>
+    <AssemblyName>CarbCopy</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -47,6 +47,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="JezUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -134,11 +135,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(TargetDir)final"
-if errorlevel 1 goto CarryOn
-:CarryOn
-copy "$(TargetPath)" "$(TargetDir)final\CarbCopy.exe"
-copy "$(TargetDir)\JezUtilities.dll" "$(TargetDir)final\JezUtilities.dll"
-exit 0</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

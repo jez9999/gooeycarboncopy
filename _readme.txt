@@ -1,8 +1,12 @@
 Carbon Copy README
 ==================
 
-NOTE: Please read _licence.txt for the licence under which this software and source code
+NOTES:
+- Please read _licence.txt for the licence under which this software and source code
 are distributed.
+- When we update the version, remember to read _version.txt for places where we need to
+update the version number!
+
 
 -----
 
@@ -20,6 +24,7 @@ need to use that if you want to get this working on Linux with Mono).
 I'm trying to keep all functionality in this solution to using version 2.0 of the .NET
 framework; hopefully, that'll mean Mono does implement the vast majority, if not all, of
 the functionality being used.  If you spot something using features introduced after 2.0,
-please inform the developers.
+please inform the developers.  All projects in this solution's 'Target Framework' should
+be '.NET Framework 2.0' or earlier.
 
 - Jez
