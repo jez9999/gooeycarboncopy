@@ -1,4 +1,4 @@
-CARBON COPY VERSION
+Carbon Copy VERSION
 ===================
 
 This version of Carbon Copy is: 2.1.0.0
