@@ -24,6 +24,7 @@ namespace Carbon_Copy {
 		/// </summary>
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
 			this.lstSourceDirs = new System.Windows.Forms.ListBox();
 			this.txtSourceDir = new System.Windows.Forms.TextBox();
 			this.btnSourceBrowse = new System.Windows.Forms.Button();
@@ -320,6 +321,7 @@ namespace Carbon_Copy {
 			this.Controls.Add(this.grpCarbonIncrement);
 			this.Controls.Add(this.btnStart);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "frmMain";
