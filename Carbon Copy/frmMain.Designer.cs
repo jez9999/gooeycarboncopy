@@ -147,7 +147,6 @@ namespace Carbon_Copy {
 			// radIncremental
 			// 
 			this.radIncremental.AutoSize = true;
-			this.radIncremental.Enabled = false;
 			this.radIncremental.Location = new System.Drawing.Point(6, 42);
 			this.radIncremental.Name = "radIncremental";
 			this.radIncremental.Size = new System.Drawing.Size(80, 17);

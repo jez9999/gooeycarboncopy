@@ -154,13 +154,13 @@ namespace Carbon_Copy {
 				return false;
 			}
 			
-			if (toCheck.DestDir == null || toCheck.DestDir.FullName.Length == 0) {
-				errors += "- Destination directory is required.\r\n";
+			if (toCheck.SourceDirs == null || toCheck.SourceDirs.Count == 0) {
+				errors += "- One or more source directories are required.\r\n";
 				foundErrors = true;
 			}
 			
-			if (toCheck.SourceDirs == null || toCheck.SourceDirs.Count == 0) {
-				errors += "- One or more source directories are required.\r\n";
+			if (toCheck.DestDir == null || toCheck.DestDir.FullName.Length == 0) {
+				errors += "- Destination directory is required.\r\n";
 				foundErrors = true;
 			}
 			

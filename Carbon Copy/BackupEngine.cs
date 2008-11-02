@@ -244,12 +244,11 @@ namespace Carbon_Copy {
 				DirectoryInfo syncedDir = ((DirectoryInfo)syncedDirInList[0]);
 				syncedDir = slashTerm(syncedDir);
 				
-				// 3. Synchronize source directory's child nodes
+				// 3. Synchronize source directory's child nodes (files AND dirs)
 				List<DirectoryInfo> childDirs = synchronizeDir(sourceDir, syncedDir);
 				syncedDir = null;
 				
 				// Now synchronize source directory's child dirs recursively...
-				// a bunch of calls to traverseDir, methinks
 				foreach (DirectoryInfo childDir in childDirs) {
 					traverseDir(childDir, baseDestDir);
 				}
@@ -494,7 +493,7 @@ namespace Carbon_Copy {
 		}
 		
 		/// <summary>
-		/// Synchronizes two specified directories by first deleting objects in the destination dir that don't exist in the source dir, then synchronizing the two dirs using synchronizeObjs.
+		/// Synchronizes two specified directories by first deleting objects in the destination dir that don't exist in the source dir (UNLESS we're in incremental backup mode), then synchronizing the two dirs using synchronizeObjs.
 		/// </summary>
 		/// <param name="sourceDir">The dir to be synchronized from.</param>
 		/// <param name="destDir">The dir to be synchronized to.</param>
@@ -539,45 +538,48 @@ namespace Carbon_Copy {
 			// in the 'source objects' FileSystemInfo list passed, but will not remove
 			// objects in the destination dir that don't exist in the source dir.  We
 			// must do that here.
-			
-			List<FileSystemInfo> newDestObjs = new List<FileSystemInfo>();
-			// 6 basic operations may need to be performed as part of synchronization:
-			// - Delete a destination object as it's not in the source dir
-			//   NOTE: We're fixing capitalization here, too; when comparing dest
-			//   and source file and directory names, we do a case-sensitive match.
-			//   If the cases are different, the dest file will be removed and replaced.
-			// - Replace a destination file as its attributes don't match those
-			//   of its namesake in the source dir
-			// - Update a destination directory as its attributes don't match those
-			//   of its namesake in the source dir
-			// - Replace a destination object as its type (file/directory) doesn't
-			//   match that of its namesake in the source dir (this is also reflected
-			//   in that the object's attributes don't match; one attribute is whether
-			//   the object is a directory or not.)
-			// - Add a source object to the destination dir as it doesn't exist in the
-			//   destination dir
-			// - Leave a destination object alone
-			foreach (FileSystemInfo obj in destObjs) {
-				if (stopBackup) {
-					throw new StopBackupException();
+			// We ONLY want to do this if we're in 'carbon copy' mode, not 'incremental'...
+			if (options.Type == CCOTypeOfBackup.CarbonCopy) {
+				List<FileSystemInfo> newDestObjs = new List<FileSystemInfo>();
+				// 6 basic operations may need to be performed as part of synchronization:
+				// - Delete a destination object as it's not in the source dir
+				//   NOTE: We're fixing capitalization here, too; when comparing dest
+				//   and source file and directory names, we do a case-sensitive match.
+				//   If the cases are different, the dest file will be removed and replaced.
+				// - Replace a destination file as its attributes don't match those
+				//   of its namesake in the source dir
+				// - Update a destination directory as its attributes don't match those
+				//   of its namesake in the source dir
+				// - Replace a destination object as its type (file/directory) doesn't
+				//   match that of its namesake in the source dir (this is also reflected
+				//   in that the object's attributes don't match; one attribute is whether
+				//   the object is a directory or not.)
+				// - Add a source object to the destination dir as it doesn't exist in the
+				//   destination dir
+				// - Leave a destination object alone
+				foreach (FileSystemInfo obj in destObjs) {
+					if (stopBackup) {
+						throw new StopBackupException();
+					}
+					
+					// Delete obj if it doesn't exist in source directory - we ONLY want to
+					// do this if we're in 'carbon copy' mode, not 'incremental'...
+					int foundIndex;
+					if ((foundIndex = indexNameXinY(obj, srcObjs)) < 0) {
+						// Delete dest object - not found
+						AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + obj.FullName + " - not found in source dir."));
+						forciblyKillObject(obj);
+					}
+					else {
+						// Objects are identical according to all the above tests; don't
+						// delete the dest object, and record its continued existance in
+						// our new list.
+						newDestObjs.Add(obj);
+					}
 				}
 				
-				// Delete obj if it doesn't exist in source directory
-				int foundIndex;
-				if ((foundIndex = indexNameXinY(obj, srcObjs)) < 0) {
-					// Delete dest object - not found
-					AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + obj.FullName + " - not found in source dir."));
-					forciblyKillObject(obj);
-				}
-				else {
-					// Objects are identical according to all the above tests; don't
-					// delete the dest object, and record its continued existance in
-					// our new list.
-					newDestObjs.Add(obj);
-				}
+				destObjs = newDestObjs;
 			}
-			
-			destObjs = newDestObjs;
 			
 			// Invalid destination objects have been deleted.  Now synchronize source
 			// objects.
