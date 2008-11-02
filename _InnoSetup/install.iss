@@ -23,7 +23,7 @@ var
   NetFrameWorkInstalled : Boolean;
   QueryResult : Integer;
 begin
-  NetFrameWorkInstalled := RegKeyExists(HKLM,'SOFTWARE\Microsoft\.NETFramework\policy\v2.0');
+  NetFrameWorkInstalled := RegKeyExists(HKLM, 'SOFTWARE\Microsoft\.NETFramework\policy\v2.0');
   if NetFrameWorkInstalled then
   begin
     // .NET 2.0 installed; OK.
