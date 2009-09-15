@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carbon Copy", "CarbonCopy\CarbonCopy.csproj", "{1902E694-7188-4ABE-89B0-88E27FBBC1CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarbonCopy", "CarbonCopy\CarbonCopy.csproj", "{1902E694-7188-4ABE-89B0-88E27FBBC1CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JezUtilities", "JezUtilities\JezUtilities.csproj", "{D2CC8C86-22E3-410C-A4B7-F584CC618238}"
 EndProject
@@ -12,12 +12,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		_version.txt = _version.txt
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_OtherLibs", "_OtherLibs", "{9833AA11-CE3B-4005-8EA1-753882E0C86E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_InnoSetup", "_InnoSetup", "{A0CECCD1-BE6A-44C9-9241-19CC1A9FA865}"
 	ProjectSection(SolutionItems) = preProject
 		_InnoSetup\_readme.txt = _InnoSetup\_readme.txt
 		_InnoSetup\install.iss = _InnoSetup\install.iss
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Libs", "_Libs", "{2F4C760D-350F-484E-A27A-0CE02D5060E0}"
+	ProjectSection(SolutionItems) = preProject
+		_Libs\GooeyUtilities.dll = _Libs\GooeyUtilities.dll
+		_Libs\GooeyUtilities.pdb = _Libs\GooeyUtilities.pdb
 	EndProjectSection
 EndProject
 Global
@@ -39,7 +43,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{9833AA11-CE3B-4005-8EA1-753882E0C86E} = {FBAE0636-7A86-4CC3-9351-A2C8BB1FF587}
 		{A0CECCD1-BE6A-44C9-9241-19CC1A9FA865} = {FBAE0636-7A86-4CC3-9351-A2C8BB1FF587}
+		{2F4C760D-350F-484E-A27A-0CE02D5060E0} = {FBAE0636-7A86-4CC3-9351-A2C8BB1FF587}
 	EndGlobalSection
 EndGlobal
