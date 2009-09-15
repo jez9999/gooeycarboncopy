@@ -71,7 +71,7 @@ end;
 ; ...
 ;===Program files===
 Source: "..\CarbonCopy\bin\Release\CarbCopy.exe"; DestDir: "{app}"; Flags: replacesameversion promptifolder
-Source: "..\CarbonCopy\bin\Release\JezUtilities.dll"; DestDir: "{app}"; Flags: replacesameversion promptifolder
+Source: "..\_Libs\GooeyUtilities.dll"; DestDir: "{app}"; Flags: replacesameversion promptifolder
 
 [Icons]
 ;Create link on Start Menu Programs for program file
