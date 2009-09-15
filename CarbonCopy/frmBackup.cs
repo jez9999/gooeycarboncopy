@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using Jez;
+using Gooey;
 
 namespace Carbon_Copy {
 	public partial class frmBackup : Form {
@@ -36,7 +36,7 @@ namespace Carbon_Copy {
 			// Carbon Copy backup options must be passed to this form upon initialization
 			this.backupOptions = passedOptions;
 			
-			this.utils = new Jez.Utilities();
+			this.utils = new Gooey.Utilities();
 			this.optFunc = new CCOFunctions();
 			this.ccColour = new CCOColours();
 			
@@ -53,7 +53,7 @@ namespace Carbon_Copy {
 		
 		#region Private methods
 		
-		private static CloseButtonDisabler cbdFrmBackup = new CloseButtonDisabler();
+		private static Gooey.CloseButtonDisabler cbdFrmBackup = new CloseButtonDisabler();
 		
 		private static void handleSizeChanged(object sender, EventArgs e) {
 			cbdFrmBackup.EventSizeChanged();
@@ -61,7 +61,7 @@ namespace Carbon_Copy {
 		
 		private void frmBackup_Load(object sender, EventArgs e) {
 			// Set title to version number, etc.
-			this.Text = "Carbon Copy v" + Jez.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString) + " - Backing up...";
+			this.Text = "Carbon Copy v" + Gooey.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString) + " - Backing up...";
 			
 			// Disable form's close button, and make sure it stays disabled when
 			// form is resized.

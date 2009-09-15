@@ -3,6 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GooeyUtilities", "GooeyUtilities.csproj", "{4B123048-C85F-419A-9322-A2CD5A1D7B4D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6FCAC84B-8FC2-4D2A-A4EC-D67EB7FF081B}"
+	ProjectSection(SolutionItems) = preProject
+		_licence.txt = _licence.txt
+		_readme.txt = _readme.txt
+		_version.txt = _version.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

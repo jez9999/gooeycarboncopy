@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Jez;
+using Gooey;
 
 namespace Carbon_Copy {
 	static class Program {
@@ -16,7 +16,7 @@ namespace Carbon_Copy {
 			// If a file path has been specified, assume it's the path to an XML file
 			// containing settings for a backup profile, which we want to run in batch
 			// mode.
-			Jez.Utilities utils = new Jez.Utilities();
+			Gooey.Utilities utils = new Gooey.Utilities();
 			string[] cmdLineArgs = Environment.GetCommandLineArgs();
 			if (cmdLineArgs.Length > 2) {
 				utils.ShowError("Usage: CarbCopy.exe \"C:\\path\\to\\backup\\profile.xml\"");

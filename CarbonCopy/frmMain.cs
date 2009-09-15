@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.IO;
-using Jez;
+using Gooey;
 
 namespace Carbon_Copy {
 	public partial class frmMain : Form {
@@ -30,7 +30,7 @@ namespace Carbon_Copy {
 			// Setup tooltip(s)
 			ttpQuick.SetToolTip(lblVerboseWarning, "'Verbose' can result in a very large amount of output for large backups; don't enable it unless you really want very detailed information!");
 			
-			this.utils = new Jez.Utilities();
+			this.utils = new Gooey.Utilities();
 			this.optFunc = new CCOFunctions();
 		}
 		
@@ -51,7 +51,7 @@ namespace Carbon_Copy {
 		
 		private void frmMain_Load(object sender, EventArgs e) {
 			// Set title to version number, etc.
-			this.Text = "Carbon Copy v" + Jez.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString);
+			this.Text = "Carbon Copy v" + Gooey.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString);
 			
 			// Automatic label height, but force width to that of the backup dirs list
 			lblDestDir.MinimumSize = new Size(lstSourceDirs.Width, 0);
@@ -242,7 +242,7 @@ namespace Carbon_Copy {
 		}
 		
 		private void btnAbout_Click(object sender, EventArgs e) {
-			utils.ShowInfo("Carbon copy version: " + Jez.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString));
+			utils.ShowInfo("Carbon copy version: " + Gooey.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString));
 		}
 		
 		private void lstSourceDirs_KeyDown(object sender, KeyEventArgs e) {
