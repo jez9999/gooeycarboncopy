@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carbon Copy", "Carbon Copy\Carbon Copy.csproj", "{1902E694-7188-4ABE-89B0-88E27FBBC1CB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carbon Copy", "CarbonCopy\CarbonCopy.csproj", "{1902E694-7188-4ABE-89B0-88E27FBBC1CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JezUtilities", "JezUtilities\JezUtilities.csproj", "{D2CC8C86-22E3-410C-A4B7-F584CC618238}"
 EndProject

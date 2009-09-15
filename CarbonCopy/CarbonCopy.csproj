@@ -7,7 +7,7 @@
     <ProjectGuid>{1902E694-7188-4ABE-89B0-88E27FBBC1CB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Carbon_Copy</RootNamespace>
+    <RootNamespace>CarbonCopy</RootNamespace>
     <AssemblyName>CarbCopy</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

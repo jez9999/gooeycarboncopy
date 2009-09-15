@@ -70,8 +70,8 @@ end;
 ;=== .net??? ===  http://www.microsoft.com/downloads/details.aspx?FamilyID=0856EACB-4362-4B0D-8EDD-AAB15C5E04F5
 ; ...
 ;===Program files===
-Source: "..\Carbon Copy\bin\Release\CarbCopy.exe"; DestDir: "{app}"; Flags: replacesameversion promptifolder
-Source: "..\Carbon Copy\bin\Release\JezUtilities.dll"; DestDir: "{app}"; Flags: replacesameversion promptifolder
+Source: "..\CarbonCopy\bin\Release\CarbCopy.exe"; DestDir: "{app}"; Flags: replacesameversion promptifolder
+Source: "..\CarbonCopy\bin\Release\JezUtilities.dll"; DestDir: "{app}"; Flags: replacesameversion promptifolder
 
 [Icons]
 ;Create link on Start Menu Programs for program file
