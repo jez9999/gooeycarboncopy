@@ -242,7 +242,7 @@ namespace Carbon_Copy {
 		}
 		
 		private void btnAbout_Click(object sender, EventArgs e) {
-			utils.ShowInfo("Carbon copy version: " + Gooey.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString));
+			utils.ShowInfo("Carbon Copy version: " + Gooey.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString));
 		}
 		
 		private void lstSourceDirs_KeyDown(object sender, KeyEventArgs e) {
