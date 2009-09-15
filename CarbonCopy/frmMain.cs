@@ -13,7 +13,7 @@ namespace Carbon_Copy {
 	public partial class frmMain : Form {
 		#region Private vars
 		
-		private Jez.Utilities utils;
+		private Gooey.Utilities utils;
 		private CCOFunctions optFunc;
 		
 		#endregion

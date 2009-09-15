@@ -44,7 +44,6 @@
     <Compile Include="JezRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
