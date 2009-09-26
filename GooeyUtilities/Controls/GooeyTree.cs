@@ -104,7 +104,7 @@ namespace GooeyControls
 			initNodesState(base.Nodes);
 		}
 		
-		protected override void OnMouseClick(MouseEventArgs ea) {
+		protected override void OnMouseDown(MouseEventArgs ea) {
 			base.OnMouseClick(ea);
 			
 			if (ea.Button == MouseButtons.Left) {
@@ -112,13 +112,13 @@ namespace GooeyControls
 				if (info.Node != null && info.Location == TreeViewHitTestLocations.StateImage) {
 					// The modifier keys value could contain Shift | Control | Alt...
 					if ((Control.ModifierKeys & Keys.Control) > 0) {
-						this.nodeActivated(info.Node, CheckBoxSpecialOperation.CheckPermRecursive);
+						this.nodeActivated(info.Node, CheckBoxSpecialOperation.CheckPermRecursive, false);
 					}
 					else if ((Control.ModifierKeys & Keys.Shift) > 0) {
-						this.nodeActivated(info.Node, CheckBoxSpecialOperation.CheckRecursive);
+						this.nodeActivated(info.Node, CheckBoxSpecialOperation.CheckRecursive, false);
 					}
 					else {
-						this.nodeActivated(info.Node, CheckBoxSpecialOperation.None);
+						this.nodeActivated(info.Node, CheckBoxSpecialOperation.None, false);
 					}
 				}
 			}
@@ -131,13 +131,13 @@ namespace GooeyControls
 				if (base.SelectedNode != null) {
 					// The modifier keys value could contain Shift | Control | Alt...
 					if ((Control.ModifierKeys & Keys.Control) > 0) {
-						this.nodeActivated(base.SelectedNode, CheckBoxSpecialOperation.CheckPermRecursive);
+						this.nodeActivated(base.SelectedNode, CheckBoxSpecialOperation.CheckPermRecursive, true);
 					}
 					else if ((Control.ModifierKeys & Keys.Shift) > 0) {
-						this.nodeActivated(base.SelectedNode, CheckBoxSpecialOperation.CheckRecursive);
+						this.nodeActivated(base.SelectedNode, CheckBoxSpecialOperation.CheckRecursive, true);
 					}
 					else {
-						this.nodeActivated(base.SelectedNode, CheckBoxSpecialOperation.None);
+						this.nodeActivated(base.SelectedNode, CheckBoxSpecialOperation.None, true);
 					}
 				}
 			}
@@ -212,11 +212,12 @@ namespace GooeyControls
 		}
 		
 		/// <summary>
-		/// To be called when a node is activated either by key or by mouse.
+		/// To be called when a checkbox node is activated either by key or by mouse.
 		/// </summary>
 		/// <param name="node">The checkbox node that was activated.</param>
 		/// <param name="op">The special operation (if any) to perform on the node, with regards to checking its child nodes.</param>
-		private void nodeActivated(TreeNode node, CheckBoxSpecialOperation op) {
+		/// <param name="activatedByKeyboard">If the checkbox node was activated by keyboard, true; otherwise false.</param>
+		private void nodeActivated(TreeNode node, CheckBoxSpecialOperation op, bool activatedByKeyboard) {
 			bool dontUpdateChildren = false;
 			bool dontUpdateParents = false;
 			bool treatPermRecursiveAsChecked = false;
@@ -308,6 +309,8 @@ namespace GooeyControls
 			
 			if (!dontUpdateChildren) { updateChildren(node, treatPermRecursiveAsChecked); }
 			if (!dontUpdateParents) { updateParents(node); }
+			
+			if (!dontUpdateChildren || !dontUpdateParents) { base.OnAfterCheck(new TreeViewEventArgs(node, (activatedByKeyboard ? TreeViewAction.ByKeyboard : TreeViewAction.ByMouse))); }
 		}
 		
 		/// <summary>
