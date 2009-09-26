@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GooeyUtilities
+namespace Gooey
 {
 	/// <summary>
 	/// The main point of this structure is that stored values are inherently ordered.  When a value is inserted
