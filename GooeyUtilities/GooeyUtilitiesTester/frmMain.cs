@@ -5,7 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using GooeyUtilities;
+using Gooey;
 
 namespace GooeyUtilitiesTester
 {
@@ -161,6 +161,11 @@ namespace GooeyUtilitiesTester
 			
 			
 			//GooeyBTree<int, string> eventsTree = new GooeyBTree<int, string>();
+		}
+		
+		private void btnTestGooeyTree_Click(object sender, EventArgs e) {
+			Form frmGooeyTree = new frmGooeyTree();
+			frmGooeyTree.ShowDialog();
 		}
 	}
 }
