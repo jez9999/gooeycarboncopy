@@ -105,7 +105,7 @@ namespace GooeyControls
 		}
 		
 		protected override void OnMouseDown(MouseEventArgs ea) {
-			base.OnMouseClick(ea);
+			base.OnMouseDown(ea);
 			
 			if (ea.Button == MouseButtons.Left) {
 				TreeViewHitTestInfo info = base.HitTest(ea.Location);
@@ -342,7 +342,7 @@ namespace GooeyControls
 						tagData.CheckState = CheckState.Checked;
 					}
 					else if (parent.StateImageIndex == (int)CheckImageState.UncheckedNormal || parent.StateImageIndex == (int)CheckImageState.UncheckedMixed) {
-						if (aChildIsPermRecursive(node)) { node.StateImageIndex = (int)CheckImageState.UncheckedMixed; }
+						if (!treatPermRecursiveAsChecked && aChildIsPermRecursive(node)) { node.StateImageIndex = (int)CheckImageState.UncheckedMixed; }
 						else { node.StateImageIndex = (int)CheckImageState.UncheckedNormal; }
 						tagData.CheckState = CheckState.Unchecked;
 					}
