@@ -68,8 +68,9 @@
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
-			this.gooeyTree1 = new GooeyControls.GooeyTree();
 			this.btnToggleEnabledR = new System.Windows.Forms.Button();
+			this.button1 = new System.Windows.Forms.Button();
+			this.gooeyTree1 = new GooeyControls.GooeyTree();
 			this.SuspendLayout();
 			// 
 			// textBox1
@@ -139,6 +140,27 @@
 			this.label2.TabIndex = 5;
 			this.label2.Text = "Regular TreeView";
 			// 
+			// btnToggleEnabledR
+			// 
+			this.btnToggleEnabledR.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.btnToggleEnabledR.Location = new System.Drawing.Point(541, 13);
+			this.btnToggleEnabledR.Name = "btnToggleEnabledR";
+			this.btnToggleEnabledR.Size = new System.Drawing.Size(162, 23);
+			this.btnToggleEnabledR.TabIndex = 6;
+			this.btnToggleEnabledR.Text = "Toggle RegularTree enabled";
+			this.btnToggleEnabledR.UseVisualStyleBackColor = true;
+			this.btnToggleEnabledR.Click += new System.EventHandler(this.btnToggleEnabledR_Click);
+			// 
+			// button1
+			// 
+			this.button1.Location = new System.Drawing.Point(726, 12);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(33, 23);
+			this.button1.TabIndex = 7;
+			this.button1.Text = "R";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
+			// 
 			// gooeyTree1
 			// 
 			this.gooeyTree1.Location = new System.Drawing.Point(12, 29);
@@ -200,22 +222,12 @@
 			this.gooeyTree1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.gooeyTree1_AfterCheck);
 			this.gooeyTree1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.gooeyTree1_AfterSelect);
 			// 
-			// btnToggleEnabledR
-			// 
-			this.btnToggleEnabledR.ForeColor = System.Drawing.SystemColors.ControlText;
-			this.btnToggleEnabledR.Location = new System.Drawing.Point(541, 13);
-			this.btnToggleEnabledR.Name = "btnToggleEnabledR";
-			this.btnToggleEnabledR.Size = new System.Drawing.Size(162, 23);
-			this.btnToggleEnabledR.TabIndex = 6;
-			this.btnToggleEnabledR.Text = "Toggle RegularTree enabled";
-			this.btnToggleEnabledR.UseVisualStyleBackColor = true;
-			this.btnToggleEnabledR.Click += new System.EventHandler(this.btnToggleEnabledR_Click);
-			// 
 			// frmGooeyTree
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(822, 604);
+			this.Controls.Add(this.button1);
 			this.Controls.Add(this.btnToggleEnabledR);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
@@ -239,5 +251,6 @@
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Button btnToggleEnabledR;
+		private System.Windows.Forms.Button button1;
 	}
 }
