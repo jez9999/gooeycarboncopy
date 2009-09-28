@@ -28,6 +28,9 @@ namespace GooeyUtilitiesTester
 			textBox1.Text += "\r\n";
 			
 			textBox1.Text += "Last update triggered by AfterCheck event for:\r\nNode: " + ea.Node.Text + "\r\nAction: " + ea.Action.ToString();
+			textBox1.Text += "\r\n";
+			
+			textBox1.Text += "Bounds of last node (x, y, w, h): " + ea.Node.Bounds.X + ", " + ea.Node.Bounds.Y + ", " + ea.Node.Bounds.Width + ", " + ea.Node.Bounds.Height;
 		}
 		
 		private void addNodeText(TreeNode node) {
