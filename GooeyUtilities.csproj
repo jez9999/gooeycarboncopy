@@ -41,8 +41,8 @@
     <Compile Include="Controls\GooeyTree.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GooeyBTree.cs" />
-    <Compile Include="Utilities.cs" />
+    <Compile Include="General\GooeyBTree.cs" />
+    <Compile Include="General\Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
