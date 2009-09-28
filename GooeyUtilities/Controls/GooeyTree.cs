@@ -77,6 +77,30 @@ namespace GooeyControls
 		
 		#region Overriding TreeView
 		
+		// TODO: Temp...
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+
+			using (Graphics gfx = this.CreateGraphics())
+			{
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(0, 0), System.Windows.Forms.VisualStyles.CheckBoxState.UncheckedNormal);
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(14, 0), System.Windows.Forms.VisualStyles.CheckBoxState.UncheckedPressed);
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(28, 0), System.Windows.Forms.VisualStyles.CheckBoxState.UncheckedHot);
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(42, 0), System.Windows.Forms.VisualStyles.CheckBoxState.UncheckedDisabled);
+
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(56, 0), System.Windows.Forms.VisualStyles.CheckBoxState.CheckedNormal);
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(70, 0), System.Windows.Forms.VisualStyles.CheckBoxState.CheckedPressed);
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(84, 0), System.Windows.Forms.VisualStyles.CheckBoxState.CheckedHot);
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(98, 0), System.Windows.Forms.VisualStyles.CheckBoxState.CheckedDisabled);
+
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(112, 0), System.Windows.Forms.VisualStyles.CheckBoxState.MixedNormal);
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(126, 0), System.Windows.Forms.VisualStyles.CheckBoxState.MixedPressed);
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(140, 0), System.Windows.Forms.VisualStyles.CheckBoxState.MixedHot);
+				CheckBoxRenderer.DrawCheckBox(gfx, new Point(156, 0), System.Windows.Forms.VisualStyles.CheckBoxState.MixedDisabled);
+			}
+		}
+		
 		protected override void OnHandleCreated(EventArgs e) {
 			base.OnHandleCreated(e);
 			
