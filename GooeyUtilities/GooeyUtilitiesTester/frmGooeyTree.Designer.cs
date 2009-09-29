@@ -29,47 +29,46 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Node1");
-			System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Node2");
-			System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Node0", new System.Windows.Forms.TreeNode[] {
-            treeNode17,
-            treeNode18});
-			System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Node5");
-			System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("Node6");
-			System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Node4", new System.Windows.Forms.TreeNode[] {
-            treeNode20,
-            treeNode21});
-			System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("Node3", new System.Windows.Forms.TreeNode[] {
-            treeNode22});
-			System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Node7");
-			System.Windows.Forms.TreeNode treeNode25 = new System.Windows.Forms.TreeNode("Node1");
-			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData9 = new GooeyControls.GooeyTree.GooeyTreeTagData();
-			System.Windows.Forms.TreeNode treeNode26 = new System.Windows.Forms.TreeNode("Node2");
-			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData10 = new GooeyControls.GooeyTree.GooeyTreeTagData();
-			System.Windows.Forms.TreeNode treeNode27 = new System.Windows.Forms.TreeNode("Node0", new System.Windows.Forms.TreeNode[] {
-            treeNode25,
-            treeNode26});
-			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData11 = new GooeyControls.GooeyTree.GooeyTreeTagData();
-			System.Windows.Forms.TreeNode treeNode28 = new System.Windows.Forms.TreeNode("Node5");
-			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData12 = new GooeyControls.GooeyTree.GooeyTreeTagData();
-			System.Windows.Forms.TreeNode treeNode29 = new System.Windows.Forms.TreeNode("Node6");
-			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData13 = new GooeyControls.GooeyTree.GooeyTreeTagData();
-			System.Windows.Forms.TreeNode treeNode30 = new System.Windows.Forms.TreeNode("Node4", new System.Windows.Forms.TreeNode[] {
-            treeNode28,
-            treeNode29});
-			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData14 = new GooeyControls.GooeyTree.GooeyTreeTagData();
-			System.Windows.Forms.TreeNode treeNode31 = new System.Windows.Forms.TreeNode("Node3", new System.Windows.Forms.TreeNode[] {
-            treeNode30});
-			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData15 = new GooeyControls.GooeyTree.GooeyTreeTagData();
-			System.Windows.Forms.TreeNode treeNode32 = new System.Windows.Forms.TreeNode("Node7");
-			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData16 = new GooeyControls.GooeyTree.GooeyTreeTagData();
+			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Node1");
+			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Node2");
+			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Node0", new System.Windows.Forms.TreeNode[] {
+            treeNode1,
+            treeNode2});
+			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Node5");
+			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Node6");
+			System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Node4", new System.Windows.Forms.TreeNode[] {
+            treeNode4,
+            treeNode5});
+			System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Node3", new System.Windows.Forms.TreeNode[] {
+            treeNode6});
+			System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Node7");
+			System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Node1");
+			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData1 = new GooeyControls.GooeyTree.GooeyTreeTagData();
+			System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Node2");
+			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData2 = new GooeyControls.GooeyTree.GooeyTreeTagData();
+			System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Node0", new System.Windows.Forms.TreeNode[] {
+            treeNode9,
+            treeNode10});
+			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData3 = new GooeyControls.GooeyTree.GooeyTreeTagData();
+			System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Node5");
+			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData4 = new GooeyControls.GooeyTree.GooeyTreeTagData();
+			System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Node6");
+			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData5 = new GooeyControls.GooeyTree.GooeyTreeTagData();
+			System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Node4", new System.Windows.Forms.TreeNode[] {
+            treeNode12,
+            treeNode13});
+			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData6 = new GooeyControls.GooeyTree.GooeyTreeTagData();
+			System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Node3", new System.Windows.Forms.TreeNode[] {
+            treeNode14});
+			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData7 = new GooeyControls.GooeyTree.GooeyTreeTagData();
+			System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Node7");
+			GooeyControls.GooeyTree.GooeyTreeTagData gooeyTreeTagData8 = new GooeyControls.GooeyTree.GooeyTreeTagData();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.btnToggleEnabledG = new System.Windows.Forms.Button();
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.btnToggleEnabledR = new System.Windows.Forms.Button();
-			this.button1 = new System.Windows.Forms.Button();
 			this.gooeyTree1 = new GooeyControls.GooeyTree();
 			this.SuspendLayout();
 			// 
@@ -97,26 +96,26 @@
 			this.treeView1.CheckBoxes = true;
 			this.treeView1.Location = new System.Drawing.Point(12, 281);
 			this.treeView1.Name = "treeView1";
-			treeNode17.Name = "Node1";
-			treeNode17.Text = "Node1";
-			treeNode18.Name = "Node2";
-			treeNode18.Text = "Node2";
-			treeNode19.Name = "Node0";
-			treeNode19.Text = "Node0";
-			treeNode20.Name = "Node5";
-			treeNode20.Text = "Node5";
-			treeNode21.Name = "Node6";
-			treeNode21.Text = "Node6";
-			treeNode22.Name = "Node4";
-			treeNode22.Text = "Node4";
-			treeNode23.Name = "Node3";
-			treeNode23.Text = "Node3";
-			treeNode24.Name = "Node7";
-			treeNode24.Text = "Node7";
+			treeNode1.Name = "Node1";
+			treeNode1.Text = "Node1";
+			treeNode2.Name = "Node2";
+			treeNode2.Text = "Node2";
+			treeNode3.Name = "Node0";
+			treeNode3.Text = "Node0";
+			treeNode4.Name = "Node5";
+			treeNode4.Text = "Node5";
+			treeNode5.Name = "Node6";
+			treeNode5.Text = "Node6";
+			treeNode6.Name = "Node4";
+			treeNode6.Text = "Node4";
+			treeNode7.Name = "Node3";
+			treeNode7.Text = "Node3";
+			treeNode8.Name = "Node7";
+			treeNode8.Text = "Node7";
 			this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode19,
-            treeNode23,
-            treeNode24});
+            treeNode3,
+            treeNode7,
+            treeNode8});
 			this.treeView1.Size = new System.Drawing.Size(354, 311);
 			this.treeView1.TabIndex = 3;
 			this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
@@ -151,72 +150,62 @@
 			this.btnToggleEnabledR.UseVisualStyleBackColor = true;
 			this.btnToggleEnabledR.Click += new System.EventHandler(this.btnToggleEnabledR_Click);
 			// 
-			// button1
-			// 
-			this.button1.Location = new System.Drawing.Point(726, 12);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(33, 23);
-			this.button1.TabIndex = 7;
-			this.button1.Text = "R";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
-			// 
 			// gooeyTree1
 			// 
 			this.gooeyTree1.Location = new System.Drawing.Point(12, 29);
 			this.gooeyTree1.Name = "gooeyTree1";
-			treeNode25.Name = "Node1";
-			treeNode25.StateImageIndex = 0;
-			gooeyTreeTagData9.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
-			gooeyTreeTagData9.OtherTagInfo = null;
-			treeNode25.Tag = gooeyTreeTagData9;
-			treeNode25.Text = "Node1";
-			treeNode26.Name = "Node2";
-			treeNode26.StateImageIndex = 0;
-			gooeyTreeTagData10.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
-			gooeyTreeTagData10.OtherTagInfo = null;
-			treeNode26.Tag = gooeyTreeTagData10;
-			treeNode26.Text = "Node2";
-			treeNode27.Name = "Node0";
-			treeNode27.StateImageIndex = 0;
-			gooeyTreeTagData11.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
-			gooeyTreeTagData11.OtherTagInfo = null;
-			treeNode27.Tag = gooeyTreeTagData11;
-			treeNode27.Text = "Node0";
-			treeNode28.Name = "Node5";
-			treeNode28.StateImageIndex = 0;
-			gooeyTreeTagData12.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
-			gooeyTreeTagData12.OtherTagInfo = null;
-			treeNode28.Tag = gooeyTreeTagData12;
-			treeNode28.Text = "Node5";
-			treeNode29.Name = "Node6";
-			treeNode29.StateImageIndex = 0;
-			gooeyTreeTagData13.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
-			gooeyTreeTagData13.OtherTagInfo = null;
-			treeNode29.Tag = gooeyTreeTagData13;
-			treeNode29.Text = "Node6";
-			treeNode30.Name = "Node4";
-			treeNode30.StateImageIndex = 0;
-			gooeyTreeTagData14.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
-			gooeyTreeTagData14.OtherTagInfo = null;
-			treeNode30.Tag = gooeyTreeTagData14;
-			treeNode30.Text = "Node4";
-			treeNode31.Name = "Node3";
-			treeNode31.StateImageIndex = 0;
-			gooeyTreeTagData15.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
-			gooeyTreeTagData15.OtherTagInfo = null;
-			treeNode31.Tag = gooeyTreeTagData15;
-			treeNode31.Text = "Node3";
-			treeNode32.Name = "Node7";
-			treeNode32.StateImageIndex = 0;
-			gooeyTreeTagData16.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
-			gooeyTreeTagData16.OtherTagInfo = null;
-			treeNode32.Tag = gooeyTreeTagData16;
-			treeNode32.Text = "Node7";
+			treeNode9.Name = "Node1";
+			treeNode9.StateImageIndex = 0;
+			gooeyTreeTagData1.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
+			gooeyTreeTagData1.OtherTagInfo = null;
+			treeNode9.Tag = gooeyTreeTagData1;
+			treeNode9.Text = "Node1";
+			treeNode10.Name = "Node2";
+			treeNode10.StateImageIndex = 0;
+			gooeyTreeTagData2.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
+			gooeyTreeTagData2.OtherTagInfo = null;
+			treeNode10.Tag = gooeyTreeTagData2;
+			treeNode10.Text = "Node2";
+			treeNode11.Name = "Node0";
+			treeNode11.StateImageIndex = 0;
+			gooeyTreeTagData3.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
+			gooeyTreeTagData3.OtherTagInfo = null;
+			treeNode11.Tag = gooeyTreeTagData3;
+			treeNode11.Text = "Node0";
+			treeNode12.Name = "Node5";
+			treeNode12.StateImageIndex = 0;
+			gooeyTreeTagData4.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
+			gooeyTreeTagData4.OtherTagInfo = null;
+			treeNode12.Tag = gooeyTreeTagData4;
+			treeNode12.Text = "Node5";
+			treeNode13.Name = "Node6";
+			treeNode13.StateImageIndex = 0;
+			gooeyTreeTagData5.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
+			gooeyTreeTagData5.OtherTagInfo = null;
+			treeNode13.Tag = gooeyTreeTagData5;
+			treeNode13.Text = "Node6";
+			treeNode14.Name = "Node4";
+			treeNode14.StateImageIndex = 0;
+			gooeyTreeTagData6.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
+			gooeyTreeTagData6.OtherTagInfo = null;
+			treeNode14.Tag = gooeyTreeTagData6;
+			treeNode14.Text = "Node4";
+			treeNode15.Name = "Node3";
+			treeNode15.StateImageIndex = 0;
+			gooeyTreeTagData7.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
+			gooeyTreeTagData7.OtherTagInfo = null;
+			treeNode15.Tag = gooeyTreeTagData7;
+			treeNode15.Text = "Node3";
+			treeNode16.Name = "Node7";
+			treeNode16.StateImageIndex = 0;
+			gooeyTreeTagData8.CheckState = GooeyControls.GooeyTree.CheckState.Unchecked;
+			gooeyTreeTagData8.OtherTagInfo = null;
+			treeNode16.Tag = gooeyTreeTagData8;
+			treeNode16.Text = "Node7";
 			this.gooeyTree1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode27,
-            treeNode31,
-            treeNode32});
+            treeNode11,
+            treeNode15,
+            treeNode16});
 			this.gooeyTree1.Size = new System.Drawing.Size(354, 214);
 			this.gooeyTree1.TabIndex = 0;
 			this.gooeyTree1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.gooeyTree1_AfterCheck);
@@ -227,7 +216,6 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(822, 604);
-			this.Controls.Add(this.button1);
 			this.Controls.Add(this.btnToggleEnabledR);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
@@ -251,6 +239,5 @@
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Button btnToggleEnabledR;
-		private System.Windows.Forms.Button button1;
 	}
 }
