@@ -221,7 +221,6 @@ namespace GooeyControls
 			bool dontUpdateChildren = false;
 			bool dontUpdateParents = false;
 			bool treatPermRecursiveAsChecked = false;
-//			bool dontRefreshNode = false;
 			
 			GooeyTree.GooeyTreeTagData tagData = (GooeyTree.GooeyTreeTagData)node.Tag;
 			switch (node.StateImageIndex) {
@@ -299,7 +298,6 @@ namespace GooeyControls
 				// Always want to do nothing.
 				dontUpdateChildren = true;
 				dontUpdateParents = true;
-//				dontRefreshNode = true;
 				break;
 				
 				case (int)CheckImageState.PermRecurse:
@@ -314,13 +312,6 @@ namespace GooeyControls
 			if (!dontUpdateParents) { updateParents(node); }
 			
 			if (!dontUpdateChildren || !dontUpdateParents) { base.OnAfterCheck(new TreeViewEventArgs(node, (activatedByKeyboard ? TreeViewAction.ByKeyboard : TreeViewAction.ByMouse))); }
-			
-//			if (!dontRefreshNode) {
-//				// Manually tell WinForms to refresh this node to work around a (now fixed) bug in Mono.
-//				// NOTE: This isn't actually working around the Mono bug.  Remove it???
-//				Rectangle rect = new Rectangle(0, node.Bounds.Top, node.Bounds.Width, node.Bounds.Height);
-//				node.TreeView.Invalidate(rect);
-//			}
 		}
 		
 		/// <summary>
