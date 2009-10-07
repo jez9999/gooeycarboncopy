@@ -12,7 +12,8 @@ namespace Gooey
 	/// or vice versa, according to the ordering of the nodes.
 	/// 
 	/// Microsoft's SortedList and SortedDictionary basically implement this, save for the ability to throw an
-	/// exception if the key already exists.
+	/// exception if the key already exists, when accessing a node via IDictionary.  Recommend using them instead,
+	/// as they don't throw a StackOverflowException when you populate them with large numbers of elements.
 	/// </summary>
 	public class GooeyBTree<TKey, TValue> : IDictionary<TKey, TValue> where TKey : IComparable<TKey> {
 		// Gooey Software binary tree class, v1.2
@@ -76,7 +77,7 @@ namespace Gooey
 			else {
 				// Node to add's key is THE SAME as this one.
 				if (this.exceptionOnNodeKeyClash) {
-					throw new GooeyNodeAlreadyExistsException();
+					throw new GooeyNodeAlreadyExistsException("The node with this key (" + nodeToAdd.Key.ToString() + ") already exists.");
 				}
 				else {
 					addTo.Value = nodeToAdd.Value;
