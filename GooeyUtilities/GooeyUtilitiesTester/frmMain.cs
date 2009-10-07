@@ -6,13 +6,42 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using Gooey;
+using System.Reflection;
 
 namespace GooeyUtilitiesTester
 {
-	public partial class frmMain : Form
-	{
+	public partial class frmMain : Form {
+		private Icon icoTray = new Icon(Assembly.GetExecutingAssembly().GetManifestResourceStream("GooeyUtilitiesTester.ccApp.ico"));
+		private ContextMenu iconMenu;
+		
 		public frmMain() {
 			InitializeComponent();
+			
+			// Create and populate icon menu
+			iconMenu = new ContextMenu();
+			this.iconMenu.MenuItems.Clear();
+			this.iconMenu.MenuItems.Add(new MenuItem("Test1", new EventHandler(iconMenuExit_Click)));
+			this.iconMenu.MenuItems.Add(new MenuItem("Test2", new EventHandler(iconMenuExit_Click)));
+			this.iconMenu.MenuItems.Add(new MenuItem("Test3", new EventHandler(iconMenuExit_Click)));
+			this.notifyIcon1.Icon = this.icoTray;
+			this.notifyIcon1.Visible = true;
+			this.notifyIcon1.ContextMenu = this.iconMenu;
+//			iconMenu.Popup += new EventHandler(iconMenu_Popup);
+		}
+		
+		private void button1_Click(object sender, EventArgs e) {
+			// Show modal dialog
+			Utilities utils = new Utilities();
+			utils.ShowInfo("Modal dialog box...");
+		}
+		
+		private void iconMenu_Popup(object sender, EventArgs e) {
+
+		}
+		
+		private void iconMenuExit_Click(object sender, EventArgs ea) {
+			// Exit app by closing main form
+			this.Close();
 		}
 		
 		private void btntestBtree_Click(object sender, EventArgs e) {
@@ -166,6 +195,11 @@ namespace GooeyUtilitiesTester
 		private void btnTestGooeyTree_Click(object sender, EventArgs e) {
 			Form frmGooeyTree = new frmGooeyTree();
 			frmGooeyTree.ShowDialog();
+		}
+
+		private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+
 		}
 	}
 }
