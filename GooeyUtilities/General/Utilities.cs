@@ -96,7 +96,13 @@ namespace Gooey {
 		#endregion
 	}
 	
+	/// <summary>
+	/// Used to specify the type of version string that should be generated.
+	/// </summary>
 	public enum VersionStringType {
+		/// <summary>
+		/// A full Assembly version string, including major, minor, build, and revision.
+		/// </summary>
 		FullString
 	}
 	
@@ -106,6 +112,12 @@ namespace Gooey {
 	public class Utilities {
 		#region Public methods
 		
+		/// <summary>
+		/// Returns a string indicating the version of the Assenbly supplied.
+		/// </summary>
+		/// <param name="getVersionFor">The Assembly to get the version string for.</param>
+		/// <param name="versionStrType">The format of the version string to return.</param>
+		/// <returns>The version string for the Assembly supplied.</returns>
 		public static string GetVersionString(Assembly getVersionFor, VersionStringType versionStrType) {
 			string retVal;
 			Version ver = getVersionFor.GetName().Version;
@@ -124,7 +136,7 @@ namespace Gooey {
 		}
 		
 		/// <summary>
-		/// Captures and returns the 'drive name' part of a codebase string
+		/// Captures and returns the 'drive name' part of a codebase string.
 		/// </summary>
 		/// <param name="codeBase">The codebase string, eg. file://C:\path\to\codebase.exe</param>
 		/// <returns>The drive part, eg. 'C', or an empty string if no drive part was found.</returns>
@@ -142,13 +154,51 @@ namespace Gooey {
 		public void ShowError(string errorMsg) {
 			System.Windows.Forms.MessageBox.Show(errorMsg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
-
+		
+		/// <summary>
+		/// Shows a warning message dialog with generic error title, OK button, and error message icon.
+		/// </summary>
+		/// <param name="warningMsg">The string of the warning message to display.</param>
+		public void ShowWarning(string warningMsg) {
+			System.Windows.Forms.MessageBox.Show(warningMsg, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+		}
+		
 		/// <summary>
 		/// Shows an information message dialog with generic information title, OK button, and information icon.
 		/// </summary>
-		/// <param name="errorMsg">The string of the information message to display.</param>
+		/// <param name="infoMsg">The string of the information message to display.</param>
 		public void ShowInfo(string infoMsg) {
 			System.Windows.Forms.MessageBox.Show(infoMsg, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+		
+		/// <summary>
+		/// Shows an OK/Cancel dialog with specified title, message, OK/Cancel buttons, and Question icon.
+		/// </summary>
+		/// <param name="title">The title/caption for the dialog.</param>
+		/// <param name="okCancelMsg">The string of the OK/cancel message to display.</param>
+		/// <returns>The result of the user's interaction with the dialog.</returns>
+		public DialogResult ShowOkCancel(string title, string okCancelMsg) {
+			return System.Windows.Forms.MessageBox.Show(okCancelMsg, title, MessageBoxButtons.OKCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+		}
+		
+		/// <summary>
+		/// Shows an Yes/No dialog with specified title, message, Yes/No buttons, and Question icon.
+		/// </summary>
+		/// <param name="title">The title/caption for the dialog.</param>
+		/// <param name="yesNoMsg">The string of the Yes/No message to display.</param>
+		/// <returns>The result of the user's interaction with the dialog.</returns>
+		public DialogResult ShowYesNo(string title, string yesNoMsg) {
+			return System.Windows.Forms.MessageBox.Show(yesNoMsg, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+		}
+		
+		/// <summary>
+		/// Shows a Yes/No/Cancel dialog with specified title, message, Yes/No/Cancel buttons, and Question icon.
+		/// </summary>
+		/// <param name="title">The title/caption for the dialog.</param>
+		/// <param name="yesNoCancelMsg">The string of the Yes/No/Cancel message to display.</param>
+		/// <returns>The result of the user's interaction with the dialog.</returns>
+		public DialogResult ShowYesNoCancel(string title, string yesNoCancelMsg) {
+			return System.Windows.Forms.MessageBox.Show(yesNoCancelMsg, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
 		}
 		
 		/// <summary>
