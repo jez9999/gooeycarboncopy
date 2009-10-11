@@ -13,20 +13,17 @@ namespace GooeyUtilitiesTester
 	public partial class frmMain : Form {
 		private Icon icoTray = new Icon(Assembly.GetExecutingAssembly().GetManifestResourceStream("GooeyUtilitiesTester.ccApp.ico"));
 		private ContextMenu iconMenu;
+		private bool popTrayMenu = true;
 		
 		public frmMain() {
 			InitializeComponent();
 			
 			// Create and populate icon menu
 			iconMenu = new ContextMenu();
-			this.iconMenu.MenuItems.Clear();
-			this.iconMenu.MenuItems.Add(new MenuItem("Test1", new EventHandler(iconMenuExit_Click)));
-			this.iconMenu.MenuItems.Add(new MenuItem("Test2", new EventHandler(iconMenuExit_Click)));
-			this.iconMenu.MenuItems.Add(new MenuItem("Test3", new EventHandler(iconMenuExit_Click)));
 			this.notifyIcon1.Icon = this.icoTray;
 			this.notifyIcon1.Visible = true;
 			this.notifyIcon1.ContextMenu = this.iconMenu;
-//			iconMenu.Popup += new EventHandler(iconMenu_Popup);
+			iconMenu.Popup += new EventHandler(iconMenu_Popup);
 		}
 		
 		private void button1_Click(object sender, EventArgs e) {
@@ -36,7 +33,12 @@ namespace GooeyUtilitiesTester
 		}
 		
 		private void iconMenu_Popup(object sender, EventArgs e) {
-
+			this.iconMenu.MenuItems.Clear();
+			if (this.popTrayMenu) {
+				this.iconMenu.MenuItems.Add(new MenuItem("Test1", new EventHandler(iconMenuExit_Click)));
+				this.iconMenu.MenuItems.Add(new MenuItem("Test2", new EventHandler(iconMenuExit_Click)));
+				this.iconMenu.MenuItems.Add(new MenuItem("Test3", new EventHandler(iconMenuExit_Click)));
+			}
 		}
 		
 		private void iconMenuExit_Click(object sender, EventArgs ea) {
@@ -200,6 +202,16 @@ namespace GooeyUtilitiesTester
 		private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 
+		}
+
+		private void checkBox1_CheckedChanged(object sender, EventArgs e)
+		{
+			if (((CheckBox)sender).Checked) {
+				this.popTrayMenu = true;
+			}
+			else {
+				this.popTrayMenu = false;
+			}
 		}
 	}
 }

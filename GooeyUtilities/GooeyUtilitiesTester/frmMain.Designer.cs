@@ -34,6 +34,7 @@
 			this.btnTestGooeyTree = new System.Windows.Forms.Button();
 			this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
 			this.button1 = new System.Windows.Forms.Button();
+			this.checkBox1 = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// tbOutput
@@ -81,11 +82,25 @@
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
+			// checkBox1
+			// 
+			this.checkBox1.AutoSize = true;
+			this.checkBox1.Checked = true;
+			this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkBox1.Location = new System.Drawing.Point(340, 16);
+			this.checkBox1.Name = "checkBox1";
+			this.checkBox1.Size = new System.Drawing.Size(117, 17);
+			this.checkBox1.TabIndex = 4;
+			this.checkBox1.Text = "Populate tray menu";
+			this.checkBox1.UseVisualStyleBackColor = true;
+			this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+			// 
 			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(892, 540);
+			this.Controls.Add(this.checkBox1);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.btnTestGooeyTree);
 			this.Controls.Add(this.btnTestBtree);
@@ -104,6 +119,7 @@
 		private System.Windows.Forms.Button btnTestGooeyTree;
 		private System.Windows.Forms.NotifyIcon notifyIcon1;
 		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.CheckBox checkBox1;
 	}
 }
 
