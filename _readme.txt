@@ -3,17 +3,18 @@ Carbon Copy README
 
 NOTES:
 - Please read _licence.txt for the licence under which this software and source code
-are distributed.
+  are distributed.
 - When we update the version, remember to read _version.txt for places where we need to
-update the version number!
+  update the version number!
 
 
 -----
 
+
 This is where we'll be putting useful info like build information, dependencies, etc.
 
 Libraries (generally DLLs) that need to be packaged with the solution should go in a
-'Libraries' directory, to be located under 'Solution Items' in the solution explorer,
+'_Libs' directory, to be located under 'Solution Items' in the solution explorer,
 and under the directory in which the .sln file resides on the file system.
 
 Carbon Copy is being developed (initially) in Visual Studio 2008, and therefore it's
