@@ -118,7 +118,7 @@ namespace Gooey {
 		/// <param name="getVersionFor">The Assembly to get the version string for.</param>
 		/// <param name="versionStrType">The format of the version string to return.</param>
 		/// <returns>The version string for the Assembly supplied.</returns>
-		public static string GetVersionString(Assembly getVersionFor, VersionStringType versionStrType) {
+		public string GetVersionString(Assembly getVersionFor, VersionStringType versionStrType) {
 			string retVal;
 			Version ver = getVersionFor.GetName().Version;
 			
@@ -199,6 +199,33 @@ namespace Gooey {
 		/// <returns>The result of the user's interaction with the dialog.</returns>
 		public DialogResult ShowYesNoCancel(string title, string yesNoCancelMsg) {
 			return System.Windows.Forms.MessageBox.Show(yesNoCancelMsg, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+		}
+		
+		/// <summary>
+		/// Normalizes all newlines from the input string into Unix-style newlines (\n).
+		/// </summary>
+		/// <param name="inputTxt">The text whose newlines to normalize.</param>
+		/// <returns>The text with normalized newlines.</returns>
+		public string ConvertToUnixNewlines(string inputTxt) {
+			return inputTxt.Replace("\r\n", "\n").Replace("\r", "\n");
+		}
+		
+		/// <summary>
+		/// Normalizes all newlines from the input string into Mac-style newlines (\r).
+		/// </summary>
+		/// <param name="inputTxt">The text whose newlines to normalize.</param>
+		/// <returns>The text with normalized newlines.</returns>
+		public string ConvertToMacNewlines(string inputTxt) {
+			return ConvertToUnixNewlines(inputTxt).Replace("\n", "\r");
+		}
+		
+		/// <summary>
+		/// Normalizes all newlines from the input string into Windows-style newlines (\r\n).
+		/// </summary>
+		/// <param name="inputTxt">The text whose newlines to normalize.</param>
+		/// <returns>The text with normalized newlines.</returns>
+		public string ConvertToWindowsNewlines(string inputTxt) {
+			return ConvertToUnixNewlines(inputTxt).Replace("\n", "\r\n");
 		}
 		
 		/// <summary>
