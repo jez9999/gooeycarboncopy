@@ -9,8 +9,24 @@ using System.Text.RegularExpressions;
 using System.IO;
 using Gooey;
 
-namespace Carbon_Copy {
+namespace CarbonCopy {
 	public partial class frmMain : Form {
+		#region Private classes
+		
+		/// <summary>
+		/// Represents a verbosity level in the 'output verbosity' listbox
+		/// </summary>
+		public class VerbosityListItem {
+			public VerbosityLevel OutputDetail { get; set; }
+			public string Description { get; set; }
+			
+			public override string ToString() {
+				return this.Description;
+			}
+		}
+		
+		#endregion
+		
 		#region Private vars
 		
 		private Gooey.Utilities utils;
@@ -22,13 +38,6 @@ namespace Carbon_Copy {
 		
 		public frmMain() {
 			InitializeComponent();
-			
-			// TODO: Make the quickToolTip popup and disappear much faster via the
-			// designer property settings, once we've figured out how to fix its
-			// bug (see http://social.msdn.microsoft.com/Forums/en-US/netfxbcl/thread/a08a23c4-88b5-464d-903b-87555475cb88)
-			
-			// Setup tooltip(s)
-			ttpQuick.SetToolTip(lblVerboseWarning, "'Verbose' can result in a very large amount of output for large backups; don't enable it unless you really want very detailed information!");
 			
 			this.utils = new Gooey.Utilities();
 			this.optFunc = new CCOFunctions();
@@ -58,9 +67,21 @@ namespace Carbon_Copy {
 			lblDestDir.MaximumSize = new Size(lstSourceDirs.Width, 0);
 			lblDestDir.Text = "";
 			
+			// Set colours of example labels
+			var ccoColours = new CCOColours();
+			lblInformational.ForeColor = ccoColours.Black;
+			lblError.ForeColor = ccoColours.Red;
+			lblDebug.ForeColor = ccoColours.Green;
+			lblVerbose.ForeColor = ccoColours.Blue;
+			
 			// Initialize options information/default selections
 			radCarbon.Checked = true;
-			chkComments.Checked = true;
+			
+			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Brief", OutputDetail = VerbosityLevel.Brief });
+			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Normal", OutputDetail = VerbosityLevel.Normal });
+			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Verbose", OutputDetail = VerbosityLevel.Verbose });
+			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Ultra-Verbose", OutputDetail = VerbosityLevel.UltraVerbose });
+			lstVerbosity.SelectedIndex = 1;  // Default to Normal
 		}
 		
 		private void btnAddDir_Click(object sender, EventArgs e) {
@@ -152,7 +173,8 @@ namespace Carbon_Copy {
 		}
 		
 		private void btnStart_Click(object sender, EventArgs e) {
-			CCO passingOptions = genPassingOptions();
+			// Generate options to be passed in to the backup form
+			CCO passingOptions = generatePassingOptions();
 			
 			string errors;
 			if (!optFunc.SanityCheck(passingOptions, out errors)) {
@@ -165,7 +187,7 @@ namespace Carbon_Copy {
 			}
 		}
 		
-		private CCO genPassingOptions() {
+		private CCO generatePassingOptions() {
 			CCO options = new CCO();
 			
 			foreach (CCODirinfoHolder dirInfoHolder in lstSourceDirs.Items) {
@@ -177,10 +199,7 @@ namespace Carbon_Copy {
 			if (radCarbon.Checked) { options.Type = CCOTypeOfBackup.CarbonCopy; }
 			else if (radIncremental.Checked) { options.Type = CCOTypeOfBackup.Incremental; }
 			
-			options.ToDisplay =
-				(chkComments.Checked ? CCOWhatToDisplay.Comments : 0) |
-				(CCOWhatToDisplay.Errors) |   // Errors always displayed
-				(chkVerbose.Checked ? CCOWhatToDisplay.Verbose : 0);
+			options.OutputDetail = ((VerbosityListItem)lstVerbosity.SelectedItem).OutputDetail;
 			
 			return options;
 		}
@@ -208,21 +227,12 @@ namespace Carbon_Copy {
 			}
 			
 			// Setup what to display
-			if ((options.ToDisplay & CCOWhatToDisplay.Comments) > 0) {
-				chkComments.Checked = true;
+			for (int i = 0; i < lstVerbosity.Items.Count; i++) {
+				if (((VerbosityListItem)lstVerbosity.Items[i]).OutputDetail == options.OutputDetail) {
+					lstVerbosity.SelectedIndex = i;
+					break;
+				}
 			}
-			else {
-				chkComments.Checked = false;
-			}
-			
-			if ((options.ToDisplay & CCOWhatToDisplay.Verbose) > 0) {
-				chkVerbose.Checked = true;
-			}
-			else {
-				chkVerbose.Checked = false;
-			}
-			// (Currently, we always display errors.  We may make this configurable in
-			// future.)
 		}
 		
 		private void txtSourceDir_KeyPress(object sender, KeyPressEventArgs e) {
@@ -286,7 +296,7 @@ namespace Carbon_Copy {
 			if (saveFileDialog1.ShowDialog() == DialogResult.OK) {
 				string errorTxt;
 				string saveToPath = saveFileDialog1.FileName;
-				if (!saveloader.Save(genPassingOptions(), saveToPath, out errorTxt)) {
+				if (!saveloader.Save(generatePassingOptions(), saveToPath, out errorTxt)) {
 					utils.ShowError("Error saving settings to '" + saveToPath + "': " + errorTxt);
 				}
 				else {
@@ -318,6 +328,38 @@ namespace Carbon_Copy {
 					setupFromOptions(options);
 					utils.ShowInfo("Settings loaded from '" + loadFromPath + "'.");
 				}
+			}
+		}
+		
+		private void lstVerbosity_SelectedIndexChanged(object sender, EventArgs ea) {
+			switch (((VerbosityListItem)lstVerbosity.SelectedItem).OutputDetail) {
+				case VerbosityLevel.Brief:
+					lblInformational.Visible = true;
+					lblError.Visible = false;
+					lblDebug.Visible = false;
+					lblVerbose.Visible = false;
+					break;
+				
+				case VerbosityLevel.Normal:
+					lblInformational.Visible = true;
+					lblError.Visible = true;
+					lblDebug.Visible = false;
+					lblVerbose.Visible = false;
+					break;
+				
+				case VerbosityLevel.Verbose:
+					lblInformational.Visible = true;
+					lblError.Visible = true;
+					lblDebug.Visible = true;
+					lblVerbose.Visible = false;
+					break;
+				
+				case VerbosityLevel.UltraVerbose:
+					lblInformational.Visible = true;
+					lblError.Visible = true;
+					lblDebug.Visible = true;
+					lblVerbose.Visible = true;
+					break;
 			}
 		}
 		
