@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Gooey;
 
-namespace Carbon_Copy {
+namespace CarbonCopy {
 	static class Program {
 		/// <summary>
 		/// The main entry point for the application.

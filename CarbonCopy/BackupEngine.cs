@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO;
 
-namespace Carbon_Copy {	
+namespace CarbonCopy {	
 	#region Backup engine
 	
 	/// <summary>
@@ -26,8 +26,8 @@ namespace Carbon_Copy {
 		
 		#region Public vars
 		
-		public event MsgFunctionDelegate CbMsg;
-		public event MsgFunctionDelegate CbCommentMsg;
+		public event MsgFunctionDelegate CbDebugMsg;
+		public event MsgFunctionDelegate CbInfoMsg;
 		public event MsgFunctionDelegate CbErrorMsg;
 		public event MsgFunctionDelegate CbVerboseMsg;
 		public event DisplayNextMsgCallbackInvoker CbDisplayNextMessage;
@@ -82,8 +82,8 @@ namespace Carbon_Copy {
 			// Ensure that callbacks allowing us to communicate with the calling
 			// code have been set
 			if (
-				this.CbMsg == null ||
-				this.CbCommentMsg == null ||
+				this.CbDebugMsg == null ||
+				this.CbInfoMsg == null ||
 				this.CbErrorMsg == null ||
 				this.CbVerboseMsg == null ||
 				this.CbDisplayNextMessage == null ||
@@ -127,7 +127,7 @@ namespace Carbon_Copy {
 			}
 			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Found destination backup directory: " + options.DestDir.FullName));
 			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Type of backup: " + options.Type.ToString()));
-			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "What to display: " + options.ToDisplay.ToString()));
+			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Verbosity level: " + options.OutputDetail.ToString()));
 			
 			// Ensure that all source backup dirs are valid and 'touch them up'
 			// (setting them to fixedPath fixes their capitalization and terminates
@@ -169,7 +169,7 @@ namespace Carbon_Copy {
 				options.DestDir = fixedPath;
 			}
 			
-			AddMsg(new MsgDisplayInfo(CbCommentMsg, "Starting backup."));
+			AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting backup."));
 			
 			foreach (DirectoryInfo sourceDir in options.SourceDirs) {
 				if (stopBackup) {
@@ -178,7 +178,7 @@ namespace Carbon_Copy {
 				}
 				
 				// Backup this source directory tree
-				AddMsg(new MsgDisplayInfo(CbCommentMsg, "Synchronizing base source directory " + sourceDir.FullName));
+				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Synchronizing base source directory " + sourceDir.FullName));
 				
 				try { traverseDir(sourceDir, options.DestDir); }
 				catch (StopBackupException) {
@@ -193,7 +193,7 @@ namespace Carbon_Copy {
 			}
 			
 			// We finished!
-			AddMsg(new MsgDisplayInfo(CbCommentMsg, "Backup finished successfully."));
+			AddMsg(new MsgDisplayInfo(CbInfoMsg, "Backup finished successfully."));
 			endBackupCleanup();
 			return;
 		}
@@ -216,7 +216,7 @@ namespace Carbon_Copy {
 			string destDirPath = Regex.Replace(sourceDir.FullName, @"^\\\\", @"\\_unc_\\");
 			destDirPath = baseDestDir.FullName + Regex.Replace(destDirPath, @"\:", @"");
 			
-			AddMsg(new MsgDisplayInfo(CbMsg, "Synchronizing " + sourceDir.FullName + " to " + destDirPath));
+			AddMsg(new MsgDisplayInfo(CbDebugMsg, "Synchronizing " + sourceDir.FullName + " to " + destDirPath));
 			
 			// Remove last dir off end; we want to synchronize TO this one
 			// eg. 'X:\backuptest\C\testBackupDir\' becomes 'X:\backuptest\C\'

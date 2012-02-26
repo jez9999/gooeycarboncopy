@@ -7,7 +7,7 @@ using System.IO;
 using System.Drawing;
 using System.Text.RegularExpressions;
 
-namespace Carbon_Copy {
+namespace CarbonCopy {
 	/// <summary>
 	/// Class to hold a DirectoryInfo object, but return the FullName of that DirectoryInfo's path when .ToString()'d (DirectoryInfo itself only returns Name).
 	/// </summary>
@@ -47,26 +47,6 @@ namespace Carbon_Copy {
 	}
 	
 	/// <summary>
-	/// Enumeration indicating what type of backup to perform.
-	/// </summary>
-	public enum CCOTypeOfBackup : int {
-		None         = 0,
-		CarbonCopy   = 1,
-		Incremental  = 2,
-	}
-	
-	/// <summary>
-	/// Enumeration of flags indicating what type(s) of output to display during backup.
-	/// </summary>
-	[FlagsAttribute]
-	public enum CCOWhatToDisplay : int {
-		None =      0,
-		Comments =  1,
-		Errors =    2,
-		Verbose =   4,
-	}
-	
-	/// <summary>
 	/// Contains members to hold the various options relating to a Carbon Copy backup.
 	/// </summary>
 	public class CCO {
@@ -75,7 +55,7 @@ namespace Carbon_Copy {
 		public List<DirectoryInfo> SourceDirs = new List<DirectoryInfo>();
 		public DirectoryInfo DestDir;
 		public CCOTypeOfBackup Type = CCOTypeOfBackup.None;
-		public CCOWhatToDisplay ToDisplay = CCOWhatToDisplay.None;
+		public VerbosityLevel OutputDetail = VerbosityLevel.Normal;
 		
 		#endregion
 	}
@@ -259,8 +239,8 @@ namespace Carbon_Copy {
 				typeElement.SetAttribute("value", ((int)options.Type).ToString());
 				rootElement.AppendChild(typeElement);
 				
-				XmlElement displayElement = doc.CreateElement("toDisplay");
-				displayElement.SetAttribute("value", ((int)options.ToDisplay).ToString());
+				XmlElement displayElement = doc.CreateElement("outputDetail");
+				displayElement.SetAttribute("value", ((int)options.OutputDetail).ToString());
 				rootElement.AppendChild(displayElement);
 				
 				XmlElement srcElement = doc.CreateElement("srcDirs");
@@ -332,11 +312,11 @@ namespace Carbon_Copy {
 				options.Type = (CCOTypeOfBackup)Convert.ToInt32(typeIter.Current.GetAttribute("value", ""));
 				
 				// To display
-				XPathNodeIterator displayIter = nav.Select("/carbonCopyOptions/toDisplay");
+				XPathNodeIterator displayIter = nav.Select("/carbonCopyOptions/outputDetail");
 				if (!displayIter.MoveNext()) {
-					throw new Exception("Couldn't find toDisplay configuration entry!");
+					throw new Exception("Couldn't find outputDetail configuration entry!");
 				}
-				options.ToDisplay = (CCOWhatToDisplay)Convert.ToInt32(displayIter.Current.GetAttribute("value", ""));
+				options.OutputDetail = (VerbosityLevel)Convert.ToInt32(displayIter.Current.GetAttribute("value", ""));
 				
 				// Source dirs
 				options.SourceDirs = new List<DirectoryInfo>();

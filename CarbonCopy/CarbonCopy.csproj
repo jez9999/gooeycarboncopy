@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="BackupEngine.cs" />
     <Compile Include="CCOptions.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="frmBackup.cs">
       <SubType>Form</SubType>
     </Compile>
