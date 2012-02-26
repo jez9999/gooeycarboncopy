@@ -1,4 +1,4 @@
-namespace Carbon_Copy {
+namespace CarbonCopy {
 	partial class frmBackup {
 		/// <summary>
 		/// Required designer variable.

@@ -2,7 +2,7 @@
 
 [Setup]
 AppName=Carbon Copy
-AppVerName=Carbon Copy v2.1.1.0
+AppVerName=Carbon Copy v2.2.0.0
 DefaultDirName={pf}\Carbon Copy
 MinVersion=4.0,4.0
 PrivilegesRequired=none
@@ -76,4 +76,3 @@ Source: "..\_Libs\GooeyUtilities.dll"; DestDir: "{app}"; Flags: replacesameversi
 [Icons]
 ;Create link on Start Menu Programs for program file
 Name: "{group}\Carbon Copy"; Filename: "{app}\CarbCopy.exe"
-

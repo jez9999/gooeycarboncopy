@@ -8,7 +8,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Gooey;
 
-namespace Carbon_Copy {
+namespace CarbonCopy {
 	public partial class frmBackup : Form {
 		#region Private vars
 		
@@ -42,8 +42,8 @@ namespace Carbon_Copy {
 			
 			this.bkpEngine = new BackupEngine(this.backupOptions);
 			bkpEngine.CbBackupFinished += backupFinishedInvoker;
-			bkpEngine.CbMsg += addMsg;
-			bkpEngine.CbCommentMsg += addCommentMsg;
+			bkpEngine.CbDebugMsg += addDebugMsg;
+			bkpEngine.CbInfoMsg += addInfoMsg;
 			bkpEngine.CbErrorMsg += addErrorMsg;
 			bkpEngine.CbVerboseMsg += addVerboseMsg;
 			bkpEngine.CbDisplayNextMessage += displayNextMsgInvoker;
@@ -119,34 +119,92 @@ namespace Carbon_Copy {
 			si.Invoke(cb, new object[] { getNextMsgCb });
 		}
 		
-		private void addMsg(string msg) {
-			// TODO - when we get a textbox class that doesn't suck and allows us to set
-			// foreground and background colour even after we've disabled the textbox.
-			// we don't need to specify ccColour.Black here, and can go back to the old
-			// code, specifying msg,null,false.
-			// addTxtboxMsg(msg, new Color(), false);  // <-- probably dont want this
-			// addTxtboxMsg(msg, null, false);         // <-- probably want this
-			// ^ actually, we should be able to use null for the middle argument, the
-			// one above that is what we used to use but new Color() probably has a nasty
-			// overhead.
-			addTxtboxMsg(msg, ccColour.Black, true);
-		}
-		
-		private void addCommentMsg(string msg) {
-			if ((backupOptions.ToDisplay & CCOWhatToDisplay.Comments) != 0) {
-				addTxtboxMsg(msg, ccColour.Green, true);
+		/// <summary>
+		/// Add informational message
+		/// </summary>
+		/// <param name="msg">Message text</param>
+		private void addInfoMsg(string msg) {
+			bool displayThis = true;
+			switch (backupOptions.OutputDetail) {
+				case VerbosityLevel.Brief:
+				case VerbosityLevel.Normal:
+				case VerbosityLevel.Verbose:
+				case VerbosityLevel.UltraVerbose:
+				default:
+					displayThis = true;
+					break;
+			}
+			if (displayThis) {
+				addTxtboxMsg("Inf: " + msg, ccColour.Black, true);
 			}
 		}
 		
+		/// <summary>
+		/// Add error message
+		/// </summary>
+		/// <param name="msg">Message text</param>
 		private void addErrorMsg(string msg) {
-			if ((backupOptions.ToDisplay & CCOWhatToDisplay.Errors) != 0) {
-				addTxtboxMsg("Error: " + msg, ccColour.Red, true);
+			bool displayThis = true;
+			switch (backupOptions.OutputDetail) {
+				case VerbosityLevel.Brief:
+					displayThis = false;
+					break;
+				
+				case VerbosityLevel.Normal:
+				case VerbosityLevel.Verbose:
+				case VerbosityLevel.UltraVerbose:
+				default:
+					displayThis = true;
+					break;
+			}
+			if (displayThis) {
+				addTxtboxMsg("Err: " + msg, ccColour.Red, true);
 			}
 		}
 		
+		/// <summary>
+		/// Add debug message
+		/// </summary>
+		/// <param name="msg">Message text</param>
+		private void addDebugMsg(string msg) {
+			bool displayThis = true;
+			switch (backupOptions.OutputDetail) {
+				case VerbosityLevel.Brief:
+				case VerbosityLevel.Normal:
+					displayThis = false;
+					break;
+				
+				case VerbosityLevel.Verbose:
+				case VerbosityLevel.UltraVerbose:
+				default:
+					displayThis = true;
+					break;
+			}
+			if (displayThis) {
+				addTxtboxMsg("Dbg: " + msg, ccColour.Green, true);
+			}
+		}
+		
+		/// <summary>
+		/// Add verbose message
+		/// </summary>
+		/// <param name="msg">Message text</param>
 		private void addVerboseMsg(string msg) {
-			if ((backupOptions.ToDisplay & CCOWhatToDisplay.Verbose) != 0) {
-				addTxtboxMsg(msg, ccColour.Blue, true);
+			bool displayThis = true;
+			switch (backupOptions.OutputDetail) {
+				case VerbosityLevel.Brief:
+				case VerbosityLevel.Normal:
+				case VerbosityLevel.Verbose:
+					displayThis = false;
+					break;
+				
+				case VerbosityLevel.UltraVerbose:
+				default:
+					displayThis = true;
+					break;
+			}
+			if (displayThis) {
+				addTxtboxMsg("Ver: " + msg, ccColour.Blue, true);
 			}
 		}
 		

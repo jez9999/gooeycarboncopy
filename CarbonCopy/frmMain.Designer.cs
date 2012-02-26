@@ -1,4 +1,4 @@
-namespace Carbon_Copy {
+namespace CarbonCopy {
 	partial class frmMain {
 		/// <summary>
 		/// Required designer variable.
@@ -23,7 +23,6 @@ namespace Carbon_Copy {
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
 			this.lstSourceDirs = new System.Windows.Forms.ListBox();
 			this.txtSourceDir = new System.Windows.Forms.TextBox();
@@ -36,15 +35,12 @@ namespace Carbon_Copy {
 			this.grpCarbonIncrement = new System.Windows.Forms.GroupBox();
 			this.radIncremental = new System.Windows.Forms.RadioButton();
 			this.radCarbon = new System.Windows.Forms.RadioButton();
-			this.grpDisplay = new System.Windows.Forms.GroupBox();
-			this.lblVerboseWarning = new System.Windows.Forms.Label();
-			this.chkVerbose = new System.Windows.Forms.CheckBox();
-			this.chkComments = new System.Windows.Forms.CheckBox();
+			this.grpVerbosity = new System.Windows.Forms.GroupBox();
+			this.lstVerbosity = new System.Windows.Forms.ComboBox();
 			this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
 			this.lblDestDir = new System.Windows.Forms.Label();
 			this.btnDestSet = new System.Windows.Forms.Button();
 			this.btnAbout = new System.Windows.Forms.Button();
-			this.ttpQuick = new System.Windows.Forms.ToolTip(this.components);
 			this.grpSource = new System.Windows.Forms.GroupBox();
 			this.grpDest = new System.Windows.Forms.GroupBox();
 			this.btnExit = new System.Windows.Forms.Button();
@@ -52,8 +48,13 @@ namespace Carbon_Copy {
 			this.btnLoad = new System.Windows.Forms.Button();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+			this.lblThisWillDisplay = new System.Windows.Forms.Label();
+			this.lblInformational = new System.Windows.Forms.Label();
+			this.lblError = new System.Windows.Forms.Label();
+			this.lblDebug = new System.Windows.Forms.Label();
+			this.lblVerbose = new System.Windows.Forms.Label();
 			this.grpCarbonIncrement.SuspendLayout();
-			this.grpDisplay.SuspendLayout();
+			this.grpVerbosity.SuspendLayout();
 			this.grpSource.SuspendLayout();
 			this.grpDest.SuspendLayout();
 			this.SuspendLayout();
@@ -108,7 +109,7 @@ namespace Carbon_Copy {
 			// 
 			// btnStart
 			// 
-			this.btnStart.Location = new System.Drawing.Point(12, 431);
+			this.btnStart.Location = new System.Drawing.Point(12, 461);
 			this.btnStart.Name = "btnStart";
 			this.btnStart.Size = new System.Drawing.Size(351, 23);
 			this.btnStart.TabIndex = 1000;
@@ -167,49 +168,30 @@ namespace Carbon_Copy {
 			this.radCarbon.Text = "Carbon copy";
 			this.radCarbon.UseVisualStyleBackColor = true;
 			// 
-			// grpDisplay
+			// grpVerbosity
 			// 
-			this.grpDisplay.Controls.Add(this.lblVerboseWarning);
-			this.grpDisplay.Controls.Add(this.chkVerbose);
-			this.grpDisplay.Controls.Add(this.chkComments);
-			this.grpDisplay.Location = new System.Drawing.Point(12, 357);
-			this.grpDisplay.Name = "grpDisplay";
-			this.grpDisplay.Size = new System.Drawing.Size(659, 68);
-			this.grpDisplay.TabIndex = 400;
-			this.grpDisplay.TabStop = false;
-			this.grpDisplay.Text = "Display...?";
+			this.grpVerbosity.Controls.Add(this.lblVerbose);
+			this.grpVerbosity.Controls.Add(this.lblDebug);
+			this.grpVerbosity.Controls.Add(this.lblError);
+			this.grpVerbosity.Controls.Add(this.lblInformational);
+			this.grpVerbosity.Controls.Add(this.lblThisWillDisplay);
+			this.grpVerbosity.Controls.Add(this.lstVerbosity);
+			this.grpVerbosity.Location = new System.Drawing.Point(12, 357);
+			this.grpVerbosity.Name = "grpVerbosity";
+			this.grpVerbosity.Size = new System.Drawing.Size(659, 80);
+			this.grpVerbosity.TabIndex = 400;
+			this.grpVerbosity.TabStop = false;
+			this.grpVerbosity.Text = "Output verbosity";
 			// 
-			// lblVerboseWarning
+			// lstVerbosity
 			// 
-			this.lblVerboseWarning.AutoSize = true;
-			this.lblVerboseWarning.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblVerboseWarning.Location = new System.Drawing.Point(226, 45);
-			this.lblVerboseWarning.Name = "lblVerboseWarning";
-			this.lblVerboseWarning.Size = new System.Drawing.Size(164, 13);
-			this.lblVerboseWarning.TabIndex = 0;
-			this.lblVerboseWarning.Text = "WARNING (hover over me!)";
-			// 
-			// chkVerbose
-			// 
-			this.chkVerbose.AutoSize = true;
-			this.chkVerbose.ForeColor = System.Drawing.Color.Blue;
-			this.chkVerbose.Location = new System.Drawing.Point(7, 42);
-			this.chkVerbose.Name = "chkVerbose";
-			this.chkVerbose.Size = new System.Drawing.Size(222, 17);
-			this.chkVerbose.TabIndex = 402;
-			this.chkVerbose.Text = "Verbose (eg. \"Replacing filename.doc...\")";
-			this.chkVerbose.UseVisualStyleBackColor = true;
-			// 
-			// chkComments
-			// 
-			this.chkComments.AutoSize = true;
-			this.chkComments.ForeColor = System.Drawing.Color.Green;
-			this.chkComments.Location = new System.Drawing.Point(7, 20);
-			this.chkComments.Name = "chkComments";
-			this.chkComments.Size = new System.Drawing.Size(198, 17);
-			this.chkComments.TabIndex = 401;
-			this.chkComments.Text = "Comments (eg. \"Base directory is...\")";
-			this.chkComments.UseVisualStyleBackColor = true;
+			this.lstVerbosity.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.lstVerbosity.FormattingEnabled = true;
+			this.lstVerbosity.Location = new System.Drawing.Point(9, 19);
+			this.lstVerbosity.Name = "lstVerbosity";
+			this.lstVerbosity.Size = new System.Drawing.Size(207, 21);
+			this.lstVerbosity.TabIndex = 401;
+			this.lstVerbosity.SelectedIndexChanged += new System.EventHandler(this.lstVerbosity_SelectedIndexChanged);
 			// 
 			// lblDestDir
 			// 
@@ -232,17 +214,13 @@ namespace Carbon_Copy {
 			// 
 			// btnAbout
 			// 
-			this.btnAbout.Location = new System.Drawing.Point(503, 431);
+			this.btnAbout.Location = new System.Drawing.Point(503, 461);
 			this.btnAbout.Name = "btnAbout";
 			this.btnAbout.Size = new System.Drawing.Size(81, 23);
 			this.btnAbout.TabIndex = 1003;
 			this.btnAbout.Text = "About";
 			this.btnAbout.UseVisualStyleBackColor = true;
 			this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
-			// 
-			// ttpQuick
-			// 
-			this.ttpQuick.ShowAlways = true;
 			// 
 			// grpSource
 			// 
@@ -274,7 +252,7 @@ namespace Carbon_Copy {
 			// 
 			// btnExit
 			// 
-			this.btnExit.Location = new System.Drawing.Point(590, 431);
+			this.btnExit.Location = new System.Drawing.Point(590, 461);
 			this.btnExit.Name = "btnExit";
 			this.btnExit.Size = new System.Drawing.Size(81, 23);
 			this.btnExit.TabIndex = 1004;
@@ -284,7 +262,7 @@ namespace Carbon_Copy {
 			// 
 			// btnSave
 			// 
-			this.btnSave.Location = new System.Drawing.Point(378, 431);
+			this.btnSave.Location = new System.Drawing.Point(378, 461);
 			this.btnSave.Name = "btnSave";
 			this.btnSave.Size = new System.Drawing.Size(52, 23);
 			this.btnSave.TabIndex = 1001;
@@ -294,7 +272,7 @@ namespace Carbon_Copy {
 			// 
 			// btnLoad
 			// 
-			this.btnLoad.Location = new System.Drawing.Point(436, 431);
+			this.btnLoad.Location = new System.Drawing.Point(436, 461);
 			this.btnLoad.Name = "btnLoad";
 			this.btnLoad.Size = new System.Drawing.Size(52, 23);
 			this.btnLoad.TabIndex = 1002;
@@ -306,18 +284,68 @@ namespace Carbon_Copy {
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
+			// lblThisWillDisplay
+			// 
+			this.lblThisWillDisplay.AutoSize = true;
+			this.lblThisWillDisplay.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblThisWillDisplay.Location = new System.Drawing.Point(116, 51);
+			this.lblThisWillDisplay.Name = "lblThisWillDisplay";
+			this.lblThisWillDisplay.Size = new System.Drawing.Size(100, 13);
+			this.lblThisWillDisplay.TabIndex = 1006;
+			this.lblThisWillDisplay.Text = "This will display:";
+			// 
+			// lblInformational
+			// 
+			this.lblInformational.AutoSize = true;
+			this.lblInformational.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblInformational.Location = new System.Drawing.Point(260, 12);
+			this.lblInformational.Name = "lblInformational";
+			this.lblInformational.Size = new System.Drawing.Size(232, 13);
+			this.lblInformational.TabIndex = 1007;
+			this.lblInformational.Text = "Informational messages (eg. \"Starting backup.\")";
+			// 
+			// lblError
+			// 
+			this.lblError.AutoSize = true;
+			this.lblError.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblError.Location = new System.Drawing.Point(260, 27);
+			this.lblError.Name = "lblError";
+			this.lblError.Size = new System.Drawing.Size(208, 13);
+			this.lblError.TabIndex = 1008;
+			this.lblError.Text = "Error messages (eg. \"Couldn\'t copy file ...\")";
+			// 
+			// lblDebug
+			// 
+			this.lblDebug.AutoSize = true;
+			this.lblDebug.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblDebug.Location = new System.Drawing.Point(260, 42);
+			this.lblDebug.Name = "lblDebug";
+			this.lblDebug.Size = new System.Drawing.Size(268, 13);
+			this.lblDebug.TabIndex = 1009;
+			this.lblDebug.Text = "Debug messages (eg. \"Synchronizing [dir1] to [dir2] ...\")";
+			// 
+			// lblVerbose
+			// 
+			this.lblVerbose.AutoSize = true;
+			this.lblVerbose.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblVerbose.Location = new System.Drawing.Point(260, 58);
+			this.lblVerbose.Name = "lblVerbose";
+			this.lblVerbose.Size = new System.Drawing.Size(251, 13);
+			this.lblVerbose.TabIndex = 1010;
+			this.lblVerbose.Text = "Verbose messages (eg. \"Copying [file1] to [file2] ...\")";
+			// 
 			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(683, 462);
+			this.ClientSize = new System.Drawing.Size(683, 496);
 			this.Controls.Add(this.btnLoad);
 			this.Controls.Add(this.btnSave);
 			this.Controls.Add(this.btnExit);
 			this.Controls.Add(this.grpDest);
 			this.Controls.Add(this.grpSource);
 			this.Controls.Add(this.btnAbout);
-			this.Controls.Add(this.grpDisplay);
+			this.Controls.Add(this.grpVerbosity);
 			this.Controls.Add(this.grpCarbonIncrement);
 			this.Controls.Add(this.btnStart);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -330,8 +358,8 @@ namespace Carbon_Copy {
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.frmMain_Paint);
 			this.grpCarbonIncrement.ResumeLayout(false);
 			this.grpCarbonIncrement.PerformLayout();
-			this.grpDisplay.ResumeLayout(false);
-			this.grpDisplay.PerformLayout();
+			this.grpVerbosity.ResumeLayout(false);
+			this.grpVerbosity.PerformLayout();
 			this.grpSource.ResumeLayout(false);
 			this.grpSource.PerformLayout();
 			this.grpDest.ResumeLayout(false);
@@ -353,15 +381,11 @@ namespace Carbon_Copy {
 		private System.Windows.Forms.GroupBox grpCarbonIncrement;
 		private System.Windows.Forms.RadioButton radIncremental;
 		private System.Windows.Forms.RadioButton radCarbon;
-		private System.Windows.Forms.GroupBox grpDisplay;
+		private System.Windows.Forms.GroupBox grpVerbosity;
 		private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
 		private System.Windows.Forms.Label lblDestDir;
 		private System.Windows.Forms.Button btnDestSet;
-		private System.Windows.Forms.CheckBox chkVerbose;
-		private System.Windows.Forms.CheckBox chkComments;
 		private System.Windows.Forms.Button btnAbout;
-		private System.Windows.Forms.Label lblVerboseWarning;
-		private System.Windows.Forms.ToolTip ttpQuick;
 		private System.Windows.Forms.GroupBox grpSource;
 		private System.Windows.Forms.GroupBox grpDest;
 		private System.Windows.Forms.Button btnExit;
@@ -369,6 +393,12 @@ namespace Carbon_Copy {
 		private System.Windows.Forms.Button btnLoad;
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
 		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+		private System.Windows.Forms.ComboBox lstVerbosity;
+		private System.Windows.Forms.Label lblThisWillDisplay;
+		private System.Windows.Forms.Label lblInformational;
+		private System.Windows.Forms.Label lblVerbose;
+		private System.Windows.Forms.Label lblDebug;
+		private System.Windows.Forms.Label lblError;
 
 
 	}

@@ -1,7 +1,7 @@
 Carbon Copy VERSION
 ===================
 
-This version of Carbon Copy is: 2.1.1.0
+This version of Carbon Copy is: 2.2.0.0
 
 Places where we need to update the version number when we're changing the version of our
 build:
@@ -10,3 +10,7 @@ build:
   Version' should be the same.
 - In the Inno Setup install file (install.iss), 'AppVerName' needs to reflect the
   version number.
+
+NOTE:
+Although we display 4 parts to the version number because 'Assembly Version' and 'File
+Version' do, we only use two of them; the last two numbers should always be zero ('0.0').
