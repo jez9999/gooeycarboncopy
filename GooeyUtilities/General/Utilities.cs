@@ -134,17 +134,81 @@ namespace Gooey {
 			
 			return retVal;
 		}
+
+		/// <summary>
+		/// Specifies a part of a file URL
+		/// </summary>
+		public enum FileUrlFragmentPart {
+			/// <summary>
+			/// The 'drive name' part (eg. 'C' from file://C:\path\to\codebase.exe)
+			/// </summary>
+			DriveName,
+			/// <summary>
+			/// The 'path' part (eg. '\path\to\' from file://C:\path\to\codebase.exe)
+			/// </summary>
+			Path,
+			/// <summary>
+			/// The 'file name' part (eg. 'codebase.exe' from file://C:\path\to\codebase.exe)
+			/// </summary>
+			FileName,
+			/// <summary>
+			/// The body of the 'file name' part (eg. 'codebase' from file://C:\path\to\codebase.exe)
+			/// </summary>
+			FileBody,
+			/// <summary>
+			/// The extension of the 'file name' part (eg. 'exe' from file://C:\path\to\codebase.exe)
+			/// </summary>
+			FileExt,
+		}
 		
 		/// <summary>
-		/// Captures and returns the 'drive name' part of a codebase string.
+		/// Captures and returns a part of a file URL (eg. file://C:\path\to\codebase.exe)
 		/// </summary>
-		/// <param name="codeBase">The codebase string, eg. file://C:\path\to\codebase.exe</param>
-		/// <returns>The drive part, eg. 'C', or an empty string if no drive part was found.</returns>
-		public string DriveNameFromCodebase(string codeBase) {
-			Regex reParseFileURI = new Regex(@"\/([^\/]*?)\:");
-			Match matchDriveName = reParseFileURI.Match(codeBase);
-			if (matchDriveName.Groups.Count >= 2) { return matchDriveName.Groups[1].Value; }
-			else { return ""; }
+		/// <param name="fileUrl">The file URL.</param>
+		/// <param name="fragmentPart">The part to retreive from the file URL.</param>
+		/// <returns>The retreived part, eg. 'C' or 'filename.exe', or an empty string if the specified part was not found.</returns>
+		public string GetFragmentFromFileUrl(string fileUrl, FileUrlFragmentPart fragmentPart) {
+			Regex reParseFileUrlDrivename = new Regex(@"\/([^\/]*?)\:");
+			Regex reParseFileUrlPathFilename = new Regex(@"\/([^\/]*?)\:(.*\\)(.*?)(\.[^\.]*)?$");
+			switch (fragmentPart) {
+				case FileUrlFragmentPart.DriveName:
+				{
+					Match matchDriveName = reParseFileUrlDrivename.Match(fileUrl);
+					if (matchDriveName.Groups.Count >= 2) { return matchDriveName.Groups[1].Value; }
+				}
+				break;
+
+				case FileUrlFragmentPart.Path:
+				{
+					Match matchPath = reParseFileUrlPathFilename.Match(fileUrl);
+					if (matchPath.Groups.Count >= 3) { return matchPath.Groups[2].Value; }
+				}
+				break;
+
+				case FileUrlFragmentPart.FileName:
+				{
+					Match matchFilename = reParseFileUrlPathFilename.Match(fileUrl);
+					if (matchFilename.Groups.Count >= 5) { return matchFilename.Groups[3].Value + matchFilename.Groups[4].Value; }
+					else if (matchFilename.Groups.Count >= 4) { return matchFilename.Groups[3].Value; }
+				}
+				break;
+
+				case FileUrlFragmentPart.FileBody:
+				{
+					Match matchFilebody = reParseFileUrlPathFilename.Match(fileUrl);
+					if (matchFilebody.Groups.Count >= 4) { return matchFilebody.Groups[3].Value; }
+				}
+				break;
+
+				case FileUrlFragmentPart.FileExt:
+				{
+					Match matchFileext = reParseFileUrlPathFilename.Match(fileUrl);
+					if (matchFileext.Groups.Count >= 5) { return matchFileext.Groups[4].Value.TrimStart(new char[] { '.' }); }
+				}
+				break;
+			}
+
+			return "";
 		}
 		
 		/// <summary>

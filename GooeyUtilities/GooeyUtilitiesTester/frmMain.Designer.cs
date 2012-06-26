@@ -35,6 +35,8 @@
 			this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
 			this.button1 = new System.Windows.Forms.Button();
 			this.checkBox1 = new System.Windows.Forms.CheckBox();
+			this.btnTestGetFragmentFromFileUrl = new System.Windows.Forms.Button();
+			this.btnXpathNav = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// tbOutput
@@ -74,7 +76,7 @@
 			// 
 			// button1
 			// 
-			this.button1.Location = new System.Drawing.Point(259, 12);
+			this.button1.Location = new System.Drawing.Point(521, 12);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(75, 23);
 			this.button1.TabIndex = 3;
@@ -87,7 +89,7 @@
 			this.checkBox1.AutoSize = true;
 			this.checkBox1.Checked = true;
 			this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox1.Location = new System.Drawing.Point(340, 16);
+			this.checkBox1.Location = new System.Drawing.Point(602, 16);
 			this.checkBox1.Name = "checkBox1";
 			this.checkBox1.Size = new System.Drawing.Size(117, 17);
 			this.checkBox1.TabIndex = 4;
@@ -95,11 +97,32 @@
 			this.checkBox1.UseVisualStyleBackColor = true;
 			this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
 			// 
+			// btnTestGetFragmentFromFileUrl
+			// 
+			this.btnTestGetFragmentFromFileUrl.Location = new System.Drawing.Point(130, 12);
+			this.btnTestGetFragmentFromFileUrl.Name = "btnTestGetFragmentFromFileUrl";
+			this.btnTestGetFragmentFromFileUrl.Size = new System.Drawing.Size(159, 23);
+			this.btnTestGetFragmentFromFileUrl.TabIndex = 5;
+			this.btnTestGetFragmentFromFileUrl.Text = "Test GetFragmentFromFileUrl";
+			this.btnTestGetFragmentFromFileUrl.UseVisualStyleBackColor = true;
+			this.btnTestGetFragmentFromFileUrl.Click += new System.EventHandler(this.btnTestGetFragmentFromFileUrl_Click);
+			// 
+			// btnXpathNav
+			// 
+			this.btnXpathNav.Location = new System.Drawing.Point(295, 12);
+			this.btnXpathNav.Name = "btnXpathNav";
+			this.btnXpathNav.Size = new System.Drawing.Size(140, 23);
+			this.btnXpathNav.TabIndex = 6;
+			this.btnXpathNav.Text = "Example Xpath navigation";
+			this.btnXpathNav.UseVisualStyleBackColor = true;
+			this.btnXpathNav.Click += new System.EventHandler(this.btnXpathNav_Click);
+			// 
 			// frmMain
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.ClientSize = new System.Drawing.Size(892, 540);
+			this.Controls.Add(this.btnXpathNav);
+			this.Controls.Add(this.btnTestGetFragmentFromFileUrl);
 			this.Controls.Add(this.checkBox1);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.btnTestGooeyTree);
@@ -120,6 +143,8 @@
 		private System.Windows.Forms.NotifyIcon notifyIcon1;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.CheckBox checkBox1;
+		private System.Windows.Forms.Button btnTestGetFragmentFromFileUrl;
+		private System.Windows.Forms.Button btnXpathNav;
 	}
 }
 
