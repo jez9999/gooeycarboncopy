@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Xml;
+using System.Xml.XPath;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using Gooey;
 using System.Reflection;
+using System.IO;
+using Gooey;
 
 namespace GooeyUtilitiesTester
 {
@@ -49,6 +52,8 @@ namespace GooeyUtilitiesTester
 		private void btntestBtree_Click(object sender, EventArgs e) {
 			GooeyBTree<UInt32, string> eventsTree = new GooeyBTree<UInt32, string>(false);
 			
+			tbOutput.Text = "";
+
 			tbOutput.Text += "Smallest node, given that we haven't added anything yet (should be null): " + (eventsTree.GetSmallestNode() == null ? "null" : "not null") + "\r\n";
 			tbOutput.Text += "Largest node, given that we haven't added anything yet (should be null): " + (eventsTree.GetLargestNode() == null ? "null" : "not null") + "\r\n";
 			
@@ -211,6 +216,146 @@ namespace GooeyUtilitiesTester
 			}
 			else {
 				this.popTrayMenu = false;
+			}
+		}
+
+		private void btnTestGetFragmentFromFileUrl_Click(object sender, EventArgs e)
+		{
+			Utilities utils = new Utilities();
+
+			string urlWithDrivename = @"file://C:";
+			string urlWithNoExt = @"file://C:\path\to\codebase";
+			string urlWithFullPath = @"file://C:\path\to\codebase.exe";
+			string urlWithFullPathMultipleExt = @"file://C:\path\to\codebase.exe.exe.exe";
+
+			tbOutput.Text = "";
+
+			// Test with drivename only
+			tbOutput.Text += "Try to get fragments from " + urlWithDrivename + "\r\n";
+			tbOutput.Text += "Drivename: " + utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
+			tbOutput.Text += "Path: " + utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.Path) + "\r\n";
+			tbOutput.Text += "Filename: " + utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
+			tbOutput.Text += "Filebody: " + utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
+			tbOutput.Text += "Fileext: " + utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
+
+			// Test with no extension
+			tbOutput.Text += "\r\n";
+			tbOutput.Text += "Try to get fragments from " + urlWithNoExt + "\r\n";
+			tbOutput.Text += "Drivename: " + utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
+			tbOutput.Text += "Path: " + utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.Path) + "\r\n";
+			tbOutput.Text += "Filename: " + utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
+			tbOutput.Text += "Filebody: " + utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
+			tbOutput.Text += "Fileext: " + utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
+
+			// Test with full URL
+			tbOutput.Text += "\r\n";
+			tbOutput.Text += "Try to get fragments from " + urlWithFullPath + "\r\n";
+			tbOutput.Text += "Drivename: " + utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
+			tbOutput.Text += "Path: " + utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.Path) + "\r\n";
+			tbOutput.Text += "Filename: " + utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
+			tbOutput.Text += "Filebody: " + utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
+			tbOutput.Text += "Fileext: " + utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
+
+			// Test with full URL with multiple extensions
+			tbOutput.Text += "\r\n";
+			tbOutput.Text += "Try to get fragments from " + urlWithFullPathMultipleExt + "\r\n";
+			tbOutput.Text += "Drivename: " + utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
+			tbOutput.Text += "Path: " + utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.Path) + "\r\n";
+			tbOutput.Text += "Filename: " + utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
+			tbOutput.Text += "Filebody: " + utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
+			tbOutput.Text += "Fileext: " + utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
+		}
+
+		private void btnXpathNav_Click(object sender, EventArgs e) {
+			tbOutput.Text = "";
+
+			// Setup example XML document
+			string xmlDocText =
+@"<?xml version=""1.0"" encoding=""utf-16""?>
+<people>
+	<person>
+		<name>Michael Motor</name>
+		<age>35</age>
+		<hobbies>
+			<hobby>Motorsport</hobby>
+			<hobby>Formula One</hobby>
+			<hobby>Watching Top Gear</hobby>
+		</hobbies>
+	</person>
+	<person>
+		<name>Charlie Computer</name>
+		<age>23</age>
+		<hobbies>
+			<hobby>Video games</hobby>
+			<hobby>Programming</hobby>
+		</hobbies>
+	</person>
+	<person>
+		<name>Betty Boring</name>
+		<age>65</age>
+		<hobbies />
+	</person>
+	<person>
+		<name>Angie Active</name>
+		<age>27</age>
+		<hobbies>
+			<hobby>Jogging</hobby>
+			<hobby>Playing tennis</hobby>
+			<hobby>Gym</hobby>
+		</hobbies>
+	</person>
+	<person>
+		<name>Freddie Film</name>
+		<age>31</age>
+		<hobbies>
+			<hobby>Cinema</hobby>
+		</hobbies>
+	</person>
+</people>";
+
+			// First, create our XmlDocument
+			XmlDocument xmlDoc = new XmlDocument();
+
+			// Create the TextReader that will read the XML document from memory
+			StringReader sr = new StringReader(xmlDocText);
+
+			// Read and load it
+			xmlDoc.Load(sr);
+
+			// Create an XPathNavigator so we can easily query values from the XmlDocument
+			XPathNavigator nav = xmlDoc.CreateNavigator();
+
+			// Display sample doc
+			tbOutput.Text += "Sample XML document:\r\n" + xmlDocText + "\r\n\r\n==========\r\n";
+
+			// Demo of how to use XPathNavigator; first, query the people
+			XPathNodeIterator peopleIter = nav.Select("/people/person");
+
+			while (peopleIter.MoveNext()) {
+				// This is a 'person' in our XML doc.
+				tbOutput.Text += "\r\nPerson\r\n";
+
+				// To do almost anything with this node, we want to get the iterator's underlying XPathNavigator.
+				XPathNavigator nodeNav = peopleIter.Current;
+
+				// Name.  Note that this is relative, so the XPath expression should NOT begin with a slash.
+				tbOutput.Text += "- Name: " + nodeNav.SelectSingleNode("name").Value + "\r\n";
+				// Age.
+				tbOutput.Text += "- Age: " + nodeNav.SelectSingleNode("age").ValueAsInt.ToString() + "\r\n";
+				// Hobbies.  We're iterating through these as it should have children.
+				tbOutput.Text += "- Hobbies:";
+				XPathNodeIterator hobbiesIter = nodeNav.Select("hobbies/hobby");
+				bool hasHobbies = false;
+				while (hobbiesIter.MoveNext()) {
+					hasHobbies = true;
+					tbOutput.Text += "\r\n  - " + hobbiesIter.Current.Value;
+				}
+				if (!hasHobbies) {
+					tbOutput.Text += " (none)";
+				}
+				tbOutput.Text += "\r\n";
+
+				// End of record, onto the next...
 			}
 		}
 	}
