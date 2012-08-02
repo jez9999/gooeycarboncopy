@@ -304,6 +304,35 @@ namespace Gooey {
 			IntPtr ptrLparam = new IntPtr(0);
 			SendMessage(rtb.Handle, WM_VSCROLL, ptrWparam, ptrLparam);
 		}
+
+		/// <summary>
+		/// Takes in a string representation of (non-space-separated) hex values, two characters per byte, and converts it into an array of bytes corresponding to the passed-in hex values.
+		/// </summary>
+		/// <param name="hexString">The string of hex characters to convert into bytes.</param>
+		/// <returns>The bytes that the passed-in hex characters represent.</returns>
+		public byte[] ConvertHexStringToBytes(string hexString) {
+			if (hexString.Length % 2 > 0) {
+				throw new Exception("Number of characters in hex string must be even!");
+			}
+			else if (Regex.IsMatch(hexString, @"[^0-9A-Fa-f]")) {
+				throw new Exception("Invalid character in hex string.  String must contain only characters in the set [0-9A-Fa-f].");
+			}
+			else {
+				// Convert each character pair into a byte
+				int charCounter = 0;
+				List<byte> hexBytes = new List<byte>();
+
+				while (charCounter < hexString.Length) {
+					// Grab next two chars and interpret them as a hex number, adding them to the list
+					hexBytes.Add(byte.Parse(hexString.Substring(charCounter, 2), System.Globalization.NumberStyles.HexNumber));
+
+					// Increment to next two chars
+					charCounter += 2;
+				}
+
+				return hexBytes.ToArray();
+			}
+		}
 		
 		[DllImport("User32.dll", CharSet=CharSet.Auto, EntryPoint="SendMessage")]
 		private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);

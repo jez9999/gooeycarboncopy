@@ -37,6 +37,7 @@
 			this.checkBox1 = new System.Windows.Forms.CheckBox();
 			this.btnTestGetFragmentFromFileUrl = new System.Windows.Forms.Button();
 			this.btnXpathNav = new System.Windows.Forms.Button();
+			this.btnTestHexStringConverter = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// tbOutput
@@ -117,10 +118,21 @@
 			this.btnXpathNav.UseVisualStyleBackColor = true;
 			this.btnXpathNav.Click += new System.EventHandler(this.btnXpathNav_Click);
 			// 
+			// btnTestHexStringConverter
+			// 
+			this.btnTestHexStringConverter.Location = new System.Drawing.Point(12, 534);
+			this.btnTestHexStringConverter.Name = "btnTestHexStringConverter";
+			this.btnTestHexStringConverter.Size = new System.Drawing.Size(139, 23);
+			this.btnTestHexStringConverter.TabIndex = 7;
+			this.btnTestHexStringConverter.Text = "Test hex string converter";
+			this.btnTestHexStringConverter.UseVisualStyleBackColor = true;
+			this.btnTestHexStringConverter.Click += new System.EventHandler(this.btnTestHexStringConverter_Click);
+			// 
 			// frmMain
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-			this.ClientSize = new System.Drawing.Size(892, 540);
+			this.ClientSize = new System.Drawing.Size(892, 567);
+			this.Controls.Add(this.btnTestHexStringConverter);
 			this.Controls.Add(this.btnXpathNav);
 			this.Controls.Add(this.btnTestGetFragmentFromFileUrl);
 			this.Controls.Add(this.checkBox1);
@@ -145,6 +157,7 @@
 		private System.Windows.Forms.CheckBox checkBox1;
 		private System.Windows.Forms.Button btnTestGetFragmentFromFileUrl;
 		private System.Windows.Forms.Button btnXpathNav;
+		private System.Windows.Forms.Button btnTestHexStringConverter;
 	}
 }
 
