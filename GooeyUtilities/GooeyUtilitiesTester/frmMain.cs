@@ -358,5 +358,62 @@ namespace GooeyUtilitiesTester
 				// End of record, onto the next...
 			}
 		}
+
+		private void btnTestHexStringConverter_Click(object sender, EventArgs e) {
+			Utilities utils = new Utilities();
+
+			string hexString1 = "C370200";
+			string hexString2 = "C37020X0";
+			string hexString3 = "C3702000";
+			string errMsg;
+			tbOutput.Text += "Testing converter with invalid hex string (length) - " + hexString1 + "... ";
+			errMsg = null;
+			try {
+				utils.ConvertHexStringToBytes(hexString1);
+			}
+			catch (Exception ex) {
+				errMsg = ex.Message;
+			}
+			if (errMsg == null) {
+				tbOutput.Text += "OK, but should have failed!\r\n";
+			}
+			else {
+				tbOutput.Text += "Failed; \"" + errMsg + "\".\r\n";
+			}
+
+			tbOutput.Text += "Testing converter with invalid hex string (contents) - " + hexString2 + "... ";
+			errMsg = null;
+			try {
+				utils.ConvertHexStringToBytes(hexString2);
+			}
+			catch (Exception ex) {
+				errMsg = ex.Message;
+			}
+			if (errMsg == null) {
+				tbOutput.Text += "OK, but should have failed!\r\n";
+			}
+			else {
+				tbOutput.Text += "Failed; \"" + errMsg + "\".\r\n";
+			}
+
+			tbOutput.Text += "Testing converter with valid hex string - " + hexString3 + "... ";
+			errMsg = null;
+			byte[] hexBytes = null;
+			try {
+				hexBytes = utils.ConvertHexStringToBytes(hexString3);
+			}
+			catch (Exception ex) {
+				errMsg = ex.Message;
+			}
+			if (errMsg != null) {
+				tbOutput.Text += "Failed, but should have succeeded; \"" + errMsg + "\".\r\n";
+			}
+			else {
+				tbOutput.Text += "OK.  Converted to a byte array containing:\r\n";
+				foreach (byte hexByte in hexBytes) {
+					tbOutput.Text += string.Format("  {0:X2} ({0:d})\r\n", hexByte);
+				}
+			}
+		}
 	}
 }
