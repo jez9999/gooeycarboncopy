@@ -103,7 +103,10 @@ namespace Gooey {
 		/// <summary>
 		/// A full Assembly version string, including major, minor, build, and revision.
 		/// </summary>
-		FullString
+		FullString,
+		MajorMinorBuild,
+		MajorMinor,
+		Major,
 	}
 	
 	/// <summary>
@@ -124,12 +127,24 @@ namespace Gooey {
 			
 			switch (versionStrType) {
 				case VersionStringType.FullString:
-				retVal = ver.Major.ToString() + "." + ver.Minor.ToString() + "." + ver.Build.ToString() + "." + ver.Revision.ToString();
-				break;
+					retVal = ver.Major.ToString() + "." + ver.Minor.ToString() + "." + ver.Build.ToString() + "." + ver.Revision.ToString();
+					break;
+
+				case VersionStringType.MajorMinorBuild:
+					retVal = ver.Major.ToString() + "." + ver.Minor.ToString() + "." + ver.Build.ToString();
+					break;
+
+				case VersionStringType.MajorMinor:
+					retVal = ver.Major.ToString() + "." + ver.Minor.ToString();
+					break;
+
+				case VersionStringType.Major:
+					retVal = ver.Major.ToString();
+					break;
 				
 				default:
-				retVal = ("(no version type recognized!)");
-				break;
+					retVal = ("(no version type recognized!)");
+					break;
 			}
 			
 			return retVal;
