@@ -142,7 +142,7 @@
 			// 
 			// btnAssemblyVersionString
 			// 
-			this.btnAssemblyVersionString.Location = new System.Drawing.Point(696, 534);
+			this.btnAssemblyVersionString.Location = new System.Drawing.Point(343, 534);
 			this.btnAssemblyVersionString.Name = "btnAssemblyVersionString";
 			this.btnAssemblyVersionString.Size = new System.Drawing.Size(184, 23);
 			this.btnAssemblyVersionString.TabIndex = 9;
