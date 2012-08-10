@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Text;
@@ -111,6 +112,17 @@ namespace Gooey {
 	/// </summary>
 	public class Utilities {
 		#region Public methods
+
+		/// <summary>
+		/// Gets an embedded resource back from the given assembly as a stream.
+		/// </summary>
+		/// <param name="getFrom">The assembly from which to get the embedded resource.</param>
+		/// <param name="defaultNamespace">The default namespace for the assembly.  This is determined at compile-time by Visual Studio, and is specified in the project properties dialog.</param>
+		/// <param name="resourceName">The name of the resource to retreive, in "Path.to.filename.ext" format.</param>
+		/// <returns>A stream containing the specified resource if found, or null otherwise.</returns>
+		public Stream GetEmbeddedResource(Assembly getFrom, string defaultNamespace, string resourceName) {
+			return getFrom.GetManifestResourceStream(defaultNamespace + "." + resourceName);
+		}
 		
 		/// <summary>
 		/// Returns a string indicating the version of the Assenbly supplied.

@@ -38,6 +38,7 @@
 			this.btnTestGetFragmentFromFileUrl = new System.Windows.Forms.Button();
 			this.btnXpathNav = new System.Windows.Forms.Button();
 			this.btnTestHexStringConverter = new System.Windows.Forms.Button();
+			this.btnTestEmbeddedResource = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// tbOutput
@@ -128,10 +129,21 @@
 			this.btnTestHexStringConverter.UseVisualStyleBackColor = true;
 			this.btnTestHexStringConverter.Click += new System.EventHandler(this.btnTestHexStringConverter_Click);
 			// 
+			// btnTestEmbeddedResource
+			// 
+			this.btnTestEmbeddedResource.Location = new System.Drawing.Point(157, 534);
+			this.btnTestEmbeddedResource.Name = "btnTestEmbeddedResource";
+			this.btnTestEmbeddedResource.Size = new System.Drawing.Size(180, 23);
+			this.btnTestEmbeddedResource.TabIndex = 8;
+			this.btnTestEmbeddedResource.Text = "Test embedded resource retreival";
+			this.btnTestEmbeddedResource.UseVisualStyleBackColor = true;
+			this.btnTestEmbeddedResource.Click += new System.EventHandler(this.btnTestEmbeddedResource_Click);
+			// 
 			// frmMain
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.ClientSize = new System.Drawing.Size(892, 567);
+			this.Controls.Add(this.btnTestEmbeddedResource);
 			this.Controls.Add(this.btnTestHexStringConverter);
 			this.Controls.Add(this.btnXpathNav);
 			this.Controls.Add(this.btnTestGetFragmentFromFileUrl);
@@ -158,6 +170,7 @@
 		private System.Windows.Forms.Button btnTestGetFragmentFromFileUrl;
 		private System.Windows.Forms.Button btnXpathNav;
 		private System.Windows.Forms.Button btnTestHexStringConverter;
+		private System.Windows.Forms.Button btnTestEmbeddedResource;
 	}
 }
 
