@@ -14,12 +14,18 @@ using Gooey;
 namespace GooeyUtilitiesTester
 {
 	public partial class frmMain : Form {
-		private Icon icoTray = new Icon(Assembly.GetExecutingAssembly().GetManifestResourceStream("GooeyUtilitiesTester.ccApp.ico"));
+		private const string defaultNamespace = "GooeyUtilitiesTester";
+		Utilities utils;
+		private Icon icoTray;
 		private ContextMenu iconMenu;
 		private bool popTrayMenu = true;
 		
 		public frmMain() {
 			InitializeComponent();
+
+			// Init utilities and icon
+			this.utils = new Utilities();
+			icoTray = new Icon(this.utils.GetEmbeddedResource(Assembly.GetExecutingAssembly(), defaultNamespace, "ccApp.ico"));
 			
 			// Create and populate icon menu
 			iconMenu = new ContextMenu();
@@ -31,8 +37,7 @@ namespace GooeyUtilitiesTester
 		
 		private void button1_Click(object sender, EventArgs e) {
 			// Show modal dialog
-			Utilities utils = new Utilities();
-			utils.ShowInfo("Modal dialog box...");
+			this.utils.ShowInfo("Modal dialog box...");
 		}
 		
 		private void iconMenu_Popup(object sender, EventArgs e) {
@@ -221,8 +226,6 @@ namespace GooeyUtilitiesTester
 
 		private void btnTestGetFragmentFromFileUrl_Click(object sender, EventArgs e)
 		{
-			Utilities utils = new Utilities();
-
 			string urlWithDrivename = @"file://C:";
 			string urlWithNoExt = @"file://C:\path\to\codebase";
 			string urlWithFullPath = @"file://C:\path\to\codebase.exe";
@@ -232,38 +235,38 @@ namespace GooeyUtilitiesTester
 
 			// Test with drivename only
 			tbOutput.Text += "Try to get fragments from " + urlWithDrivename + "\r\n";
-			tbOutput.Text += "Drivename: " + utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
-			tbOutput.Text += "Path: " + utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.Path) + "\r\n";
-			tbOutput.Text += "Filename: " + utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
-			tbOutput.Text += "Filebody: " + utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
-			tbOutput.Text += "Fileext: " + utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
+			tbOutput.Text += "Drivename: " + this.utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
+			tbOutput.Text += "Path: " + this.utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.Path) + "\r\n";
+			tbOutput.Text += "Filename: " + this.utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
+			tbOutput.Text += "Filebody: " + this.utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
+			tbOutput.Text += "Fileext: " + this.utils.GetFragmentFromFileUrl(urlWithDrivename, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
 
 			// Test with no extension
 			tbOutput.Text += "\r\n";
 			tbOutput.Text += "Try to get fragments from " + urlWithNoExt + "\r\n";
-			tbOutput.Text += "Drivename: " + utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
-			tbOutput.Text += "Path: " + utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.Path) + "\r\n";
-			tbOutput.Text += "Filename: " + utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
-			tbOutput.Text += "Filebody: " + utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
-			tbOutput.Text += "Fileext: " + utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
+			tbOutput.Text += "Drivename: " + this.utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
+			tbOutput.Text += "Path: " + this.utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.Path) + "\r\n";
+			tbOutput.Text += "Filename: " + this.utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
+			tbOutput.Text += "Filebody: " + this.utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
+			tbOutput.Text += "Fileext: " + this.utils.GetFragmentFromFileUrl(urlWithNoExt, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
 
 			// Test with full URL
 			tbOutput.Text += "\r\n";
 			tbOutput.Text += "Try to get fragments from " + urlWithFullPath + "\r\n";
-			tbOutput.Text += "Drivename: " + utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
-			tbOutput.Text += "Path: " + utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.Path) + "\r\n";
-			tbOutput.Text += "Filename: " + utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
-			tbOutput.Text += "Filebody: " + utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
-			tbOutput.Text += "Fileext: " + utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
+			tbOutput.Text += "Drivename: " + this.utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
+			tbOutput.Text += "Path: " + this.utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.Path) + "\r\n";
+			tbOutput.Text += "Filename: " + this.utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
+			tbOutput.Text += "Filebody: " + this.utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
+			tbOutput.Text += "Fileext: " + this.utils.GetFragmentFromFileUrl(urlWithFullPath, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
 
 			// Test with full URL with multiple extensions
 			tbOutput.Text += "\r\n";
 			tbOutput.Text += "Try to get fragments from " + urlWithFullPathMultipleExt + "\r\n";
-			tbOutput.Text += "Drivename: " + utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
-			tbOutput.Text += "Path: " + utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.Path) + "\r\n";
-			tbOutput.Text += "Filename: " + utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
-			tbOutput.Text += "Filebody: " + utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
-			tbOutput.Text += "Fileext: " + utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
+			tbOutput.Text += "Drivename: " + this.utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.DriveName) + "\r\n";
+			tbOutput.Text += "Path: " + this.utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.Path) + "\r\n";
+			tbOutput.Text += "Filename: " + this.utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.FileName) + "\r\n";
+			tbOutput.Text += "Filebody: " + this.utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.FileBody) + "\r\n";
+			tbOutput.Text += "Fileext: " + this.utils.GetFragmentFromFileUrl(urlWithFullPathMultipleExt, Utilities.FileUrlFragmentPart.FileExt) + "\r\n";
 		}
 
 		private void btnXpathNav_Click(object sender, EventArgs e) {
@@ -360,8 +363,6 @@ namespace GooeyUtilitiesTester
 		}
 
 		private void btnTestHexStringConverter_Click(object sender, EventArgs e) {
-			Utilities utils = new Utilities();
-
 			string hexString1 = "C370200";
 			string hexString2 = "C37020X0";
 			string hexString3 = "C3702000";
@@ -369,7 +370,7 @@ namespace GooeyUtilitiesTester
 			tbOutput.Text += "Testing converter with invalid hex string (length) - " + hexString1 + "... ";
 			errMsg = null;
 			try {
-				utils.ConvertHexStringToBytes(hexString1);
+				this.utils.ConvertHexStringToBytes(hexString1);
 			}
 			catch (Exception ex) {
 				errMsg = ex.Message;
@@ -384,7 +385,7 @@ namespace GooeyUtilitiesTester
 			tbOutput.Text += "Testing converter with invalid hex string (contents) - " + hexString2 + "... ";
 			errMsg = null;
 			try {
-				utils.ConvertHexStringToBytes(hexString2);
+				this.utils.ConvertHexStringToBytes(hexString2);
 			}
 			catch (Exception ex) {
 				errMsg = ex.Message;
@@ -400,7 +401,7 @@ namespace GooeyUtilitiesTester
 			errMsg = null;
 			byte[] hexBytes = null;
 			try {
-				hexBytes = utils.ConvertHexStringToBytes(hexString3);
+				hexBytes = this.utils.ConvertHexStringToBytes(hexString3);
 			}
 			catch (Exception ex) {
 				errMsg = ex.Message;
@@ -414,6 +415,26 @@ namespace GooeyUtilitiesTester
 					tbOutput.Text += string.Format("  {0:X2} ({0:d})\r\n", hexByte);
 				}
 			}
+		}
+
+		private void btnTestEmbeddedResource_Click(object sender, EventArgs e) {
+			Stream resourceStream = this.utils.GetEmbeddedResource(Assembly.GetExecutingAssembly(), defaultNamespace, "EmbeddedResources.mary.txt");
+			try {
+				tbOutput.Text += "Getting 'Mary had a little lamb' embedded resource:\r\n";
+				StreamReader sr = new StreamReader(resourceStream, Encoding.UTF8);
+				tbOutput.Text += sr.ReadToEnd();
+				tbOutput.Text += "\r\n";
+			}
+			catch (Exception ex) {
+				tbOutput.Text += "Error getting mary.txt embedded resource: " + ex.Message + "\r\n";
+			}
+			finally {
+				if (resourceStream != null) {
+					resourceStream.Close();
+				}
+			}
+
+			tbOutput.Text += "\r\n";
 		}
 	}
 }
