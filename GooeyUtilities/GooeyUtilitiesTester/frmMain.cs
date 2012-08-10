@@ -436,5 +436,16 @@ namespace GooeyUtilitiesTester
 
 			tbOutput.Text += "\r\n";
 		}
+
+		private void btnAssemblyVersionString_Click(object sender, EventArgs e) {
+			Utilities utils = new Utilities();
+			Assembly currentAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+
+			tbOutput.Text += "Testing assembly version string builder on current assembly:\r\n";
+			tbOutput.Text += "Major: " + utils.GetVersionString(currentAssembly, VersionStringType.Major) + "\r\n";
+			tbOutput.Text += "MajorMinor: " + utils.GetVersionString(currentAssembly, VersionStringType.MajorMinor) + "\r\n";
+			tbOutput.Text += "MajorMinorBuild: " + utils.GetVersionString(currentAssembly, VersionStringType.MajorMinorBuild) + "\r\n";
+			tbOutput.Text += "FullString: " + utils.GetVersionString(currentAssembly, VersionStringType.FullString) + "\r\n";
+		}
 	}
 }
