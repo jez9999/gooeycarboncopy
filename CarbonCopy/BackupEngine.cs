@@ -241,6 +241,9 @@ namespace CarbonCopy {
 				List<FileSystemInfo> syncedDirInList = synchronizeObjs(sourceDirInList, destDir, false);
 				// We know the synchronized dest dir is the first entry in the list as it's
 				// the only object we passed to be synchronized!
+				if (syncedDirInList.Count == 0) {
+					throw new SynchronizeDirException("Unable to synchronize dir: " + sourceDir.FullName);
+				}
 				DirectoryInfo syncedDir = ((DirectoryInfo)syncedDirInList[0]);
 				syncedDir = slashTerm(syncedDir);
 				
@@ -283,11 +286,14 @@ namespace CarbonCopy {
 			synchronizeObjs(sourceObjs, destDir, true);
 		}
 		/// <summary>
-		/// Synchronizes the FileSystemInfo objects passed into the destination directory specified by the DirectoryInfo passed.  This ensures that all source FileSystemInfo objects passed will exist in the destination directory passed.  It DOES NOT delete entries in the destination dir that have not been specified in the source FileSystemInfo objects list; that must be done elsewhere.
+		/// Synchronizes the specified FileSystemInfo objects into the specified destination directory.
+		/// This ensures that all source FileSystemInfo objects passed will exist in the destination directory.
+		/// It DOES NOT delete entries in the destination dir that have not been specified in the source
+		/// FileSystemInfo objects list; that must be done elsewhere.
 		/// </summary>
 		/// <param name="sourceObjs">The list of source FileSystemInfo objects to be synchronized to the destination dir.</param>
 		/// <param name="destDir">The destination dir DirectoryInfo object.</param>
-		/// <param name="syncDirAttributes">A boolean specifying whether the destination directories that are being synchronized should have their attributes set to match those of the corresponding source directories, or not.</param>
+		/// <param name="syncDirAttributes">A boolean specifying whether the destination directories that are being synchronized should have their attributes set to match those of the corresponding source directories.</param>
 		/// <returns>A list of FileSystemInfo objects which are descriptors of the DESTINATION DIR objects that have been synchronized (ie. they'll have the .FullName set to the DESTINATION DIR's path to that FileSystemInfo object).</returns>
 		private List<FileSystemInfo> synchronizeObjs(List<FileSystemInfo> sourceObjs, DirectoryInfo destDir, bool syncDirAttributes) {
 			// Synchronize objects in source objects list into given destination dir
@@ -295,23 +301,6 @@ namespace CarbonCopy {
 			// directory) that was synchronized.
 			
 			List<FileSystemInfo> retVal = new List<FileSystemInfo>();
-			
-			// 6 basic operations may need to be performed as part of synchronization:
-			// - Delete a destination object as it's not in the source dir
-			//   NOTE: We're fixing capitalization here, too; when comparing dest
-			//   and source file and directory names, we do a case-sensitive match.
-			//   If the cases are different, the dest file will be removed and replaced.
-			// - Replace a destination file as its attributes don't match those
-			//   of its namesake in the source dir
-			// - Update a destination directory as its attributes don't match those
-			//   of its namesake in the source dir
-			// - Replace a destination object as its type (file/directory) doesn't
-			//   match that of its namesake in the source dir (this is also reflected
-			//   in that the object's attributes don't match; one attribute is whether
-			//   the object is a directory or not.)
-			// - Add a source object to the destination dir as it doesn't exist in the
-			//   destination dir
-			// - Leave a destination object alone
 			
 			if (stopBackup) {
 				throw new StopBackupException();
@@ -439,13 +428,14 @@ namespace CarbonCopy {
 				}
 				
 				int foundIndex;
-				
+				string copyToPath = "???";
+				string createPath = "???";
 				// FILE
 				if (obj is FileInfo) {
 					if ((foundIndex = indexNameXinY(obj, destObjs)) < 0) {
 						// Need to copy
 						try {
-							string copyToPath = destDir.FullName + obj.Name;
+							copyToPath = destDir.FullName + obj.Name;
 							// The 'Copying' verbose message tends to result in ENORMOUS
 							// output when dealing with large directories.  This warrants
 							// a warnings in the GUI somewhere around the 'display
@@ -462,7 +452,7 @@ namespace CarbonCopy {
 							retVal.Add(justCopied);
 						}
 						catch (Exception ex) {
-							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't copy file " + obj.FullName + " - " + ex.Message));
+							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't copy file " + copyToPath + " - " + ex.Message));
 						}
 					}
 				}
@@ -471,7 +461,7 @@ namespace CarbonCopy {
 					if ((foundIndex = indexNameXinY(obj, destObjs)) < 0) {
 						// Need to copy
 						try {
-							string createPath = destDir.FullName + obj.Name + "\\";
+							createPath = destDir.FullName + obj.Name + "\\";
 							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Creating directory " + createPath));
 							Directory.CreateDirectory(createPath);
 							DirectoryInfo justCreated = new DirectoryInfo(createPath);
@@ -483,7 +473,7 @@ namespace CarbonCopy {
 							retVal.Add(justCreated);
 						}
 						catch (Exception ex) {
-							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Couldn't create directory " + obj.FullName + " - " + ex.Message));
+							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't create directory " + createPath + " - " + ex.Message));
 						}
 					}
 				}
@@ -596,35 +586,45 @@ namespace CarbonCopy {
 		/// <returns>The zero-indexed index in the list provided of the matching object if the name of one matches (case-sensitive); otherwise -1.</returns>
 		private int indexNameXinY(FileSystemInfo XObj, List<FileSystemInfo> YObjs) {
 			for (int index=0; index < YObjs.Count; index++) {
-				if (YObjs[index].Name == XObj.Name) { return index; }
+				if (YObjs[index].Name == XObj.Name) {
+					return index;
+				}
 			}
 			
 			return -1;
 		}
 		private int indexNameXinY(FileInfo XObj, List<FileInfo> YObjs) {
 			for (int index=0; index < YObjs.Count; index++) {
-				if (YObjs[index].Name == XObj.Name) { return index; }
+				if (YObjs[index].Name == XObj.Name) {
+					return index;
+				}
 			}
 			
 			return -1;
 		}
 		private int indexNameXinY(FileInfo XObj, List<DirectoryInfo> YObjs) {
 			for (int index=0; index < YObjs.Count; index++) {
-				if (YObjs[index].Name == XObj.Name) { return index; }
+				if (YObjs[index].Name == XObj.Name) {
+					return index;
+				}
 			}
 			
 			return -1;
 		}
 		private int indexNameXinY(DirectoryInfo XObj, List<FileInfo> YObjs) {
 			for (int index=0; index < YObjs.Count; index++) {
-				if (YObjs[index].Name == XObj.Name) { return index; }
+				if (YObjs[index].Name == XObj.Name) {
+					return index;
+				}
 			}
 			
 			return -1;
 		}
 		private int indexNameXinY(DirectoryInfo XObj, List<DirectoryInfo> YObjs) {
 			for (int index=0; index < YObjs.Count; index++) {
-				if (YObjs[index].Name == XObj.Name) { return index; }
+				if (YObjs[index].Name == XObj.Name) {
+					return index;
+				}
 			}
 			
 			return -1;
