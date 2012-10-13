@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
 using Gooey;
+using GooeyUtilities.General.EnumHelper;
 
 namespace GooeyUtilitiesTester
 {
@@ -19,7 +20,13 @@ namespace GooeyUtilitiesTester
 		private Icon icoTray;
 		private ContextMenu iconMenu;
 		private bool popTrayMenu = true;
-		
+
+		private enum TestEnum : int {
+			TestEnumThirty      = 30,
+			TestEnumMinusForty  = -40,
+			TestEnumFifty       = 50,
+		}
+
 		public frmMain() {
 			InitializeComponent();
 
@@ -446,6 +453,18 @@ namespace GooeyUtilitiesTester
 			tbOutput.Text += "MajorMinor: " + utils.GetVersionString(currentAssembly, VersionStringType.MajorMinor) + "\r\n";
 			tbOutput.Text += "MajorMinorBuild: " + utils.GetVersionString(currentAssembly, VersionStringType.MajorMinorBuild) + "\r\n";
 			tbOutput.Text += "FullString: " + utils.GetVersionString(currentAssembly, VersionStringType.FullString) + "\r\n";
+			tbOutput.Text += "\r\n";
+		}
+
+		private void btnEnumHelper_Click(object sender, EventArgs e) {
+			tbOutput.Text += "Testing enum helper methods:\r\n";
+			tbOutput.Text += "GetEnumFromEnumName with TestEnum.TestEnumThirty: an enum named " + EnumHelper<TestEnum>.GetEnumFromEnumName("TestEnumThirty").ToString() + "\r\n";
+			tbOutput.Text += "GetEnumFromEnumValue with TestEnum.TestEnumMinusForty: an enum named " + EnumHelper<TestEnum>.GetEnumFromEnumValue(-40).ToString() + "\r\n";
+			tbOutput.Text += "GetEnumNameFromEnum with TestEnum.TestEnumFifty: " + EnumHelper<TestEnum>.GetEnumNameFromEnum(TestEnum.TestEnumFifty) + "\r\n";
+			tbOutput.Text += "GetEnumValueFromEnum with TestEnum.TestEnumThirty: " + EnumHelper<TestEnum>.GetEnumValueFromEnum(TestEnum.TestEnumThirty).ToString() + "\r\n";
+			tbOutput.Text += "GetEnumName extension method with TestEnum.TestEnumMinusForty: " + TestEnum.TestEnumMinusForty.GetEnumName() + "\r\n";
+			tbOutput.Text += "GetEnumValue extension method with TestEnum.TestEnumFifty: " + TestEnum.TestEnumFifty.GetEnumValue().ToString() + "\r\n";
+			tbOutput.Text += "\r\n";
 		}
 	}
 }

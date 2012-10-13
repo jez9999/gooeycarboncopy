@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GooeyUtilities</RootNamespace>
     <AssemblyName>GooeyUtilities</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -21,7 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\GooeyUtilities.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Data" />
@@ -42,6 +46,9 @@
     <Compile Include="Controls\GooeyTree.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="General\EnumHelper\EnumHelper.cs" />
+    <Compile Include="General\EnumHelper\EnumHelperException.cs" />
+    <Compile Include="General\EnumHelper\EnumHelperExtensions.cs" />
     <Compile Include="General\GooeyBTree.cs" />
     <Compile Include="General\Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
