@@ -40,6 +40,7 @@
 			this.btnTestHexStringConverter = new System.Windows.Forms.Button();
 			this.btnTestEmbeddedResource = new System.Windows.Forms.Button();
 			this.btnAssemblyVersionString = new System.Windows.Forms.Button();
+			this.btnEnumHelper = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// tbOutput
@@ -150,10 +151,21 @@
 			this.btnAssemblyVersionString.UseVisualStyleBackColor = true;
 			this.btnAssemblyVersionString.Click += new System.EventHandler(this.btnAssemblyVersionString_Click);
 			// 
+			// btnEnumHelper
+			// 
+			this.btnEnumHelper.Location = new System.Drawing.Point(535, 534);
+			this.btnEnumHelper.Name = "btnEnumHelper";
+			this.btnEnumHelper.Size = new System.Drawing.Size(129, 23);
+			this.btnEnumHelper.TabIndex = 10;
+			this.btnEnumHelper.Text = "Test enum helper";
+			this.btnEnumHelper.UseVisualStyleBackColor = true;
+			this.btnEnumHelper.Click += new System.EventHandler(this.btnEnumHelper_Click);
+			// 
 			// frmMain
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.ClientSize = new System.Drawing.Size(892, 567);
+			this.Controls.Add(this.btnEnumHelper);
 			this.Controls.Add(this.btnTestEmbeddedResource);
 			this.Controls.Add(this.btnAssemblyVersionString);
 			this.Controls.Add(this.btnTestHexStringConverter);
@@ -184,6 +196,7 @@
 		private System.Windows.Forms.Button btnTestHexStringConverter;
 		private System.Windows.Forms.Button btnTestEmbeddedResource;
 		private System.Windows.Forms.Button btnAssemblyVersionString;
+		private System.Windows.Forms.Button btnEnumHelper;
 	}
 }
 
