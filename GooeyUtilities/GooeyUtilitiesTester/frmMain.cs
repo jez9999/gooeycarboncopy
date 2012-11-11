@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Reflection;
 using System.IO;
 using Gooey;
 using GooeyUtilities.General.EnumHelper;
+using GooeyUtilities.General.LinkedListHelper;
 
 namespace GooeyUtilitiesTester
 {
@@ -25,6 +27,13 @@ namespace GooeyUtilitiesTester
 			TestEnumThirty      = 30,
 			TestEnumMinusForty  = -40,
 			TestEnumFifty       = 50,
+		}
+
+		private class CaseStudy {
+			public int CaseStudyId { get; set; }
+			public string Name { get; set; }
+			public int Age { get; set; }
+			public string Description { get; set; }
 		}
 
 		public frmMain() {
@@ -464,6 +473,58 @@ namespace GooeyUtilitiesTester
 			tbOutput.Text += "GetEnumValueFromEnum with TestEnum.TestEnumThirty: " + EnumHelper<TestEnum>.GetEnumValueFromEnum(TestEnum.TestEnumThirty).ToString() + "\r\n";
 			tbOutput.Text += "GetEnumName extension method with TestEnum.TestEnumMinusForty: " + TestEnum.TestEnumMinusForty.GetEnumName() + "\r\n";
 			tbOutput.Text += "GetEnumValue extension method with TestEnum.TestEnumFifty: " + TestEnum.TestEnumFifty.GetEnumValue().ToString() + "\r\n";
+			tbOutput.Text += "\r\n";
+		}
+
+		private void btnLinkedListHelper_Click(object sender, EventArgs e) {
+			tbOutput.Text += "Testing linked list helper methods:\r\n";
+
+			LinkedList<CaseStudy> llCaseStudies = new LinkedList<CaseStudy>();
+			LinkedListNode<CaseStudy> foundNode;
+			LinkedListNode<CaseStudy> nodeJoe;
+			LinkedListNode<CaseStudy> nodeChris;
+			LinkedListNode<CaseStudy> nodeChloe;
+			LinkedListNode<CaseStudy> nodeNeela;
+			LinkedListNode<CaseStudy> nodeAndy;
+			LinkedListNode<CaseStudy> nodePrevious;
+			nodeJoe = nodePrevious = llCaseStudies.AddFirst(new CaseStudy { CaseStudyId = 12, Name = "Joe", Description = "A man from London who is depressed.", Age = 33 });
+			nodeChris = nodePrevious = llCaseStudies.AddAfter(nodePrevious, new CaseStudy { CaseStudyId = 45, Name = "Chris", Description = "A religious man struggling with his faith.", Age = 28 });
+			nodeChloe = nodePrevious = llCaseStudies.AddAfter(nodePrevious, new CaseStudy { CaseStudyId = 23, Name = "Chloe", Description = "White female whose husband has left her.", Age = 27 });
+			nodeNeela = nodePrevious = llCaseStudies.AddAfter(nodePrevious, new CaseStudy { CaseStudyId = 56, Name = "Neela", Description = "Pakistani woman having trouble visiting extended family.", Age = 52 });
+			nodeAndy = nodePrevious = llCaseStudies.AddAfter(nodePrevious, new CaseStudy { CaseStudyId = 34, Name = "Andy", Description = "Aggressive personality and anger management issues.", Age = 41 });
+
+			tbOutput.Text += "Find Neela before Chris (should be null):\r\n";
+			foundNode = nodeChris.FindFirstBefore(true, cs => cs.Name == "Neela" && cs.CaseStudyId == 56);
+			tbOutput.Text += "- " + (foundNode == null ? "(null)\r\n" : foundNode.Value.Name + ", " + foundNode.Value.Age + ", " + foundNode.Value.Description + "\r\n");
+
+			tbOutput.Text += "Find Chris before Neela (should be Chris):\r\n";
+			foundNode = nodeNeela.FindFirstBefore(true, cs => cs.Name == "Chris" && cs.CaseStudyId == 45);
+			tbOutput.Text += "- " + (foundNode == null ? "(null)\r\n" : foundNode.Value.Name + ", " + foundNode.Value.Age + ", " + foundNode.Value.Description + "\r\n");
+
+			tbOutput.Text += "Find Neela before Neela including specified node (should be Neela):\r\n";
+			foundNode = nodeNeela.FindFirstBefore(true, cs => cs.Name == "Neela" && cs.CaseStudyId == 56);
+			tbOutput.Text += "- " + (foundNode == null ? "(null)\r\n" : foundNode.Value.Name + ", " + foundNode.Value.Age + ", " + foundNode.Value.Description + "\r\n");
+
+			tbOutput.Text += "Find Neela before Neela excluding specified node (should be null):\r\n";
+			foundNode = nodeNeela.FindFirstBefore(false, cs => cs.Name == "Neela" && cs.CaseStudyId == 56);
+			tbOutput.Text += "- " + (foundNode == null ? "(null)\r\n" : foundNode.Value.Name + ", " + foundNode.Value.Age + ", " + foundNode.Value.Description + "\r\n");
+
+			tbOutput.Text += "Find Chloe after Andy (should be null):\r\n";
+			foundNode = nodeAndy.FindFirstAfter(true, cs => cs.Name == "Chloe" && cs.CaseStudyId == 23);
+			tbOutput.Text += "- " + (foundNode == null ? "(null)\r\n" : foundNode.Value.Name + ", " + foundNode.Value.Age + ", " + foundNode.Value.Description + "\r\n");
+
+			tbOutput.Text += "Find Andy after Chloe (should be Andy):\r\n";
+			foundNode = nodeChloe.FindFirstAfter(true, cs => cs.Name == "Andy" && cs.CaseStudyId == 34);
+			tbOutput.Text += "- " + (foundNode == null ? "(null)\r\n" : foundNode.Value.Name + ", " + foundNode.Value.Age + ", " + foundNode.Value.Description + "\r\n");
+
+			tbOutput.Text += "Find Joe after Joe including specified node (should be Joe):\r\n";
+			foundNode = nodeJoe.FindFirstAfter(true, cs => cs.Name == "Joe" && cs.CaseStudyId == 12);
+			tbOutput.Text += "- " + (foundNode == null ? "(null)\r\n" : foundNode.Value.Name + ", " + foundNode.Value.Age + ", " + foundNode.Value.Description + "\r\n");
+
+			tbOutput.Text += "Find Joe after Joe excluding specified node (should be null):\r\n";
+			foundNode = nodeJoe.FindFirstAfter(false, cs => cs.Name == "Joe" && cs.CaseStudyId == 12);
+			tbOutput.Text += "- " + (foundNode == null ? "(null)\r\n" : foundNode.Value.Name + ", " + foundNode.Value.Age + ", " + foundNode.Value.Description + "\r\n");
+
 			tbOutput.Text += "\r\n";
 		}
 	}
