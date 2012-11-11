@@ -376,11 +376,6 @@ namespace Gooey {
 		Form invokeWith;
 		private bool dropExceptions;
 		
-		private class doInvocationData {
-			public Delegate method;
-			public object[] args;
-		}
-		
 		#endregion
 		
 		#region Constructors
