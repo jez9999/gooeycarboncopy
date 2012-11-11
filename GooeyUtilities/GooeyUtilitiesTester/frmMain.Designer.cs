@@ -41,6 +41,7 @@
 			this.btnTestEmbeddedResource = new System.Windows.Forms.Button();
 			this.btnAssemblyVersionString = new System.Windows.Forms.Button();
 			this.btnEnumHelper = new System.Windows.Forms.Button();
+			this.btnLinkedListHelper = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// tbOutput
@@ -161,10 +162,21 @@
 			this.btnEnumHelper.UseVisualStyleBackColor = true;
 			this.btnEnumHelper.Click += new System.EventHandler(this.btnEnumHelper_Click);
 			// 
+			// btnLinkedListHelper
+			// 
+			this.btnLinkedListHelper.Location = new System.Drawing.Point(670, 534);
+			this.btnLinkedListHelper.Name = "btnLinkedListHelper";
+			this.btnLinkedListHelper.Size = new System.Drawing.Size(132, 23);
+			this.btnLinkedListHelper.TabIndex = 11;
+			this.btnLinkedListHelper.Text = "Test linked list helper";
+			this.btnLinkedListHelper.UseVisualStyleBackColor = true;
+			this.btnLinkedListHelper.Click += new System.EventHandler(this.btnLinkedListHelper_Click);
+			// 
 			// frmMain
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.ClientSize = new System.Drawing.Size(892, 567);
+			this.Controls.Add(this.btnLinkedListHelper);
 			this.Controls.Add(this.btnEnumHelper);
 			this.Controls.Add(this.btnTestEmbeddedResource);
 			this.Controls.Add(this.btnAssemblyVersionString);
@@ -197,6 +209,7 @@
 		private System.Windows.Forms.Button btnTestEmbeddedResource;
 		private System.Windows.Forms.Button btnAssemblyVersionString;
 		private System.Windows.Forms.Button btnEnumHelper;
+		private System.Windows.Forms.Button btnLinkedListHelper;
 	}
 }
 
