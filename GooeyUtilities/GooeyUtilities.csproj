@@ -46,11 +46,13 @@
     <Compile Include="Controls\GooeyTree.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="General\CustomAttributeProviderExtensions.cs" />
     <Compile Include="General\EnumHelper\EnumHelper.cs" />
     <Compile Include="General\EnumHelper\EnumHelperException.cs" />
     <Compile Include="General\EnumHelper\EnumHelperExtensions.cs" />
     <Compile Include="General\GooeyBTree.cs" />
     <Compile Include="General\LinkedListHelper\LinkedListHelperExtensions.cs" />
+    <Compile Include="General\StringExtensions.cs" />
     <Compile Include="General\Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
