@@ -42,6 +42,7 @@
 			this.btnAssemblyVersionString = new System.Windows.Forms.Button();
 			this.btnEnumHelper = new System.Windows.Forms.Button();
 			this.btnLinkedListHelper = new System.Windows.Forms.Button();
+			this.btnTestCustAttribute = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// tbOutput
@@ -50,7 +51,7 @@
 			this.tbOutput.Multiline = true;
 			this.tbOutput.Name = "tbOutput";
 			this.tbOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.tbOutput.Size = new System.Drawing.Size(868, 487);
+			this.tbOutput.Size = new System.Drawing.Size(905, 487);
 			this.tbOutput.TabIndex = 0;
 			// 
 			// btnTestBtree
@@ -65,7 +66,7 @@
 			// 
 			// btnTestGooeyTree
 			// 
-			this.btnTestGooeyTree.Location = new System.Drawing.Point(744, 12);
+			this.btnTestGooeyTree.Location = new System.Drawing.Point(781, 12);
 			this.btnTestGooeyTree.Name = "btnTestGooeyTree";
 			this.btnTestGooeyTree.Size = new System.Drawing.Size(136, 23);
 			this.btnTestGooeyTree.TabIndex = 2;
@@ -81,7 +82,7 @@
 			// 
 			// button1
 			// 
-			this.button1.Location = new System.Drawing.Point(521, 12);
+			this.button1.Location = new System.Drawing.Point(558, 12);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(75, 23);
 			this.button1.TabIndex = 3;
@@ -94,7 +95,7 @@
 			this.checkBox1.AutoSize = true;
 			this.checkBox1.Checked = true;
 			this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox1.Location = new System.Drawing.Point(602, 16);
+			this.checkBox1.Location = new System.Drawing.Point(639, 16);
 			this.checkBox1.Name = "checkBox1";
 			this.checkBox1.Size = new System.Drawing.Size(117, 17);
 			this.checkBox1.TabIndex = 4;
@@ -156,7 +157,7 @@
 			// 
 			this.btnEnumHelper.Location = new System.Drawing.Point(535, 534);
 			this.btnEnumHelper.Name = "btnEnumHelper";
-			this.btnEnumHelper.Size = new System.Drawing.Size(129, 23);
+			this.btnEnumHelper.Size = new System.Drawing.Size(104, 23);
 			this.btnEnumHelper.TabIndex = 10;
 			this.btnEnumHelper.Text = "Test enum helper";
 			this.btnEnumHelper.UseVisualStyleBackColor = true;
@@ -164,18 +165,29 @@
 			// 
 			// btnLinkedListHelper
 			// 
-			this.btnLinkedListHelper.Location = new System.Drawing.Point(670, 534);
+			this.btnLinkedListHelper.Location = new System.Drawing.Point(645, 534);
 			this.btnLinkedListHelper.Name = "btnLinkedListHelper";
-			this.btnLinkedListHelper.Size = new System.Drawing.Size(132, 23);
+			this.btnLinkedListHelper.Size = new System.Drawing.Size(119, 23);
 			this.btnLinkedListHelper.TabIndex = 11;
 			this.btnLinkedListHelper.Text = "Test linked list helper";
 			this.btnLinkedListHelper.UseVisualStyleBackColor = true;
 			this.btnLinkedListHelper.Click += new System.EventHandler(this.btnLinkedListHelper_Click);
 			// 
+			// btnTestCustAttribute
+			// 
+			this.btnTestCustAttribute.Location = new System.Drawing.Point(770, 534);
+			this.btnTestCustAttribute.Name = "btnTestCustAttribute";
+			this.btnTestCustAttribute.Size = new System.Drawing.Size(147, 23);
+			this.btnTestCustAttribute.TabIndex = 12;
+			this.btnTestCustAttribute.Text = "Test custom attribute helper";
+			this.btnTestCustAttribute.UseVisualStyleBackColor = true;
+			this.btnTestCustAttribute.Click += new System.EventHandler(this.btnTestCustAttribute_Click);
+			// 
 			// frmMain
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-			this.ClientSize = new System.Drawing.Size(892, 567);
+			this.ClientSize = new System.Drawing.Size(929, 567);
+			this.Controls.Add(this.btnTestCustAttribute);
 			this.Controls.Add(this.btnLinkedListHelper);
 			this.Controls.Add(this.btnEnumHelper);
 			this.Controls.Add(this.btnTestEmbeddedResource);
@@ -210,6 +222,7 @@
 		private System.Windows.Forms.Button btnAssemblyVersionString;
 		private System.Windows.Forms.Button btnEnumHelper;
 		private System.Windows.Forms.Button btnLinkedListHelper;
+		private System.Windows.Forms.Button btnTestCustAttribute;
 	}
 }
 

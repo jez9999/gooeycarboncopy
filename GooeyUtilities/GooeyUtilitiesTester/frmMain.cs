@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
 using Gooey;
+using GooeyUtilities.General;
 using GooeyUtilities.General.EnumHelper;
 using GooeyUtilities.General.LinkedListHelper;
 
@@ -23,6 +24,10 @@ namespace GooeyUtilitiesTester
 		private ContextMenu iconMenu;
 		private bool popTrayMenu = true;
 
+		[System.ThreadStaticAttribute]
+		[MyTestAttribute(Info="TestAttributeText")]
+		private string testAttributedField = "Hello world";
+
 		private enum TestEnum : int {
 			TestEnumThirty      = 30,
 			TestEnumMinusForty  = -40,
@@ -34,6 +39,10 @@ namespace GooeyUtilitiesTester
 			public string Name { get; set; }
 			public int Age { get; set; }
 			public string Description { get; set; }
+		}
+
+		private class MyTestAttribute : Attribute {
+			public string Info { get; set; }
 		}
 
 		public frmMain() {
@@ -524,6 +533,41 @@ namespace GooeyUtilitiesTester
 			tbOutput.Text += "Find Joe after Joe excluding specified node (should be null):\r\n";
 			foundNode = nodeJoe.FindFirstAfter(false, cs => cs.Name == "Joe" && cs.CaseStudyId == 12);
 			tbOutput.Text += "- " + (foundNode == null ? "(null)\r\n" : foundNode.Value.Name + ", " + foundNode.Value.Age + ", " + foundNode.Value.Description + "\r\n");
+
+			tbOutput.Text += "\r\n";
+		}
+
+		private void btnTestCustAttribute_Click(object sender, EventArgs e) {
+			tbOutput.Text += "Testing custom attribute helper methods:\r\n";
+			tbOutput.Text += "Get certain custom attributes on testAttributedField:\r\n";
+
+			int count;
+			tbOutput.Text += "testAttributedField exists in this class, and has value: " + this.testAttributedField + "\r\n";
+
+			var foundField = this.GetType().GetField("testAttributedField", BindingFlags.NonPublic | BindingFlags.Instance);
+			List<System.ThreadStaticAttribute> foundThreadStaticAttributes = foundField.GetCustomAttributes<System.ThreadStaticAttribute>();
+			tbOutput.Text += "Found {0} ThreadStaticAttribute attribute(s) on testAttributedField:\r\n".FormatWith(foundThreadStaticAttributes.Count);
+
+			count = 1;
+			foreach (var attr in foundThreadStaticAttributes) {
+				tbOutput.Text += "- ThreadStaticAttribute " + count++ + "\r\n";
+			}
+
+			List<RelatedImageListAttribute> foundRelatedImageListAttributes = foundField.GetCustomAttributes<RelatedImageListAttribute>();
+			tbOutput.Text += "Found {0} RelatedImageListAttribute attribute(s) on testAttributedField:\r\n".FormatWith(foundRelatedImageListAttributes.Count);
+
+			count = 1;
+			foreach (var attr in foundRelatedImageListAttributes) {
+				tbOutput.Text += "- RelatedImageListAttribute " + count++ + "\r\n";
+			}
+
+			List<MyTestAttribute> foundMyTestAttributes = foundField.GetCustomAttributes<MyTestAttribute>();
+			tbOutput.Text += "Found {0} MyTestAttribute attribute(s) on testAttributedField:\r\n".FormatWith(foundMyTestAttributes.Count);
+
+			count = 1;
+			foreach (var attr in foundMyTestAttributes) {
+				tbOutput.Text += "- MyTestAttribute " + count++ + ": Info is '" + attr.Info + "'\r\n";
+			}
 
 			tbOutput.Text += "\r\n";
 		}
