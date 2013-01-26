@@ -571,5 +571,39 @@ namespace GooeyUtilitiesTester
 
 			tbOutput.Text += "\r\n";
 		}
+
+		private void btnCalcMd5Hash_Click(object sender, EventArgs e) {
+			string calculatedHashString = "";
+			bool errorCaught = false;
+			FileStream openedFile = null;
+			try {
+				calculatedHashString = utils.GetMd5HashString(
+					openedFile = File.Open(txtMd5File.Text, FileMode.Open, FileAccess.Read)
+				);
+			}
+			catch (Exception ex) {
+				errorCaught = true;
+				tbOutput.Text += "Error getting MD5 hash for file: {0}\r\n".FormatWith(ex.Message);
+			}
+			finally {
+				if (openedFile != null) {
+					openedFile.Close();
+				}
+			}
+
+			if (!errorCaught) {
+				tbOutput.Text += "MD5 hash for {0}:\r\n{1}\r\n".FormatWith(txtMd5File.Text, calculatedHashString);
+			}
+
+			tbOutput.Text += "\r\n";
+		}
+
+		private void btnBrowse_Click(object sender, EventArgs e) {
+			var dialogResult = openFileDialog1.ShowDialog();
+			if (dialogResult == DialogResult.OK || dialogResult == DialogResult.Yes) {
+				// Put chosen file location into textbox
+				txtMd5File.Text = openFileDialog1.FileName;
+			}
+		}
 	}
 }

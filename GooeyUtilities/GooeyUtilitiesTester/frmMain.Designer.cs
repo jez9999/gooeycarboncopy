@@ -43,6 +43,10 @@
 			this.btnEnumHelper = new System.Windows.Forms.Button();
 			this.btnLinkedListHelper = new System.Windows.Forms.Button();
 			this.btnTestCustAttribute = new System.Windows.Forms.Button();
+			this.btnCalcMd5Hash = new System.Windows.Forms.Button();
+			this.txtMd5File = new System.Windows.Forms.TextBox();
+			this.btnBrowse = new System.Windows.Forms.Button();
+			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.SuspendLayout();
 			// 
 			// tbOutput
@@ -183,10 +187,45 @@
 			this.btnTestCustAttribute.UseVisualStyleBackColor = true;
 			this.btnTestCustAttribute.Click += new System.EventHandler(this.btnTestCustAttribute_Click);
 			// 
+			// btnCalcMd5Hash
+			// 
+			this.btnCalcMd5Hash.Location = new System.Drawing.Point(440, 569);
+			this.btnCalcMd5Hash.Name = "btnCalcMd5Hash";
+			this.btnCalcMd5Hash.Size = new System.Drawing.Size(137, 23);
+			this.btnCalcMd5Hash.TabIndex = 13;
+			this.btnCalcMd5Hash.Text = "Calculate file\'s MD5 hash";
+			this.btnCalcMd5Hash.UseVisualStyleBackColor = true;
+			this.btnCalcMd5Hash.Click += new System.EventHandler(this.btnCalcMd5Hash_Click);
+			// 
+			// txtMd5File
+			// 
+			this.txtMd5File.Location = new System.Drawing.Point(584, 570);
+			this.txtMd5File.Name = "txtMd5File";
+			this.txtMd5File.Size = new System.Drawing.Size(251, 20);
+			this.txtMd5File.TabIndex = 14;
+			// 
+			// btnBrowse
+			// 
+			this.btnBrowse.Location = new System.Drawing.Point(842, 569);
+			this.btnBrowse.Name = "btnBrowse";
+			this.btnBrowse.Size = new System.Drawing.Size(75, 23);
+			this.btnBrowse.TabIndex = 15;
+			this.btnBrowse.Text = "Browse...";
+			this.btnBrowse.UseVisualStyleBackColor = true;
+			this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+			// 
+			// openFileDialog1
+			// 
+			this.openFileDialog1.FileName = "openFileDialog1";
+			this.openFileDialog1.Title = "Select file to get the MD5 hash of";
+			// 
 			// frmMain
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-			this.ClientSize = new System.Drawing.Size(929, 567);
+			this.ClientSize = new System.Drawing.Size(929, 604);
+			this.Controls.Add(this.btnBrowse);
+			this.Controls.Add(this.txtMd5File);
+			this.Controls.Add(this.btnCalcMd5Hash);
 			this.Controls.Add(this.btnTestCustAttribute);
 			this.Controls.Add(this.btnLinkedListHelper);
 			this.Controls.Add(this.btnEnumHelper);
@@ -223,6 +262,10 @@
 		private System.Windows.Forms.Button btnEnumHelper;
 		private System.Windows.Forms.Button btnLinkedListHelper;
 		private System.Windows.Forms.Button btnTestCustAttribute;
+		private System.Windows.Forms.Button btnCalcMd5Hash;
+		private System.Windows.Forms.TextBox txtMd5File;
+		private System.Windows.Forms.Button btnBrowse;
+		private System.Windows.Forms.OpenFileDialog openFileDialog1;
 	}
 }
 

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace Gooey {
 	/// <summary>
@@ -358,6 +359,30 @@ namespace Gooey {
 				}
 
 				return hexBytes.ToArray();
+			}
+		}
+
+		public string GetMd5HashString(Stream inputData) {
+			StringBuilder sbHashString = new StringBuilder();
+			byte[] calculatedHash = GetMd5Hash(inputData);
+			for (int i = 0; i < calculatedHash.Length; i++) {
+				// Represent this byte as 2 hex chars
+				sbHashString.Append(string.Format("{0:x2}", calculatedHash[i]));
+			}
+
+			return sbHashString.ToString();
+		}
+
+		public byte[] GetMd5Hash(Stream inputData) {
+			MD5 md5Implementation = MD5.Create();
+			FileStream openedFile = null;
+			try {
+				return md5Implementation.ComputeHash(inputData);
+			}
+			finally {
+				if (openedFile != null) {
+					openedFile.Close();
+				}
 			}
 		}
 		
