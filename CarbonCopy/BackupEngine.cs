@@ -8,24 +8,21 @@ using System.IO;
 
 namespace CarbonCopy {	
 	#region Backup engine
-	
 	/// <summary>
 	/// A class that implements a backup engine, which will backup certain directories that are to be specified by the calling code, either by synchronizing them with another set in another location, or by performing an incremental backup in another location.
 	/// </summary>
 	public class BackupEngine {
 		#region Private vars
-		
 		private Thread backupWorker;
 		private bool stopBackup = false;
+		private string currentlyProcessing = "(initializing)";
 		private Object endBackupCleanupLock = new Object();
 		private Object stopBackupLock = new Object();
 		private CCO options;
 		private Queue<MsgDisplayInfo> messages = new Queue<MsgDisplayInfo>();
-		
 		#endregion
-		
+
 		#region Public vars
-		
 		public event MsgFunctionDelegate CbDebugMsg;
 		public event MsgFunctionDelegate CbInfoMsg;
 		public event MsgFunctionDelegate CbErrorMsg;
@@ -38,19 +35,20 @@ namespace CarbonCopy {
 				return (backupWorker != null);
 			}		
 		}
-		
+		public string CurrentlyProcessing {
+			get {
+				return currentlyProcessing;
+			}
+		}
 		#endregion
-		
+
 		#region Constructors
-		
 		public BackupEngine(CCO options) {
 			this.options = options;
 		}
-		
 		#endregion
-		
+
 		#region Public methods
-		
 		public MsgDisplayInfo GetNextMsg() {
 			return messages.Dequeue();
 		}
@@ -73,11 +71,9 @@ namespace CarbonCopy {
 		public void StopBackup() {
 			stopBackup = true;
 		}
-		
 		#endregion
 		
 		#region Private methods
-		
 		private void checkNecessarySettings() {
 			// Ensure that callbacks allowing us to communicate with the calling
 			// code have been set
@@ -94,7 +90,7 @@ namespace CarbonCopy {
 		}
 		
 		private void endBackupCleanup() {
-			lock(endBackupCleanupLock) {
+			lock (endBackupCleanupLock) {
 				if (backupWorker != null) {
 					stopBackup = false;
 					
@@ -169,7 +165,12 @@ namespace CarbonCopy {
 				options.DestDir = fixedPath;
 			}
 			
-			AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting backup."));
+			if (!options.IsDryRun) {
+				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting backup."));
+			}
+			else {
+				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting 'dry run' backup."));
+			}
 			
 			foreach (DirectoryInfo sourceDir in options.SourceDirs) {
 				if (stopBackup) {
@@ -178,7 +179,14 @@ namespace CarbonCopy {
 				}
 				
 				// Backup this source directory tree
-				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Synchronizing base source directory " + sourceDir.FullName));
+				try { currentlyProcessing = sourceDir.FullName; }
+				catch (Exception) { }
+				if (!options.IsDryRun) {
+					AddMsg(new MsgDisplayInfo(CbInfoMsg, "Synchronizing base source directory " + sourceDir.FullName));
+				}
+				else {
+					AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would synchronize base source directory " + sourceDir.FullName));
+				}
 				
 				try { traverseDir(sourceDir, options.DestDir); }
 				catch (StopBackupException) {
@@ -200,6 +208,8 @@ namespace CarbonCopy {
 		
 		private void traverseDir(DirectoryInfo sourceDir, DirectoryInfo baseDestDir) {
 			// Synchronize current source directory
+			try { currentlyProcessing = sourceDir.FullName; }
+			catch (Exception) { }
 			
 			// The plan of action is:
 			// 1. Get full dest dir path from base dest dir & source dir path
@@ -226,7 +236,13 @@ namespace CarbonCopy {
 			// Get DirectoryInfo for destination dir; create dir if necessary
 			DirectoryInfo destDir = null;
 			try {
-				destDir = Directory.CreateDirectory(destDirPath);
+				if (options.IsDryRun) {
+					AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Would ensure that destination dir existed: " + destDirPath));
+					destDir = new DirectoryInfo(destDirPath);
+				}
+				else {
+					destDir = Directory.CreateDirectory(destDirPath);
+				}
 			}
 			catch (Exception ex) {
 				AddMsg(new MsgDisplayInfo(CbErrorMsg, "Problem creating base backup directory: " + ex.Message.ToString()));
@@ -238,7 +254,7 @@ namespace CarbonCopy {
 			sourceDirInList.Add(sourceDir);
 			
 			try {
-				List<FileSystemInfo> syncedDirInList = synchronizeObjs(sourceDirInList, destDir, false);
+				List<FileSystemInfo> syncedDirInList = synchronizeObjs(sourceDirInList, destDir, false, true);
 				// We know the synchronized dest dir is the first entry in the list as it's
 				// the only object we passed to be synchronized!
 				if (syncedDirInList.Count == 0) {
@@ -259,7 +275,9 @@ namespace CarbonCopy {
 				// 4. Finally, set this directory's attributes and datetimes correctly; we
 				// didn't do this at the beginning, as the modified datetime was going to
 				// change when we synchronized its contents; therefore, it must be done last.
-				synchronizeObjs(sourceDirInList, destDir, true);
+				if (!options.IsDryRun) {
+					synchronizeObjs(sourceDirInList, destDir, true, true);
+				}
 			}
 			catch (SynchronizeObjsException ex) {
 				// Oh dear... just output error and move on.
@@ -280,11 +298,7 @@ namespace CarbonCopy {
 			}
 			else { return inputDir; }
 		}
-		
-		private void synchronizeObjs(List<FileSystemInfo> sourceObjs, DirectoryInfo destDir) {
-			// By default, DO synchronize directory attributes
-			synchronizeObjs(sourceObjs, destDir, true);
-		}
+
 		/// <summary>
 		/// Synchronizes the specified FileSystemInfo objects into the specified destination directory.
 		/// This ensures that all source FileSystemInfo objects passed will exist in the destination directory.
@@ -293,9 +307,10 @@ namespace CarbonCopy {
 		/// </summary>
 		/// <param name="sourceObjs">The list of source FileSystemInfo objects to be synchronized to the destination dir.</param>
 		/// <param name="destDir">The destination dir DirectoryInfo object.</param>
-		/// <param name="syncDirAttributes">A boolean specifying whether the destination directories that are being synchronized should have their attributes set to match those of the corresponding source directories.</param>
+		/// <param name="syncDirAttributes">Specifies whether the destination directories that are being synchronized should have their attributes set to match those of the corresponding source directories.</param>
+		/// <param name="outputDryRunDirCreation">Specifies whether, during a dry run, we should output a message when we would create a directory.</param>
 		/// <returns>A list of FileSystemInfo objects which are descriptors of the DESTINATION DIR objects that have been synchronized (ie. they'll have the .FullName set to the DESTINATION DIR's path to that FileSystemInfo object).</returns>
-		private List<FileSystemInfo> synchronizeObjs(List<FileSystemInfo> sourceObjs, DirectoryInfo destDir, bool syncDirAttributes) {
+		private List<FileSystemInfo> synchronizeObjs(List<FileSystemInfo> sourceObjs, DirectoryInfo destDir, bool syncDirAttributes, bool outputDryRunDirCreation) {
 			// Synchronize objects in source objects list into given destination dir
 			// Returns a FileSystemInfo list containing info on each object (file or
 			// directory) that was synchronized.
@@ -308,15 +323,17 @@ namespace CarbonCopy {
 			
 			// Make array list of dest dir's objects; they seem to be in
 			// alphabetical order already...
-			FileInfo[] destFilesTemp;
-			DirectoryInfo[] destDirsTemp;
+			FileInfo[] destFilesTemp = new FileInfo[0];
+			DirectoryInfo[] destDirsTemp = new DirectoryInfo[0];
 			
 			try {
 				destFilesTemp = destDir.GetFiles();
 				destDirsTemp = destDir.GetDirectories();
 			}
 			catch (Exception ex) {
-				throw new SynchronizeObjsException("Couldn't get file or directory list - " + ex.Message);
+				if (!options.IsDryRun) {
+					throw new SynchronizeObjsException("Couldn't get file or directory list - " + ex.Message);
+				}
 			}
 			
 			List<FileSystemInfo> destObjs = new List<FileSystemInfo>();
@@ -328,6 +345,8 @@ namespace CarbonCopy {
 			// First, sync objects that already exist in the destination dir and that
 			// are specified in the source objects list.
 			foreach (FileSystemInfo obj in destObjs) {
+				try { currentlyProcessing = obj.FullName; }
+				catch (Exception) { }
 				if (stopBackup) {
 					throw new StopBackupException();
 				}
@@ -350,8 +369,13 @@ namespace CarbonCopy {
 						// we have to delete the dest dir object and copy it across
 						// later...
 						
-						AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + obj.FullName + " - attributes or type different from that in source dir."));
-						forciblyKillObject(obj);
+						if (!options.IsDryRun) {
+							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (obj is FileInfo ? "file " : "dir ") + obj.FullName + " - attributes or type different from that in source dir."));
+							forciblyKillObject(obj);
+						}
+						else {
+							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete " + (obj is FileInfo ? "file " : "dir ") + obj.FullName + " - attributes or type different from that in source dir."));
+						}
 						objectsIdentical = false;
 					}
 					else if (
@@ -365,8 +389,13 @@ namespace CarbonCopy {
 						// If dest object is a directory, we don't need to do this as
 						// we can simply change its created/modified times later.
 						
-						AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + obj.FullName + " - last creation or write time different from that in source dir."));
-						forciblyKillObject(obj);
+						if (!options.IsDryRun) {
+							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting file " + obj.FullName + " - last creation or write time different from that in source dir."));
+							forciblyKillObject(obj);
+						}
+						else {
+							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete file " + obj.FullName + " - last creation or write time different from that in source dir."));
+						}
 						objectsIdentical = false;
 					}
 					else if (
@@ -376,8 +405,13 @@ namespace CarbonCopy {
 						( ((FileInfo)obj).Length != ((FileInfo)sourceObjs[foundIndex]).Length )
 					) {
 						// Delete dest file - sizes differ
-						AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + obj.FullName + " - size of file different from that of file in source dir."));
-						forciblyKillObject(obj);
+						if (!options.IsDryRun) {
+							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting file " + obj.FullName + " - size of file different from that of file in source dir."));
+							forciblyKillObject(obj);
+						}
+						else {
+							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete file " + obj.FullName + " - size of file different from that of file in source dir."));
+						}
 						objectsIdentical = false;
 					}
 					
@@ -390,16 +424,26 @@ namespace CarbonCopy {
 							syncDirAttributes
 						) {
 							if (obj.Attributes != sourceObjs[foundIndex].Attributes) {
-								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Setting attributes for directory " + obj.FullName + " - dest dir attributes different from source dir attributes."));
-								obj.Attributes = sourceObjs[foundIndex].Attributes;
-							}
+								if (!options.IsDryRun) {
+									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Setting attributes for directory " + obj.FullName + " - dest dir attributes different from source dir attributes."));
+									obj.Attributes = sourceObjs[foundIndex].Attributes;
+								}
+								else {
+									AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would set attributes for directory " + obj.FullName + " - dest dir attributes different from source dir attributes."));
+								}
+							} // JEZ TEST
 							if (
 								obj.CreationTimeUtc != sourceObjs[foundIndex].CreationTimeUtc ||
 								obj.LastWriteTimeUtc != sourceObjs[foundIndex].LastWriteTimeUtc
 							) {
-								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Setting created/modified datetimes for directory " + obj.FullName + " - dest dir datetimes different from source dir datetimes."));
-								obj.CreationTimeUtc = sourceObjs[foundIndex].CreationTimeUtc;
-								obj.LastWriteTimeUtc = sourceObjs[foundIndex].LastWriteTimeUtc;
+								if (!options.IsDryRun) {
+									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Setting created/modified datetimes for directory " + obj.FullName + " - dest dir datetimes different from source dir datetimes."));
+									obj.CreationTimeUtc = sourceObjs[foundIndex].CreationTimeUtc;
+									obj.LastWriteTimeUtc = sourceObjs[foundIndex].LastWriteTimeUtc;
+								}
+								else {
+									AddMsg(new MsgDisplayInfo(CbDebugMsg, "Would set created/modified datetimes for directory " + obj.FullName + " - dest dir datetimes different from source dir datetimes."));
+								}
 							}
 						}
 					}
@@ -423,6 +467,8 @@ namespace CarbonCopy {
 			
 			// Now, copy over source objects that need to be copied.
 			foreach (FileSystemInfo obj in sourceObjs) {
+				try { currentlyProcessing = obj.FullName; }
+				catch (Exception) { }
 				if (stopBackup) {
 					throw new StopBackupException();
 				}
@@ -436,20 +482,26 @@ namespace CarbonCopy {
 						// Need to copy
 						try {
 							copyToPath = destDir.FullName + obj.Name;
-							// The 'Copying' verbose message tends to result in ENORMOUS
-							// output when dealing with large directories.  This warrants
-							// a warnings in the GUI somewhere around the 'display
-							// verbose messages' checkbox.
-							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Copying " + obj.FullName + " to " + copyToPath));
-							((FileInfo)obj).CopyTo(copyToPath);
-							FileInfo justCopied = new FileInfo(copyToPath);
-							justCopied.Attributes &= ~FileAttributes.ReadOnly;
-							justCopied.CreationTimeUtc = obj.CreationTimeUtc;
-							justCopied.LastWriteTimeUtc = obj.LastWriteTimeUtc;
-							justCopied.Attributes = obj.Attributes;
-							
-							// Add to list of objects synchronized
-							retVal.Add(justCopied);
+							if (!options.IsDryRun) {
+								// The 'Copying' verbose message tends to result in ENORMOUS
+								// output when dealing with large directories.  This warrants
+								// a warnings in the GUI somewhere around the 'display
+								// verbose messages' checkbox.
+								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Copying " + obj.FullName + " to " + copyToPath));
+								((FileInfo)obj).CopyTo(copyToPath);
+								FileInfo justCopied = new FileInfo(copyToPath);
+								justCopied.Attributes &= ~FileAttributes.ReadOnly;
+								justCopied.CreationTimeUtc = obj.CreationTimeUtc;
+								justCopied.LastWriteTimeUtc = obj.LastWriteTimeUtc;
+								justCopied.Attributes = obj.Attributes;
+								
+								// Add to list of objects synchronized
+								retVal.Add(justCopied);
+							}
+							else {
+								AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would copy " + obj.FullName + " to " + copyToPath));
+								retVal.Add(new FileInfo(copyToPath));
+							}
 						}
 						catch (Exception ex) {
 							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't copy file " + copyToPath + " - " + ex.Message));
@@ -462,15 +514,23 @@ namespace CarbonCopy {
 						// Need to copy
 						try {
 							createPath = destDir.FullName + obj.Name + "\\";
-							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Creating directory " + createPath));
-							Directory.CreateDirectory(createPath);
-							DirectoryInfo justCreated = new DirectoryInfo(createPath);
-							justCreated.CreationTimeUtc = obj.CreationTimeUtc;
-							justCreated.LastWriteTimeUtc = obj.LastWriteTimeUtc;
-							justCreated.Attributes = obj.Attributes;
-							
-							// Add to list of objects synchronized
-							retVal.Add(justCreated);
+							if (!options.IsDryRun) {
+								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Creating directory " + createPath));
+								Directory.CreateDirectory(createPath);
+								DirectoryInfo justCreated = new DirectoryInfo(createPath);
+								justCreated.CreationTimeUtc = obj.CreationTimeUtc;
+								justCreated.LastWriteTimeUtc = obj.LastWriteTimeUtc;
+								justCreated.Attributes = obj.Attributes;
+								
+								// Add to list of objects synchronized
+								retVal.Add(justCreated);
+							}
+							else {
+								if (outputDryRunDirCreation) {
+									AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would create directory " + createPath));
+								}
+								retVal.Add(new DirectoryInfo(createPath));
+							}
 						}
 						catch (Exception ex) {
 							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't create directory " + createPath + " - " + ex.Message));
@@ -498,19 +558,28 @@ namespace CarbonCopy {
 			
 			List<DirectoryInfo> childDirs = new List<DirectoryInfo>();
 			
-			FileInfo[] srcFilesTemp;
-			FileInfo[] destFilesTemp;
-			DirectoryInfo[] srcDirsTemp;
-			DirectoryInfo[] destDirsTemp;
+			FileInfo[] srcFilesTemp = new FileInfo[0];
+			FileInfo[] destFilesTemp = new FileInfo[0];
+			DirectoryInfo[] srcDirsTemp = new DirectoryInfo[0];
+			DirectoryInfo[] destDirsTemp = new DirectoryInfo[0];
 			
 			try {
 				srcFilesTemp = sourceDir.GetFiles();
 				destFilesTemp = destDir.GetFiles();
+			}
+			catch (Exception ex) {
+				if (!options.IsDryRun) {
+					throw new SynchronizeDirException("Couldn't get file list - " + ex.Message);
+				}
+			}
+			try {
 				srcDirsTemp = sourceDir.GetDirectories();
 				destDirsTemp = destDir.GetDirectories();
 			}
 			catch (Exception ex) {
-				throw new SynchronizeDirException("Couldn't get file or directory list - " + ex.Message);
+				if (!options.IsDryRun) {
+					throw new SynchronizeDirException("Couldn't get directory list - " + ex.Message);
+				}
 			}
 			foreach (DirectoryInfo di in srcDirsTemp) {
 				childDirs.Add(slashTerm(di));
@@ -557,8 +626,13 @@ namespace CarbonCopy {
 					int foundIndex;
 					if ((foundIndex = indexNameXinY(obj, srcObjs)) < 0) {
 						// Delete dest object - not found
-						AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + obj.FullName + " - not found in source dir."));
-						forciblyKillObject(obj);
+						if (!options.IsDryRun) {
+							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (obj is FileInfo ? "file " : "dir ") + obj.FullName + " - not found in source dir."));
+							forciblyKillObject(obj);
+						}
+						else {
+							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete " + (obj is FileInfo ? "file " : "dir ") + obj.FullName + " - not found in source dir."));
+						}
 					}
 					else {
 						// Objects are identical according to all the above tests; don't
@@ -571,9 +645,12 @@ namespace CarbonCopy {
 				destObjs = newDestObjs;
 			}
 			
-			// Invalid destination objects have been deleted.  Now synchronize source
-			// objects.
-			synchronizeObjs(srcObjs, destDir);
+			// Invalid destination objects have been deleted.  Now synchronize source objects, including
+			// synchronization of directory attributes.  Because any child directories in this list will later
+			// be synchronized again through synchronizeObjs, as parent directories, we don't output 'dry run'
+			// info here that we're creating them, because the info would be output twice (once here, and once
+			// when the directory is later synchronized as a parent directory).
+			synchronizeObjs(srcObjs, destDir, true, false);
 			
 			return childDirs;
 		}
@@ -635,6 +712,11 @@ namespace CarbonCopy {
 		/// </summary>
 		/// <param name="obj">File or dir to delete/kill.</param>
 		private void forciblyKillObject(FileSystemInfo obj) {
+			if (options.IsDryRun) {
+				throw new Exception("Engine is in dry run mode but somehow we got to 'forciblyKillObject' - halted.");
+			}
+			try { currentlyProcessing = obj.FullName; }
+			catch (Exception) { }
 			if (obj is FileInfo) { obj.Attributes &= ~FileAttributes.ReadOnly; }
 			else { notReadOnly((DirectoryInfo)obj); }
 			
@@ -669,14 +751,11 @@ namespace CarbonCopy {
 			
 			CbDisplayNextMessage(GetNextMsg);
 		}
-		
 		#endregion
 	}
-	
 	#endregion
 	
 	#region Delegates and containers
-	
 	/// <summary>
 	/// A class that holds information on a message that is to be supplied to the calling code.  This will be put in FIFO queue, ready to be pulled out by the calling code's message handler.
 	/// </summary>
@@ -715,11 +794,9 @@ namespace CarbonCopy {
 	// Delegates for callbacks indicating that the backup process has finished.
 	public delegate void BackupFinishedCallbackInvoker();
 	public delegate void BackupFinishedCallback();
-	
 	#endregion
 	
 	#region Exceptions
-	
 	public class BackupEngineException : Exception {
 		// General backup engine exception class
 		
@@ -900,6 +977,5 @@ namespace CarbonCopy {
 		
 		#endregion
 	}
-	
 	#endregion
 }

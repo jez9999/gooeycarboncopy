@@ -18,7 +18,7 @@ namespace CarbonCopy {
 	public enum VerbosityLevel : int {
 		Brief =         0,
 		Normal =        1,
-		Verbose =       2,
-		UltraVerbose =  3,
+		Debug =       2,
+		Verbose =  3,
 	}
 }

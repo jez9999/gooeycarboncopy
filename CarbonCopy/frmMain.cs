@@ -76,11 +76,12 @@ namespace CarbonCopy {
 			
 			// Initialize options information/default selections
 			radCarbon.Checked = true;
+            chkDryRun.Checked = true;
 			
 			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Brief", OutputDetail = VerbosityLevel.Brief });
 			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Normal", OutputDetail = VerbosityLevel.Normal });
+			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Debug", OutputDetail = VerbosityLevel.Debug });
 			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Verbose", OutputDetail = VerbosityLevel.Verbose });
-			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Ultra-Verbose", OutputDetail = VerbosityLevel.UltraVerbose });
 			lstVerbosity.SelectedIndex = 1;  // Default to Normal
 		}
 		
@@ -198,6 +199,8 @@ namespace CarbonCopy {
 			
 			if (radCarbon.Checked) { options.Type = CCOTypeOfBackup.CarbonCopy; }
 			else if (radIncremental.Checked) { options.Type = CCOTypeOfBackup.Incremental; }
+
+            options.IsDryRun = chkDryRun.Checked;
 			
 			options.OutputDetail = ((VerbosityListItem)lstVerbosity.SelectedItem).OutputDetail;
 			
@@ -225,6 +228,8 @@ namespace CarbonCopy {
 			else if (options.Type == CCOTypeOfBackup.Incremental) {
 				radIncremental.Checked = true;
 			}
+
+			chkDryRun.Checked = options.IsDryRun;
 			
 			// Setup what to display
 			for (int i = 0; i < lstVerbosity.Items.Count; i++) {
@@ -347,14 +352,14 @@ namespace CarbonCopy {
 					lblVerbose.Visible = false;
 					break;
 				
-				case VerbosityLevel.Verbose:
+				case VerbosityLevel.Debug:
 					lblInformational.Visible = true;
 					lblError.Visible = true;
 					lblDebug.Visible = true;
 					lblVerbose.Visible = false;
 					break;
 				
-				case VerbosityLevel.UltraVerbose:
+				case VerbosityLevel.Verbose:
 					lblInformational.Visible = true;
 					lblError.Visible = true;
 					lblDebug.Visible = true;

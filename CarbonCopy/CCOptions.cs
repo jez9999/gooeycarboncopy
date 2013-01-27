@@ -51,12 +51,11 @@ namespace CarbonCopy {
 	/// </summary>
 	public class CCO {
 		#region Public vars
-		
 		public List<DirectoryInfo> SourceDirs = new List<DirectoryInfo>();
 		public DirectoryInfo DestDir;
 		public CCOTypeOfBackup Type = CCOTypeOfBackup.None;
 		public VerbosityLevel OutputDetail = VerbosityLevel.Normal;
-		
+        public bool IsDryRun;
 		#endregion
 	}
 	
@@ -65,11 +64,8 @@ namespace CarbonCopy {
 	/// </summary>
 	public class CCOFunctions {
 		#region Public methods
-		
 		public bool CheckDirValidity(string inputPath, ref DirectoryInfo outputPath, out string errorHolder) {
 			string fixedPath = "";
-			
-			// my $path='c:\\abc\\'; $path =~ s/^([A-Za-z]+)\:/\U$1\E\:/; print $path;
 			
 			// Is path string valid?
 			try {
@@ -170,11 +166,9 @@ namespace CarbonCopy {
 			if (foundErrors) { return false; }
 			else { return true; }
 		}
-		
 		#endregion
 		
 		#region Private methods
-		
 		private string replaceDrivenameCapitalized(Match m) {
 			// Replace this Regex drivename match with an uppercased version
 			// Regex should match a path like this:
@@ -202,7 +196,6 @@ namespace CarbonCopy {
 				}
 			}
 		}
-		
 		#endregion
 	}
 	
@@ -238,6 +231,10 @@ namespace CarbonCopy {
 				XmlElement typeElement = doc.CreateElement("backupType");
 				typeElement.SetAttribute("value", ((int)options.Type).ToString());
 				rootElement.AppendChild(typeElement);
+
+                XmlElement dryRunElement = doc.CreateElement("isDryRun");
+                dryRunElement.SetAttribute("value", options.IsDryRun.ToString());
+                rootElement.AppendChild(dryRunElement);
 				
 				XmlElement displayElement = doc.CreateElement("outputDetail");
 				displayElement.SetAttribute("value", ((int)options.OutputDetail).ToString());
@@ -310,7 +307,14 @@ namespace CarbonCopy {
 					throw new Exception("Couldn't find backupType configuration entry!");
 				}
 				options.Type = (CCOTypeOfBackup)Convert.ToInt32(typeIter.Current.GetAttribute("value", ""));
-				
+
+                // Is dry run?
+				XPathNodeIterator dryRunIter = nav.Select("/carbonCopyOptions/isDryRun");
+				if (!dryRunIter.MoveNext()) {
+					throw new Exception("Couldn't find isDryRun configuration entry!");
+				}
+				options.IsDryRun = Convert.ToBoolean(dryRunIter.Current.GetAttribute("value", ""));
+
 				// To display
 				XPathNodeIterator displayIter = nav.Select("/carbonCopyOptions/outputDetail");
 				if (!displayIter.MoveNext()) {

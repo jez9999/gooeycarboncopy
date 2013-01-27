@@ -23,6 +23,8 @@ namespace CarbonCopy {
 		private int cancelTopDiff = 0;
 		private int closeLeftDiff = 0;
 		private int closeTopDiff = 0;
+//		private int processingTitleLeftDiff = 0;
+		private int processingTitleTopDiff = 0;
 		private bool closeOnStop = false;
 		private bool closeBtnClicked = false;
 		
@@ -51,12 +53,14 @@ namespace CarbonCopy {
 		
 		#endregion
 		
-		#region Private methods
-		
 		private static Gooey.CloseButtonDisabler cbdFrmBackup = new CloseButtonDisabler();
 		
 		private static void handleSizeChanged(object sender, EventArgs e) {
 			cbdFrmBackup.EventSizeChanged();
+		}
+
+		private void updateProcessing() {
+			lblProcessing.Text = bkpEngine.CurrentlyProcessing;
 		}
 		
 		private void frmBackup_Load(object sender, EventArgs e) {
@@ -80,8 +84,11 @@ namespace CarbonCopy {
 			cancelTopDiff = this.Height - btnCancel.Top;
 			closeLeftDiff = this.Width - btnClose.Left;
 			closeTopDiff = this.Height - btnClose.Top;
+//			processingTitleLeftDiff = this.Width - lblProcessingTitle.Left;
+			processingTitleTopDiff = this.Height - lblProcessingTitle.Top;
 			
 			// Position form controls correctly
+			lblProcessing.Text = "";
 			positionFormControls(this, null);
 			this.SizeChanged += new EventHandler(positionFormControls);
 			
@@ -106,6 +113,9 @@ namespace CarbonCopy {
 			btnCancel.Top = this.Height - this.cancelTopDiff;
 			btnClose.Left = this.Width - this.closeLeftDiff;
 			btnClose.Top = this.Height - this.closeTopDiff;
+			lblProcessingTitle.Top = this.Height - this.processingTitleTopDiff;
+			lblProcessing.Top = lblProcessingTitle.Top + 13;
+			lblProcessing.MaximumSize = new Size(this.Width - this.widthDiff, 26);
 		}
 		
 		// Methods to add text to backup richtextbox
@@ -128,8 +138,8 @@ namespace CarbonCopy {
 			switch (backupOptions.OutputDetail) {
 				case VerbosityLevel.Brief:
 				case VerbosityLevel.Normal:
+				case VerbosityLevel.Debug:
 				case VerbosityLevel.Verbose:
-				case VerbosityLevel.UltraVerbose:
 				default:
 					displayThis = true;
 					break;
@@ -151,8 +161,8 @@ namespace CarbonCopy {
 					break;
 				
 				case VerbosityLevel.Normal:
+				case VerbosityLevel.Debug:
 				case VerbosityLevel.Verbose:
-				case VerbosityLevel.UltraVerbose:
 				default:
 					displayThis = true;
 					break;
@@ -174,8 +184,8 @@ namespace CarbonCopy {
 					displayThis = false;
 					break;
 				
+				case VerbosityLevel.Debug:
 				case VerbosityLevel.Verbose:
-				case VerbosityLevel.UltraVerbose:
 				default:
 					displayThis = true;
 					break;
@@ -194,11 +204,11 @@ namespace CarbonCopy {
 			switch (backupOptions.OutputDetail) {
 				case VerbosityLevel.Brief:
 				case VerbosityLevel.Normal:
-				case VerbosityLevel.Verbose:
+				case VerbosityLevel.Debug:
 					displayThis = false;
 					break;
 				
-				case VerbosityLevel.UltraVerbose:
+				case VerbosityLevel.Verbose:
 				default:
 					displayThis = true;
 					break;
@@ -229,6 +239,8 @@ namespace CarbonCopy {
 		}
 		
 		private void btnCancel_Click(object sender, EventArgs e) {
+			btnCancel.Enabled = false;
+			btnCancel.Text = "Cancelling...";
 			bkpEngine.StopBackup();
 		}
 		
@@ -251,13 +263,19 @@ namespace CarbonCopy {
 			
 			if (!bkpEngine.IsRunningBackup) {
 				btnCancel.Enabled = true;
+				btnCancel.Text = "Cancel backup";
 				bkpEngine.StartBackup();
+				updateProcessing();
+				tmrProcessing.Start();
 			}
 		}
 		
 		private void backupFinished() {
+			tmrProcessing.Stop();
+			lblProcessing.Text = "";
 			txtBackupOutput.Enabled = true;
 			btnCancel.Enabled = false;
+			btnCancel.Text = "Cancel backup";
 			btnClose.Enabled = true;
 			
 			txtBackupOutput.TabStop = true;
@@ -289,7 +307,9 @@ namespace CarbonCopy {
 				return;
 			}
 		}
-		
-		#endregion
+
+		private void tmrProcessing_Tick(object sender, EventArgs e) {
+			updateProcessing();
+		}
 	}
 }
