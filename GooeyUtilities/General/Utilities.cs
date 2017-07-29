@@ -391,68 +391,61 @@ namespace Gooey {
 		
 		#endregion
 	}
-	
+
 	/// <summary>
-	/// Handles the calling of the Form.Invoke() method in a safe way; that is to say that it will, by default, drop exceptions; it will also return immediately when Invoke is called and setup a new Thread to deal with it.  This may be needed if Invoke is called at a time when the Form may be closing or have closed, so an ObjectDisposedException or InvalidOperationException (which we can safely ignore) may arise.
+	/// Handles the calling of the Form.Invoke() method in a safe way; that is to say that it will, by default, drop exceptions.  This may be needed if Invoke is called at a time when the Form may be closing or have closed, so an ObjectDisposedException or InvalidOperationException (which we can safely ignore) may arise.
 	/// </summary>
 	public class SafeInvoker {
-		#region Private vars
-		
-		Form invokeWith;
-		private bool dropExceptions;
-		
-		#endregion
-		
-		#region Constructors
-		
-		public SafeInvoker(Form invokeWith, bool dontdropExceptions) {
-			this.invokeWith = invokeWith;
-			this.dropExceptions = !dontdropExceptions;
+		#region Private classes
+		private class DoInvocationData {
+			public Delegate ToInvoke { get; set; }
+			public object[] InvokeWithArgs { get; set; }
 		}
-		
+		#endregion
+
+		#region Private vars
+		private Form _invokeWith;
+		private bool _dropExceptions;
+		#endregion
+
+		#region Constructors
+		public SafeInvoker(Form invokeWith, bool dontdropExceptions) {
+			_invokeWith = invokeWith;
+			_dropExceptions = !dontdropExceptions;
+		}
+
 		public SafeInvoker(Form invokeWith): this(invokeWith, false) {
 			// We want to drop the exception raised if Invoke fails, by default
 		}
-		
 		#endregion
-		
+
 		#region Private methods
-		
-//		private void doInvocation(Object threadData) {
-//			// We need threadData to be a doInvocationData class as that contains the
-//			// necessary arguments.
-//			doInvocationData did = (doInvocationData)threadData;
-//			
-//			// Try the invocation, maybe drop exceptions
-//			try {
-//				invokeWith.Invoke(did.method, did.args);
-//			}
-//			catch (Exception ex) {
-//				if (!dropExceptions) {
-//					throw ex;
-//				}
-//			}
-//		}
-		
+		private void doInvocation(DoInvocationData invokeData) {
+			// Try the invocation, maybe drop exceptions
+			try {
+				_invokeWith.Invoke(invokeData.ToInvoke, invokeData.InvokeWithArgs);
+			}
+			catch (Exception ex) {
+				if (!_dropExceptions) {
+					throw ex;
+				}
+			}
+		}
 		#endregion
-		
+
 		#region Public methods
-		
 		public void Invoke(Delegate method) {
 			this.Invoke(method, new object[] { });
 		}
-		
+
 		public void Invoke(Delegate method, params object[] args) {
-			invokeWith.Invoke(method, args);
-//			// Invoke the specified method with the specified args in a new thread
-//			doInvocationData did = new doInvocationData();
-//			did.method = method;
-//			did.args = args;
-//			
-//			Thread invoker = new Thread(new ParameterizedThreadStart(doInvocation));
-//			invoker.Start(did);
+            doInvocation(
+				new DoInvocationData {
+					ToInvoke = method,
+					InvokeWithArgs = args
+				}
+			);
 		}
-		
 		#endregion
 	}
 }
