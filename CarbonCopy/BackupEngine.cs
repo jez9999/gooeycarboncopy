@@ -357,7 +357,11 @@ namespace CarbonCopy {
 				// source objects list, synchronize it
 				if ((foundIndex = indexNameXinY(obj, sourceObjs)) >= 0) {
 					// Synchronize
-					
+
+					// TODO: refactor this code so that we're caching .Attributes first, and using that cached
+					// version; see, sometimes we can't get the file's attributes even if it's in the dir
+					// listing (symlinks on a Samba share when symlinks aren't being followed by Samba), and in
+					// that case we want to output an error and move on, not abort the whole backup.
 					objectsIdentical = true;
 					if (
 						obj.Attributes != sourceObjs[foundIndex].Attributes &&
