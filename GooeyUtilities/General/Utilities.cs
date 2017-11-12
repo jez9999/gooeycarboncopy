@@ -439,7 +439,7 @@ namespace Gooey {
 		}
 
 		public void Invoke(Delegate method, params object[] args) {
-            doInvocation(
+			doInvocation(
 				new DoInvocationData {
 					ToInvoke = method,
 					InvokeWithArgs = args

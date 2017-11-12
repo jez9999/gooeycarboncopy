@@ -1,6 +1,43 @@
-_ReSharper.*
+# Build folders
+[Oo]bj/
+[Bb]in/
+
+# Temporary Visual Studio files
 *.suo
 *.cache
+*.user
+.vs/
+*.dbmdl
+UpgradeLog.htm
+
+# ReSharper stuff
+_ReSharper.*
+
+# Potential difftool litter files
 *.orig
-obj/
-bin/
+
+# Ignore NuGet packages
+*.nupkg
+# ...and packages contents
+**/packages/*
+# ...except build/, which is used as an MSBuild target.
+!**/packages/build/
+
+# Inno Setup output
+/_InnoSetup/Output
+
+# MonoDevelop
+*.pidb
+*.userprefs
+
+## Per-developer configuration files
+#postBuild.bat
+
+# Ignore temporary files written by programs like Microsoft Word and Vim
+~$*
+~*.tmp
+*.swp
+*~
+
+# Others
+*.[Cc]ache

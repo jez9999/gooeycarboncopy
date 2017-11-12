@@ -2,7 +2,7 @@
 
 [Setup]
 AppName=Carbon Copy
-AppVerName=Carbon Copy v2.2.0.0
+AppVerName=Carbon Copy v2.3.0.0
 DefaultDirName={pf}\Carbon Copy
 MinVersion=4.0,4.0
 PrivilegesRequired=none
