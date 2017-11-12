@@ -46,5 +46,33 @@ namespace GooeyUtilities.General.LinkedListHelper {
 
 			return currentNode;
 		}
+
+		/// <summary>
+		/// Searches a linked list using the given predicate, going forwards from the first node toward the last node in the linked list.
+		/// </summary>
+		/// <typeparam name="T">The type of object the linked list is comprised of.</typeparam>
+		/// <param name="thisList">The linked list to search.</param>
+		/// <param name="predicate">A delegate to execute which should evaluate the passed-in object and return true if it matches the search parameters, or false otherwise.</param>
+		/// <returns>If any matching nodes exist in the linked list, the first found matching node (the one nearest the start of the list); otherwise null.</returns>
+		public static LinkedListNode<T> FindFirstForwards<T>(this LinkedList<T> thisList, Func<T, bool> predicate) {
+			if (thisList.First == null) {
+				return null;
+			}
+			return thisList.First.FindFirstAfter(true, predicate);
+		}
+
+		/// <summary>
+		/// Searches a linked list using the given predicate, going backwards from the last node toward the first node in the linked list.
+		/// </summary>
+		/// <typeparam name="T">The type of object the linked list is comprised of.</typeparam>
+		/// <param name="thisList">The linked list to search.</param>
+		/// <param name="predicate">A delegate to execute which should evaluate the passed-in object and return true if it matches the search parameters, or false otherwise.</param>
+		/// <returns>If any matching nodes exist in the linked list, the last found matching node (the one nearest the end of the list); otherwise null.</returns>
+		public static LinkedListNode<T> FindLastBackwards<T>(this LinkedList<T> thisList, Func<T, bool> predicate) {
+			if (thisList.Last == null) {
+				return null;
+			}
+			return thisList.Last.FindFirstBefore(true, predicate);
+		}
 	}
 }
