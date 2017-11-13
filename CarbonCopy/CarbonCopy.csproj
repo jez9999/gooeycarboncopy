@@ -130,21 +130,21 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ccApp.ico" />
-    <EmbeddedResource Include="Resources\0.bmp" />
-    <EmbeddedResource Include="Resources\1.bmp" />
-    <EmbeddedResource Include="Resources\10.bmp" />
-    <EmbeddedResource Include="Resources\11.bmp" />
-    <EmbeddedResource Include="Resources\12.bmp" />
-    <EmbeddedResource Include="Resources\13.bmp" />
-    <EmbeddedResource Include="Resources\14.bmp" />
-    <EmbeddedResource Include="Resources\2.bmp" />
-    <EmbeddedResource Include="Resources\3.bmp" />
-    <EmbeddedResource Include="Resources\4.bmp" />
-    <EmbeddedResource Include="Resources\5.bmp" />
-    <EmbeddedResource Include="Resources\6.bmp" />
-    <EmbeddedResource Include="Resources\7.bmp" />
-    <EmbeddedResource Include="Resources\8.bmp" />
-    <EmbeddedResource Include="Resources\9.bmp" />
+    <EmbeddedResource Include="Resources\0.png" />
+    <EmbeddedResource Include="Resources\1.png" />
+    <EmbeddedResource Include="Resources\10.png" />
+    <EmbeddedResource Include="Resources\11.png" />
+    <EmbeddedResource Include="Resources\12.png" />
+    <EmbeddedResource Include="Resources\13.png" />
+    <EmbeddedResource Include="Resources\14.png" />
+    <EmbeddedResource Include="Resources\2.png" />
+    <EmbeddedResource Include="Resources\3.png" />
+    <EmbeddedResource Include="Resources\4.png" />
+    <EmbeddedResource Include="Resources\5.png" />
+    <EmbeddedResource Include="Resources\6.png" />
+    <EmbeddedResource Include="Resources\7.png" />
+    <EmbeddedResource Include="Resources\8.png" />
+    <EmbeddedResource Include="Resources\9.png" />
     <Content Include="Resources\app.ico" />
     <Content Include="Resources\doc.ico" />
   </ItemGroup>

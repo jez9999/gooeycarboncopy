@@ -23,8 +23,8 @@ namespace CarbonCopy {
 		private int cancelTopDiff = 0;
 		private int closeLeftDiff = 0;
 		private int closeTopDiff = 0;
-//		private int processingTitleLeftDiff = 0;
 		private int processingTitleTopDiff = 0;
+		private int pictWorkingTopDiff = 0;
 		private bool closeOnStop = false;
 		private bool closeBtnClicked = false;
 		
@@ -84,8 +84,8 @@ namespace CarbonCopy {
 			cancelTopDiff = this.Height - btnCancel.Top;
 			closeLeftDiff = this.Width - btnClose.Left;
 			closeTopDiff = this.Height - btnClose.Top;
-//			processingTitleLeftDiff = this.Width - lblProcessingTitle.Left;
 			processingTitleTopDiff = this.Height - lblProcessingTitle.Top;
+			pictWorkingTopDiff = this.Height - pictWorking.Top;
 			
 			// Position form controls correctly
 			lblProcessing.Text = "";
@@ -116,6 +116,7 @@ namespace CarbonCopy {
 			lblProcessingTitle.Top = this.Height - this.processingTitleTopDiff;
 			lblProcessing.Top = lblProcessingTitle.Top + 13;
 			lblProcessing.MaximumSize = new Size(this.Width - this.widthDiff, 26);
+			pictWorking.Top = this.Height - this.pictWorkingTopDiff;
 		}
 		
 		// Methods to add text to backup richtextbox
@@ -261,6 +262,8 @@ namespace CarbonCopy {
 			// backup process IF the backup engine exists and is not currently running
 			// a backup.
 
+			doPictAnimTick();
+			tmrPictAnim.Interval = 100;
 			tmrPictAnim.Start();
 			if (!bkpEngine.IsRunningBackup) {
 				btnCancel.Enabled = true;
@@ -274,7 +277,7 @@ namespace CarbonCopy {
 		private void backupFinished() {
 			tmrProcessing.Stop();
 			tmrPictAnim.Stop();
-			pictWorking.Image = Image.FromStream(Utils.GetEmbeddedImageStream("0.bmp"));
+			setWorkingImage(14);
 			lblProcessing.Text = "";
 			txtBackupOutput.Enabled = true;
 			btnCancel.Enabled = false;
@@ -311,8 +314,38 @@ namespace CarbonCopy {
 			}
 		}
 
+		private void setWorkingImage(int imgNumber) {
+			pictWorking.Tag = imgNumber;
+			pictWorking.Image = Image.FromStream(Utils.GetEmbeddedImageStream(imgNumber + ".png"));
+		}
+
 		private void tmrProcessing_Tick(object sender, EventArgs e) {
 			updateProcessing();
+		}
+
+		private void tmrPictAnim_Tick(object sender, EventArgs e)
+		{
+			doPictAnimTick();
+		}
+
+		private void doPictAnimTick() {
+			if (pictWorking.Tag == null || (int)pictWorking.Tag == 14) {
+				pictWorking.Tag = 1;
+			}
+			else {
+				tmrPictAnim.Interval = 100;
+				pictWorking.Tag = (int)pictWorking.Tag + 1;
+			}
+
+			if ((int)pictWorking.Tag == 14) {
+				tmrPictAnim.Interval = 1000;
+			}
+			else {
+				tmrPictAnim.Interval = 100;
+			}
+
+			//pictWorking.Image = Image.FromStream(Utils.GetEmbeddedImageStream((int)pictWorking.Tag + ".png"));
+			setWorkingImage((int)pictWorking.Tag);
 		}
 	}
 }

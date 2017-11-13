@@ -81,7 +81,7 @@ namespace CarbonCopy {
 			// 
 			// tmrPictAnim
 			// 
-			this.tmrPictAnim.Interval = 1000;
+			this.tmrPictAnim.Tick += new System.EventHandler(this.tmrPictAnim_Tick);
 			// 
 			// frmBackup
 			// 

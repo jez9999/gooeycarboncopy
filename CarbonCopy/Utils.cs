@@ -10,7 +10,7 @@ namespace CarbonCopy
 	{
 		public static Stream GetEmbeddedImageStream(string imgName) {
 			Assembly asm = Assembly.GetExecutingAssembly();
-			return asm.GetManifestResourceStream("CarbCopy.Resources." + imgName);
+			return asm.GetManifestResourceStream("CarbonCopy.Resources." + imgName);
 		}
 	}
 }
