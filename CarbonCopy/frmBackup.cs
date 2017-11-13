@@ -256,11 +256,12 @@ namespace CarbonCopy {
 				backupFinished();
 				return;
 			}
-			
+
 			// We assume all options have now been checked for validity; start the
 			// backup process IF the backup engine exists and is not currently running
 			// a backup.
-			
+
+			tmrPictAnim.Start();
 			if (!bkpEngine.IsRunningBackup) {
 				btnCancel.Enabled = true;
 				btnCancel.Text = "Cancel backup";
@@ -272,6 +273,8 @@ namespace CarbonCopy {
 		
 		private void backupFinished() {
 			tmrProcessing.Stop();
+			tmrPictAnim.Stop();
+			pictWorking.Image = Image.FromStream(Utils.GetEmbeddedImageStream("0.bmp"));
 			lblProcessing.Text = "";
 			txtBackupOutput.Enabled = true;
 			btnCancel.Enabled = false;

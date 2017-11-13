@@ -31,7 +31,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <ApplicationIcon>ccApp.ico</ApplicationIcon>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -80,6 +81,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils.cs" />
     <EmbeddedResource Include="frmBackup.resx">
       <SubType>Designer</SubType>
       <DependentUpon>frmBackup.cs</DependentUpon>
@@ -98,6 +100,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -127,6 +130,23 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ccApp.ico" />
+    <EmbeddedResource Include="Resources\0.bmp" />
+    <EmbeddedResource Include="Resources\1.bmp" />
+    <EmbeddedResource Include="Resources\10.bmp" />
+    <EmbeddedResource Include="Resources\11.bmp" />
+    <EmbeddedResource Include="Resources\12.bmp" />
+    <EmbeddedResource Include="Resources\13.bmp" />
+    <EmbeddedResource Include="Resources\14.bmp" />
+    <EmbeddedResource Include="Resources\2.bmp" />
+    <EmbeddedResource Include="Resources\3.bmp" />
+    <EmbeddedResource Include="Resources\4.bmp" />
+    <EmbeddedResource Include="Resources\5.bmp" />
+    <EmbeddedResource Include="Resources\6.bmp" />
+    <EmbeddedResource Include="Resources\7.bmp" />
+    <EmbeddedResource Include="Resources\8.bmp" />
+    <EmbeddedResource Include="Resources\9.bmp" />
+    <Content Include="Resources\app.ico" />
+    <Content Include="Resources\doc.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

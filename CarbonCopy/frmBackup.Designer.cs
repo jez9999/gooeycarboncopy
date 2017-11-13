@@ -31,6 +31,9 @@ namespace CarbonCopy {
 			this.lblProcessingTitle = new System.Windows.Forms.Label();
 			this.lblProcessing = new System.Windows.Forms.Label();
 			this.tmrProcessing = new System.Windows.Forms.Timer(this.components);
+			this.pictWorking = new System.Windows.Forms.PictureBox();
+			this.tmrPictAnim = new System.Windows.Forms.Timer(this.components);
+			((System.ComponentModel.ISupportInitialize)(this.pictWorking)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// btnClose
@@ -70,19 +73,31 @@ namespace CarbonCopy {
 			this.tmrProcessing.Interval = 500;
 			this.tmrProcessing.Tick += new System.EventHandler(this.tmrProcessing_Tick);
 			// 
+			// pictWorking
+			// 
+			resources.ApplyResources(this.pictWorking, "pictWorking");
+			this.pictWorking.Name = "pictWorking";
+			this.pictWorking.TabStop = false;
+			// 
+			// tmrPictAnim
+			// 
+			this.tmrPictAnim.Interval = 1000;
+			// 
 			// frmBackup
 			// 
 			this.AllowDrop = true;
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.pictWorking);
 			this.Controls.Add(this.lblProcessing);
 			this.Controls.Add(this.lblProcessingTitle);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnClose);
 			this.Controls.Add(this.txtBackupOutput);
 			this.Name = "frmBackup";
-			this.Load += new System.EventHandler(this.frmBackup_Load);
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmBackup_FormClosing);
+			this.Load += new System.EventHandler(this.frmBackup_Load);
+			((System.ComponentModel.ISupportInitialize)(this.pictWorking)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -96,5 +111,7 @@ namespace CarbonCopy {
 		private System.Windows.Forms.Label lblProcessingTitle;
 		private System.Windows.Forms.Label lblProcessing;
 		private System.Windows.Forms.Timer tmrProcessing;
+		private System.Windows.Forms.PictureBox pictWorking;
+		private System.Windows.Forms.Timer tmrPictAnim;
 	}
 }
