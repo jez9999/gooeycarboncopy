@@ -23,6 +23,11 @@ _ReSharper.*
 # ...except build/, which is used as an MSBuild target.
 !**/packages/build/
 
+# Ignore Gooey utilities stuff (should be built separately)
+/_Libs/GooeyUtilities.dll
+/_Libs/GooeyUtilities.pdb
+/_Libs/GooeyUtilities.xml
+
 # Inno Setup output
 /_InnoSetup/Output
 
