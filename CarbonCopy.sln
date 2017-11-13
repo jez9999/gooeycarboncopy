@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Libs", "_Libs", "{2F4C760D
 	ProjectSection(SolutionItems) = preProject
 		_Libs\GooeyUtilities.dll = _Libs\GooeyUtilities.dll
 		_Libs\GooeyUtilities.pdb = _Libs\GooeyUtilities.pdb
+		_Libs\GooeyUtilities.XML = _Libs\GooeyUtilities.XML
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarbonCopy", "CarbonCopy\CarbonCopy.csproj", "{1902E694-7188-4ABE-89B0-88E27FBBC1CB}"

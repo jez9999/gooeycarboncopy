@@ -344,7 +344,6 @@ namespace CarbonCopy {
 				tmrPictAnim.Interval = 100;
 			}
 
-			//pictWorking.Image = Image.FromStream(Utils.GetEmbeddedImageStream((int)pictWorking.Tag + ".png"));
 			setWorkingImage((int)pictWorking.Tag);
 		}
 	}
