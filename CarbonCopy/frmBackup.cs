@@ -65,7 +65,7 @@ namespace CarbonCopy {
 		
 		private void frmBackup_Load(object sender, EventArgs e) {
 			// Set title to version number, etc.
-			this.Text = "Carbon Copy v" + Gooey.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString) + " - Backing up...";
+			this.Text = "Carbon Copy v" + this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString) + " - Backing up...";
 			
 			// Disable form's close button, and make sure it stays disabled when
 			// form is resized.

@@ -52,8 +52,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GooeyUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="GooeyUtilities">
       <HintPath>..\_Libs\GooeyUtilities.dll</HintPath>
     </Reference>
     <Reference Include="System" />

@@ -50,7 +50,7 @@ namespace CarbonCopy {
 		private void btnSourceBrowse_Click(object sender, EventArgs e) {
 			folderBrowserDialog1.Description = "Select a source directory to backup...";
 			string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
-			string driveName = utils.DriveNameFromCodebase(codeBase);
+			string driveName = utils.GetFragmentFromFileUrl(codeBase, Utilities.FileUrlFragmentPart.DriveName);
 			folderBrowserDialog1.SelectedPath = driveName + ":\\";
 			folderBrowserDialog1.ShowNewFolderButton = false;
 			if (folderBrowserDialog1.ShowDialog() == DialogResult.OK) {
@@ -60,7 +60,7 @@ namespace CarbonCopy {
 		
 		private void frmMain_Load(object sender, EventArgs e) {
 			// Set title to version number, etc.
-			this.Text = "Carbon Copy v" + Gooey.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString);
+			this.Text = "Carbon Copy v" + this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString);
 			
 			// Automatic label height, but force width to that of the backup dirs list
 			lblDestDir.MinimumSize = new Size(lstSourceDirs.Width, 0);
@@ -144,7 +144,7 @@ namespace CarbonCopy {
 		private void btnDestBrowse_Click(object sender, EventArgs e) {
 			folderBrowserDialog1.Description = "Select a destination directory to backup to...";
 			string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
-			string driveName = utils.DriveNameFromCodebase(codeBase);
+			string driveName = utils.GetFragmentFromFileUrl(codeBase, Utilities.FileUrlFragmentPart.DriveName);
 			if (Directory.Exists(txtDestDir.Text)) { folderBrowserDialog1.SelectedPath = txtDestDir.Text; }
 			else { folderBrowserDialog1.SelectedPath = driveName + ":\\"; }
 			folderBrowserDialog1.ShowNewFolderButton = false;
@@ -257,7 +257,7 @@ namespace CarbonCopy {
 		}
 		
 		private void btnAbout_Click(object sender, EventArgs e) {
-			utils.ShowInfo("Carbon Copy version: " + Gooey.Utilities.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString));
+			utils.ShowInfo("Carbon Copy version: " + this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString));
 		}
 		
 		private void lstSourceDirs_KeyDown(object sender, KeyEventArgs e) {
