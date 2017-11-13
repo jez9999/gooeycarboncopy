@@ -269,7 +269,12 @@ namespace CarbonCopy {
 				
 				// Now synchronize source directory's child dirs recursively...
 				foreach (DirectoryInfo childDir in childDirs) {
-					traverseDir(childDir, baseDestDir);
+					if ((childDir.Attributes & FileAttributes.ReparsePoint) > 0)
+					{
+						// Reparse point; could be junction point, symlink, mount point, etc.  Handle separately.
+					}
+
+					traverseDir(childDir, baseDestDir);  // TODO: junction point?
 				}
 				
 				// 4. Finally, set this directory's attributes and datetimes correctly; we

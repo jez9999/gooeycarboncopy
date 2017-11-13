@@ -55,7 +55,7 @@ namespace CarbonCopy {
 		public DirectoryInfo DestDir;
 		public CCOTypeOfBackup Type = CCOTypeOfBackup.None;
 		public VerbosityLevel OutputDetail = VerbosityLevel.Normal;
-        public bool IsDryRun;
+		public bool IsDryRun;
 		#endregion
 	}
 	
@@ -232,9 +232,9 @@ namespace CarbonCopy {
 				typeElement.SetAttribute("value", ((int)options.Type).ToString());
 				rootElement.AppendChild(typeElement);
 
-                XmlElement dryRunElement = doc.CreateElement("isDryRun");
-                dryRunElement.SetAttribute("value", options.IsDryRun.ToString());
-                rootElement.AppendChild(dryRunElement);
+				XmlElement dryRunElement = doc.CreateElement("isDryRun");
+				dryRunElement.SetAttribute("value", options.IsDryRun.ToString());
+				rootElement.AppendChild(dryRunElement);
 				
 				XmlElement displayElement = doc.CreateElement("outputDetail");
 				displayElement.SetAttribute("value", ((int)options.OutputDetail).ToString());
@@ -308,7 +308,7 @@ namespace CarbonCopy {
 				}
 				options.Type = (CCOTypeOfBackup)Convert.ToInt32(typeIter.Current.GetAttribute("value", ""));
 
-                // Is dry run?
+				// Is dry run?
 				XPathNodeIterator dryRunIter = nav.Select("/carbonCopyOptions/isDryRun");
 				if (!dryRunIter.MoveNext()) {
 					throw new Exception("Couldn't find isDryRun configuration entry!");
