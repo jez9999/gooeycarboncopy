@@ -36,7 +36,7 @@ _ReSharper.*
 *.userprefs
 
 ## Per-developer configuration files
-#postBuild.bat
+postBuild.bat
 
 # Ignore temporary files written by programs like Microsoft Word and Vim
 ~$*
