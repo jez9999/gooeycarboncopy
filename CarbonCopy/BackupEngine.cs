@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO;
+using JunctionPoint;
 
 namespace CarbonCopy {	
 	#region Backup engine
@@ -263,25 +264,26 @@ namespace CarbonCopy {
 				DirectoryInfo syncedDir = ((DirectoryInfo)syncedDirInList[0]);
 				syncedDir = slashTerm(syncedDir);
 				
-				// 3. Synchronize source directory's child nodes (files AND dirs)
-				List<DirectoryInfo> childDirs = synchronizeDir(sourceDir, syncedDir);
-				syncedDir = null;
-				
-				// Now synchronize source directory's child dirs recursively...
-				foreach (DirectoryInfo childDir in childDirs) {
-					if ((childDir.Attributes & FileAttributes.ReparsePoint) > 0)
-					{
-						// Reparse point; could be junction point, symlink, mount point, etc.  Handle separately.
+				if (!(
+					(sourceDir.Attributes & FileAttributes.ReparsePoint) > 0 &&
+					JP.Exists(sourceDir.FullName)
+				))
+				{
+					// 3. Not a junction point, so synchronize source directory's child nodes (files AND dirs)
+					List<DirectoryInfo> childDirs = synchronizeDir(sourceDir, syncedDir);
+					syncedDir = null;
+					
+					// Now synchronize source directory's child dirs recursively...
+					foreach (DirectoryInfo childDir in childDirs) {
+						traverseDir(childDir, baseDestDir);
 					}
-
-					traverseDir(childDir, baseDestDir);  // TODO: junction point?
-				}
 				
-				// 4. Finally, set this directory's attributes and datetimes correctly; we
-				// didn't do this at the beginning, as the modified datetime was going to
-				// change when we synchronized its contents; therefore, it must be done last.
-				if (!options.IsDryRun) {
-					synchronizeObjs(sourceDirInList, destDir, true, true);
+					// 4. Finally, set this directory's attributes and datetimes correctly; we
+					// didn't do this at the beginning, as the modified datetime was going to
+					// change when we synchronized its contents; therefore, it must be done last.
+					if (!options.IsDryRun) {
+						synchronizeObjs(sourceDirInList, destDir, true, true);
+					}
 				}
 			}
 			catch (SynchronizeObjsException ex) {
@@ -314,8 +316,9 @@ namespace CarbonCopy {
 		/// <param name="destDir">The destination dir DirectoryInfo object.</param>
 		/// <param name="syncDirAttributes">Specifies whether the destination directories that are being synchronized should have their attributes set to match those of the corresponding source directories.</param>
 		/// <param name="outputDryRunDirCreation">Specifies whether, during a dry run, we should output a message when we would create a directory.</param>
+		/// <param name="dontCreateJunctionPoints">If true, doesn't create new junction points.</param>
 		/// <returns>A list of FileSystemInfo objects which are descriptors of the DESTINATION DIR objects that have been synchronized (ie. they'll have the .FullName set to the DESTINATION DIR's path to that FileSystemInfo object).</returns>
-		private List<FileSystemInfo> synchronizeObjs(List<FileSystemInfo> sourceObjs, DirectoryInfo destDir, bool syncDirAttributes, bool outputDryRunDirCreation) {
+		private List<FileSystemInfo> synchronizeObjs(List<FileSystemInfo> sourceObjs, DirectoryInfo destDir, bool syncDirAttributes, bool outputDryRunDirCreation, bool dontCreateJunctionPoints = false) {
 			// Synchronize objects in source objects list into given destination dir
 			// Returns a FileSystemInfo list containing info on each object (file or
 			// directory) that was synchronized.
@@ -349,8 +352,8 @@ namespace CarbonCopy {
 			
 			// First, sync objects that already exist in the destination dir and that
 			// are specified in the source objects list.
-			foreach (FileSystemInfo obj in destObjs) {
-				try { currentlyProcessing = obj.FullName; }
+			foreach (FileSystemInfo destObj in destObjs) {
+				try { currentlyProcessing = destObj.FullName; }
 				catch (Exception) { }
 				if (stopBackup) {
 					throw new StopBackupException();
@@ -360,7 +363,7 @@ namespace CarbonCopy {
 				int foundIndex;
 				// If destination object has the same name as an object in the
 				// source objects list, synchronize it
-				if ((foundIndex = indexNameXinY(obj, sourceObjs)) >= 0) {
+				if ((foundIndex = indexNameXinY(destObj, sourceObjs)) >= 0) {
 					// Synchronize
 
 					// TODO: refactor this code so that we're caching .Attributes first, and using that cached
@@ -368,58 +371,78 @@ namespace CarbonCopy {
 					// listing (symlinks on a Samba share when symlinks aren't being followed by Samba), and in
 					// that case we want to output an error and move on, not abort the whole backup.
 					objectsIdentical = true;
+					bool destObjIsJunctionPoint = destObj is DirectoryInfo && isReparsePoint((DirectoryInfo)destObj) && JP.Exists(((DirectoryInfo)destObj).FullName);
 					if (
-						obj.Attributes != sourceObjs[foundIndex].Attributes &&
-						!(obj is DirectoryInfo && sourceObjs[foundIndex] is DirectoryInfo)
+						destObj.Attributes != sourceObjs[foundIndex].Attributes &&
+						!(destObj is DirectoryInfo && sourceObjs[foundIndex] is DirectoryInfo && notReparsePoint((DirectoryInfo)destObj) && notReparsePoint((DirectoryInfo)sourceObjs[foundIndex]))
 					) {
-						// Attributes (including whether the object is a directory)
-						// different.  If they're both directories we can leave the dest
-						// dir object and simply change its attributes later.  Otherwise,
-						// we have to delete the dest dir object and copy it across
-						// later...
-						
-						if (!options.IsDryRun) {
-							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (obj is FileInfo ? "file " : "dir ") + obj.FullName + " - attributes or type different from that in source dir."));
-							forciblyKillObject(obj);
-						}
-						else {
-							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete " + (obj is FileInfo ? "file " : "dir ") + obj.FullName + " - attributes or type different from that in source dir."));
+						// Attributes (including whether the object is a directory or reparse point)
+						// different.  If they're both directories we can leave the dest dir object
+						// and simply change its attributes later.  Otherwise, we have to delete the
+						// dest dir object and copy it across later...
+						if (!(destObjIsJunctionPoint && dontCreateJunctionPoints)) {
+							if (!options.IsDryRun) {
+								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - attributes or type different from that in source dir."));
+								forciblyKillObject(destObj);
+							}
+							else {
+								AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - attributes or type different from that in source dir."));
+							}
 						}
 						objectsIdentical = false;
 					}
 					else if (
-						obj is FileInfo &&
+						(destObj is FileInfo || destObjIsJunctionPoint) &&
 						(
-							sourceObjs[foundIndex].CreationTimeUtc != obj.CreationTimeUtc ||
-							sourceObjs[foundIndex].LastWriteTimeUtc != obj.LastWriteTimeUtc
+							sourceObjs[foundIndex].CreationTimeUtc != destObj.CreationTimeUtc ||
+							sourceObjs[foundIndex].LastWriteTimeUtc != destObj.LastWriteTimeUtc
 						)
 					) {
-						// Delete dest file - last creation or write time different.
-						// If dest object is a directory, we don't need to do this as
+						// Delete dest file/JP - last creation or write time different.
+						// If dest object is a normal directory, we don't need to do this as
 						// we can simply change its created/modified times later.
-						
-						if (!options.IsDryRun) {
-							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting file " + obj.FullName + " - last creation or write time different from that in source dir."));
-							forciblyKillObject(obj);
-						}
-						else {
-							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete file " + obj.FullName + " - last creation or write time different from that in source dir."));
+
+						if (!(destObjIsJunctionPoint && dontCreateJunctionPoints)) {
+							if (!options.IsDryRun) {
+								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (destObjIsJunctionPoint ? "junction point " : "file ") + destObj.FullName + " - last creation or write time different from that in source dir."));
+								forciblyKillObject(destObj);
+							}
+							else {
+								AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete " + (destObjIsJunctionPoint ? "junction point " : "file ") + destObj.FullName + " - last creation or write time different from that in source dir."));
+							}
 						}
 						objectsIdentical = false;
 					}
 					else if (
-						obj is FileInfo &&
+						destObj is FileInfo &&
 						// It's a file, and we know that the types of the dest and src
 						// objs are the same.  Check their lengths to make sure they match.
-						( ((FileInfo)obj).Length != ((FileInfo)sourceObjs[foundIndex]).Length )
+						( ((FileInfo)destObj).Length != ((FileInfo)sourceObjs[foundIndex]).Length )
 					) {
 						// Delete dest file - sizes differ
 						if (!options.IsDryRun) {
-							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting file " + obj.FullName + " - size of file different from that of file in source dir."));
-							forciblyKillObject(obj);
+							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting file " + destObj.FullName + " - size of file different from that of file in source dir."));
+							forciblyKillObject(destObj);
 						}
 						else {
-							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete file " + obj.FullName + " - size of file different from that of file in source dir."));
+							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete file " + destObj.FullName + " - size of file different from that of file in source dir."));
+						}
+						objectsIdentical = false;
+					}
+					else if (
+						destObjIsJunctionPoint &&
+						JP.Exists(((DirectoryInfo)sourceObjs[foundIndex]).FullName) &&
+						JP.GetTarget(((DirectoryInfo)destObj).FullName) != JP.GetTarget(((DirectoryInfo)sourceObjs[foundIndex]).FullName)
+					) {
+						// Delete dest JP - source and destination objects are junction points but their targets differ
+						if (!(destObjIsJunctionPoint && dontCreateJunctionPoints)) {
+							if (!options.IsDryRun) {
+								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting junction point " + destObj.FullName + " - targets differ."));
+								forciblyKillObject(destObj);
+							}
+							else {
+								AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete junction point " + destObj.FullName + " - targets differ."));
+							}
 						}
 						objectsIdentical = false;
 					}
@@ -428,30 +451,32 @@ namespace CarbonCopy {
 						// We may need to change attributes and/or datetimes to make
 						// dirs with the same name identical.
 						if (
-							obj is DirectoryInfo &&
+							destObj is DirectoryInfo &&
 							sourceObjs[foundIndex] is DirectoryInfo &&
+							(notReparsePoint((DirectoryInfo)destObj)) &&
+							(notReparsePoint((DirectoryInfo)sourceObjs[foundIndex])) &&
 							syncDirAttributes
 						) {
-							if (obj.Attributes != sourceObjs[foundIndex].Attributes) {
+							if (destObj.Attributes != sourceObjs[foundIndex].Attributes) {
 								if (!options.IsDryRun) {
-									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Setting attributes for directory " + obj.FullName + " - dest dir attributes different from source dir attributes."));
-									obj.Attributes = sourceObjs[foundIndex].Attributes;
+									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Setting attributes for directory " + destObj.FullName + " - dest dir attributes different from source dir attributes."));
+									destObj.Attributes = sourceObjs[foundIndex].Attributes;
 								}
 								else {
-									AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would set attributes for directory " + obj.FullName + " - dest dir attributes different from source dir attributes."));
+									AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would set attributes for directory " + destObj.FullName + " - dest dir attributes different from source dir attributes."));
 								}
-							} // JEZ TEST
+							}
 							if (
-								obj.CreationTimeUtc != sourceObjs[foundIndex].CreationTimeUtc ||
-								obj.LastWriteTimeUtc != sourceObjs[foundIndex].LastWriteTimeUtc
+								destObj.CreationTimeUtc != sourceObjs[foundIndex].CreationTimeUtc ||
+								destObj.LastWriteTimeUtc != sourceObjs[foundIndex].LastWriteTimeUtc
 							) {
 								if (!options.IsDryRun) {
-									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Setting created/modified datetimes for directory " + obj.FullName + " - dest dir datetimes different from source dir datetimes."));
-									obj.CreationTimeUtc = sourceObjs[foundIndex].CreationTimeUtc;
-									obj.LastWriteTimeUtc = sourceObjs[foundIndex].LastWriteTimeUtc;
+									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Setting created/modified datetimes for directory " + destObj.FullName + " - dest dir datetimes different from source dir datetimes."));
+									destObj.CreationTimeUtc = sourceObjs[foundIndex].CreationTimeUtc;
+									destObj.LastWriteTimeUtc = sourceObjs[foundIndex].LastWriteTimeUtc;
 								}
 								else {
-									AddMsg(new MsgDisplayInfo(CbDebugMsg, "Would set created/modified datetimes for directory " + obj.FullName + " - dest dir datetimes different from source dir datetimes."));
+									AddMsg(new MsgDisplayInfo(CbDebugMsg, "Would set created/modified datetimes for directory " + destObj.FullName + " - dest dir datetimes different from source dir datetimes."));
 								}
 							}
 						}
@@ -461,13 +486,13 @@ namespace CarbonCopy {
 					}
 					
 					if (objectsIdentical) {
-						// Objects are identical according to all the above tests; don't
-						// delete the dest object, and record its continued existance in
+						// Objects are identical according to all the above tests; we didn't
+						// delete the dest object, so record its continued existance in
 						// our new list.
-						newDestObjs.Add(obj);
+						newDestObjs.Add(destObj);
 						
 						// Add to list of objects synchronized
-						retVal.Add(obj);
+						retVal.Add(destObj);
 					}
 				}
 			}
@@ -521,28 +546,32 @@ namespace CarbonCopy {
 				else if (obj is DirectoryInfo) {
 					if ((foundIndex = indexNameXinY(obj, destObjs)) < 0) {
 						// Need to copy
-						try {
-							createPath = destDir.FullName + obj.Name + "\\";
-							if (!options.IsDryRun) {
-								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Creating directory " + createPath));
-								Directory.CreateDirectory(createPath);
-								DirectoryInfo justCreated = new DirectoryInfo(createPath);
-								justCreated.CreationTimeUtc = obj.CreationTimeUtc;
-								justCreated.LastWriteTimeUtc = obj.LastWriteTimeUtc;
-								justCreated.Attributes = obj.Attributes;
+						bool isJunctionPoint = isReparsePoint((DirectoryInfo)obj) && JP.Exists(((DirectoryInfo)obj).FullName);
+						if (!(isJunctionPoint && dontCreateJunctionPoints)) {
+							try {
+								createPath = destDir.FullName + obj.Name + "\\";
+								if (!options.IsDryRun) {
+									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Creating " + (isJunctionPoint ? "junction point " : "directory ") + createPath));
+									if (isJunctionPoint) { JP.Create(createPath, JP.GetTarget(((DirectoryInfo)obj).FullName), false); }
+									else { Directory.CreateDirectory(createPath); }
+									DirectoryInfo justCreated = new DirectoryInfo(createPath);
+									justCreated.CreationTimeUtc = obj.CreationTimeUtc;
+									justCreated.LastWriteTimeUtc = obj.LastWriteTimeUtc;
+									justCreated.Attributes = obj.Attributes;
 								
-								// Add to list of objects synchronized
-								retVal.Add(justCreated);
-							}
-							else {
-								if (outputDryRunDirCreation) {
-									AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would create directory " + createPath));
+									// Add to list of objects synchronized
+									retVal.Add(justCreated);
 								}
-								retVal.Add(new DirectoryInfo(createPath));
+								else {
+									if (outputDryRunDirCreation) {
+										AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would create " + (isJunctionPoint ? "junction point " : "directory ") + createPath));
+									}
+									retVal.Add(new DirectoryInfo(createPath));
+								}
 							}
-						}
-						catch (Exception ex) {
-							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't create directory " + createPath + " - " + ex.Message));
+							catch (Exception ex) {
+								AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't create " + (isJunctionPoint ? "junction point " : "directory ") + createPath + " - " + ex.Message));
+							}
 						}
 					}
 				}
@@ -562,8 +591,7 @@ namespace CarbonCopy {
 				throw new StopBackupException();
 			}
 			
-			// Make array list of source and dest dirs' objects; they seem to be in
-			// alphabetical order already...
+			// Make array list of source and dest dirs' objects; they seem to be in alphabetical order already...
 			
 			List<DirectoryInfo> childDirs = new List<DirectoryInfo>();
 			
@@ -625,29 +653,29 @@ namespace CarbonCopy {
 				// - Add a source object to the destination dir as it doesn't exist in the
 				//   destination dir
 				// - Leave a destination object alone
-				foreach (FileSystemInfo obj in destObjs) {
+				foreach (FileSystemInfo destObj in destObjs) {
 					if (stopBackup) {
 						throw new StopBackupException();
 					}
 					
-					// Delete obj if it doesn't exist in source directory - we ONLY want to
-					// do this if we're in 'carbon copy' mode, not 'incremental'...
+					// Delete obj if it doesn't exist in source directory ('carbon copy' mode)
 					int foundIndex;
-					if ((foundIndex = indexNameXinY(obj, srcObjs)) < 0) {
+					if ((foundIndex = indexNameXinY(destObj, srcObjs)) < 0) {
 						// Delete dest object - not found
+						bool destObjIsJunctionPoint = destObj is DirectoryInfo && isReparsePoint((DirectoryInfo)destObj) && JP.Exists(((DirectoryInfo)destObj).FullName);
 						if (!options.IsDryRun) {
-							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (obj is FileInfo ? "file " : "dir ") + obj.FullName + " - not found in source dir."));
-							forciblyKillObject(obj);
+							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - not found in source dir."));
+							forciblyKillObject(destObj);
 						}
 						else {
-							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete " + (obj is FileInfo ? "file " : "dir ") + obj.FullName + " - not found in source dir."));
+							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - not found in source dir."));
 						}
 					}
 					else {
 						// Objects are identical according to all the above tests; don't
 						// delete the dest object, and record its continued existance in
 						// our new list.
-						newDestObjs.Add(obj);
+						newDestObjs.Add(destObj);
 					}
 				}
 				
@@ -658,8 +686,10 @@ namespace CarbonCopy {
 			// synchronization of directory attributes.  Because any child directories in this list will later
 			// be synchronized again through synchronizeObjs, as parent directories, we don't output 'dry run'
 			// info here that we're creating them, because the info would be output twice (once here, and once
-			// when the directory is later synchronized as a parent directory).
-			synchronizeObjs(srcObjs, destDir, true, false);
+			// when the directory is later synchronized as a parent directory).  Nor do we create junction
+			// points, which will be created later when traversed as parent directories (they're DirectoryInfo
+			// objects even though they're semantically more like files).
+			synchronizeObjs(srcObjs, destDir, true, false, true);
 			
 			return childDirs;
 		}
@@ -717,20 +747,31 @@ namespace CarbonCopy {
 		}
 		
 		/// <summary>
-		/// Check whether this is a file or a dir.  Set the file to not readonly, or if it's a dir, set it and its children recursively to not readonly; then, delete it.
+		/// Check whether this is a file, a dir, or a junction point.  Set the file (or JP) to not readonly, or if it's a dir, set it and its children recursively to not readonly; then, delete it.
 		/// </summary>
-		/// <param name="obj">File or dir to delete/kill.</param>
+		/// <param name="obj">File/dir/JP to delete/kill.</param>
 		private void forciblyKillObject(FileSystemInfo obj) {
 			if (options.IsDryRun) {
 				throw new Exception("Engine is in dry run mode but somehow we got to 'forciblyKillObject' - halted.");
 			}
 			try { currentlyProcessing = obj.FullName; }
 			catch (Exception) { }
-			if (obj is FileInfo) { obj.Attributes &= ~FileAttributes.ReadOnly; }
+			if (
+				obj is FileInfo ||
+				(obj is DirectoryInfo && (((DirectoryInfo)obj).Attributes & FileAttributes.ReparsePoint) > 0 && JP.Exists(((DirectoryInfo)obj).FullName))
+			) {
+				obj.Attributes &= ~FileAttributes.ReadOnly;
+			}
 			else { notReadOnly((DirectoryInfo)obj); }
 			
-			if (obj is FileInfo) { ((FileInfo)obj).Delete(); }
-			else { ((DirectoryInfo)obj).Delete(true); }
+			if (obj is FileInfo) {
+				// Delete file
+				((FileInfo)obj).Delete();
+			}
+			else {
+				// Delete dir (recursively if it's a regular dir, not if it's a junction point)
+				((DirectoryInfo)obj).Delete(notReparsePoint((DirectoryInfo)obj));
+			}
 		}
 		
 		/// <summary>
@@ -749,6 +790,24 @@ namespace CarbonCopy {
 			foreach (DirectoryInfo dirSubdir in dirSubdirs) {
 				notReadOnly(dirSubdir);
 			}
+		}
+
+		/// <summary>
+		/// Checks whether the given directory is not a reparse point (probable NTFS junction point).
+		/// </summary>
+		/// <param name="di">The directory to check.</param>
+		/// <returns>If directory is not a reparse point, true; otherwise false.</returns>
+		private bool notReparsePoint(DirectoryInfo di) {
+			return (di.Attributes & FileAttributes.ReparsePoint) == 0;
+		}
+
+		/// <summary>
+		/// Checks whether the given directory is a reparse point (probable NTFS junction point).
+		/// </summary>
+		/// <param name="di">The directory to check.</param>
+		/// <returns>If directory is a reparse point, true; otherwise false.</returns>
+		private bool isReparsePoint(DirectoryInfo di) {
+			return !notReparsePoint(di);
 		}
 		
 		/// <summary>

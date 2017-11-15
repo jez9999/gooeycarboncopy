@@ -148,6 +148,12 @@
     <Content Include="Resources\app.ico" />
     <Content Include="Resources\doc.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JunctionPoint\JunctionPoint.csproj">
+      <Project>{1431bf7b-74cf-4df7-afc9-61ac220532bc}</Project>
+      <Name>JunctionPoint</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
