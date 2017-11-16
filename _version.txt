@@ -1,7 +1,7 @@
 Carbon Copy VERSION
 ===================
 
-This version of Carbon Copy is: 2.2.0.0
+This version of Carbon Copy is: 3.0.0.0
 
 Places where we need to update the version number when we're changing the version of our
 build:
