@@ -92,16 +92,8 @@ namespace CarbonCopy {
 			positionFormControls(this, null);
 			this.SizeChanged += new EventHandler(positionFormControls);
 			
-			// TODO: yes, this will cause the window BG to go grey.  Find a 3rd
-			// party control (or create one!) that lets us set it to a colour of our
-			// choice when it's disabled.  For now, we put up with grey.
+			// Disable textbox interaction during backup (window BG goes grey)
 			txtBackupOutput.Enabled = false;
-			
-			// Prevent text wrapping
-			// TODO: This doesn't work.  Maybe replacing this richtextbox with our new
-			// listbox control will fix things anyway, but in the meantime maybe we can
-			// find a way to prevent text wrapping in the richtextbox?
-			txtBackupOutput.RightMargin = System.Convert.ToInt32(System.Math.Pow(2, 31)-1);
 			
 			startBackup();
 		}
@@ -220,11 +212,7 @@ namespace CarbonCopy {
 		}
 		
 		private void addTxtboxMsg(string msg, Color ccColor, bool useCcColor) {
-			// TODO: When we get a new, better output control than this, that should take
-			// care of the flicker/wobbling scrollbar problem.
-			
-			// Try and make this an atomic operation to reduce (somewhat) scrollbar
-			// flicker/'wobbling'
+			// Try and make this an atomic operation to somewhat reduce scrollbar flicker/'wobbling'
 			lock(txtBackupOutput) {
 				// Get caret to end of text
 				txtBackupOutput.Select(txtBackupOutput.Text.Length, 0);

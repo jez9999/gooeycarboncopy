@@ -52,19 +52,34 @@ namespace JunctionPoint
         private const int FSCTL_DELETE_REPARSE_POINT = 0x000900AC;
 
         /// <summary>
-        /// Reparse point tag used to identify mount points and junction points.
-        /// </summary>
-        private const uint IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
-
-        /// <summary>
         /// This prefix indicates to NTFS that the path is to be treated as a non-interpreted
         /// path in the virtual file system.
         /// </summary>
         private const string NonInterpretedPathPrefix = @"\??\";
 
+        /// <summary>
+        /// Reparse point tag used to identify whether reparse point is mount point, junction point, symlink, etc.
+        /// </summary>
+        private enum ReparseTag : uint
+        {
+            CSV = 0x80000009,
+            DEDUP = 0x80000013,
+            DFS = 0x8000000A,
+            DFSR = 0x80000012,
+            HSM = 0xC0000004,
+            HSM2 = 0x80000006,
+            MOUNT_POINT = 0xA0000003,
+            NFS = 0x80000014,
+            SIS = 0x80000007,
+            SYMLINK = 0xA000000C,
+            WIM = 0x80000008,
+        }
+
         [Flags]
         private enum EFileAccess : uint
         {
+            None = 0x00000000,
+            FileWriteAttributes = 0x00000100,
             GenericRead = 0x80000000,
             GenericWrite = 0x40000000,
             GenericExecute = 0x20000000,
@@ -185,6 +200,15 @@ namespace JunctionPoint
             EFileAttributes dwFlagsAndAttributes,
             IntPtr hTemplateFile);
 
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "SetFileTime", ExactSpelling = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetFileCreateModifyTime(IntPtr hFile, ref long lpCreationTime, IntPtr lpLastAccessTime, ref long lpLastWriteTime);
+
+        private struct JunctionPointInfo {
+            public string Target;
+            public ReparseTag? Tag;
+        }
+
         /// <summary>
         /// Creates a junction point from the specified directory to the specified target directory.
         /// </summary>
@@ -194,7 +218,7 @@ namespace JunctionPoint
         /// <param name="junctionPoint">The junction point path</param>
         /// <param name="targetDir">The target directory</param>
         /// <param name="overwrite">If true overwrites an existing reparse point or empty directory</param>
-		/// <param name="ensureTargetDirExists">If true, ensures the given target dir exists before creating junction point</param>
+        /// <param name="ensureTargetDirExists">If true, ensures the given target dir exists before creating junction point</param>
         /// <exception cref="IOException">Thrown when the junction point could not be created or when
         /// an existing directory was found and <paramref name="overwrite" /> if false</exception>
         public static void Create(string junctionPoint, string targetDir, bool overwrite, bool ensureTargetDirExists = false)
@@ -220,7 +244,7 @@ namespace JunctionPoint
 
                 REPARSE_DATA_BUFFER reparseDataBuffer = new REPARSE_DATA_BUFFER();
 
-                reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
+                reparseDataBuffer.ReparseTag = (uint)ReparseTag.MOUNT_POINT;
                 reparseDataBuffer.ReparseDataLength = (ushort)(targetDirBytes.Length + 12);
                 reparseDataBuffer.SubstituteNameOffset = 0;
                 reparseDataBuffer.SubstituteNameLength = (ushort)targetDirBytes.Length;
@@ -272,7 +296,7 @@ namespace JunctionPoint
             {
                 REPARSE_DATA_BUFFER reparseDataBuffer = new REPARSE_DATA_BUFFER();
 
-                reparseDataBuffer.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
+                reparseDataBuffer.ReparseTag = (uint)ReparseTag.MOUNT_POINT;
                 reparseDataBuffer.ReparseDataLength = 0;
                 reparseDataBuffer.PathBuffer = new byte[0x3ff0];
 
@@ -306,21 +330,49 @@ namespace JunctionPoint
         }
 
         /// <summary>
+        /// Modifies the creation and last modified datetimes of the specified junction point.
+        /// </summary>
+        /// <param name="junctionPoint">The junction point path.</param>
+        /// <param name="creationTimeUtc">The datetime (UTC) to set creation time to.</param>
+        /// <param name="lastWriteTimeUtc">The datetime (UTC) to set last modified time to.</param>
+        public static void SetCreateModifyTime(string junctionPoint, DateTime creationTimeUtc, DateTime lastWriteTimeUtc) {
+            long creationFileTimeUtc = creationTimeUtc.ToFileTimeUtc();
+            long lastWriteFileTimeUtc = lastWriteTimeUtc.ToFileTimeUtc();
+
+            if (!Directory.Exists(junctionPoint))
+            {
+                if (File.Exists(junctionPoint))
+                    throw new IOException("Path is not a junction point.");
+
+                throw new IOException("Path does not exist.");
+            }
+
+            using (SafeFileHandle handle = OpenReparsePoint(junctionPoint, EFileAccess.FileWriteAttributes))
+            {
+                bool result = SetFileCreateModifyTime(handle.DangerousGetHandle(), ref creationFileTimeUtc,
+                    IntPtr.Zero, ref lastWriteFileTimeUtc);
+
+                if (!result)
+                        ThrowLastWin32Error("Unable to modify junction point create/modify datetime.");
+            }
+        }
+
+        /// <summary>
         /// Determines whether the specified path exists and refers to a junction point.
         /// </summary>
         /// <param name="path">The junction point path</param>
         /// <returns>True if the specified path represents a junction point</returns>
         /// <exception cref="IOException">Thrown if the specified path is invalid
         /// or some other error occurs</exception>
-        public static bool Exists(string path)
+        public static bool IsJunctionPoint(string path)
         {
             if (! Directory.Exists(path))
                 return false;
 
-            using (SafeFileHandle handle = OpenReparsePoint(path, EFileAccess.GenericRead))
+            using (SafeFileHandle handle = OpenReparsePoint(path, EFileAccess.None))
             {
-                string target = InternalGetTarget(handle);
-                return target != null;
+                var info = InternalGetTarget(handle);
+                return info != null && info.Value.Tag != null && info.Value.Tag.Value == ReparseTag.MOUNT_POINT;
             }
         }
 
@@ -336,18 +388,40 @@ namespace JunctionPoint
         /// exist, is invalid, is not a junction point, or some other error occurs</exception>
         public static string GetTarget(string junctionPoint)
         {
-            using (SafeFileHandle handle = OpenReparsePoint(junctionPoint, EFileAccess.GenericRead))
+            using (SafeFileHandle handle = OpenReparsePoint(junctionPoint, EFileAccess.None))
             {
-                string target = InternalGetTarget(handle);
-                if (target == null)
+                var info = InternalGetTarget(handle);
+                if (info == null)
+                    throw new IOException("Path is not a reparse point.");
+
+                if (info.Value.Tag == null || info.Value.Tag.Value != ReparseTag.MOUNT_POINT || info.Value.Target == null)
                     throw new IOException("Path is not a junction point.");
 
-                return target;
+                return info.Value.Target;
             }
         }
 
-        private static string InternalGetTarget(SafeFileHandle handle)
+        /// <summary>
+        /// Determines whether the specified path exists and refers to a symlink.
+        /// </summary>
+        /// <param name="reparsePoint">The reparse point path</param>
+        /// <returns>True if the specified path represents a symlink</returns>
+        /// <exception cref="IOException">Thrown if the specified path is invalid
+        /// or some other error occurs</exception>
+        public static bool IsSymlink(string reparsePoint) {
+            using (SafeFileHandle handle = OpenReparsePoint(reparsePoint, EFileAccess.None))
+            {
+                var info = InternalGetTarget(handle);
+                if (info == null)
+                    throw new IOException("Path is not a reparse point.");
+
+                return info.Value.Tag != null && info.Value.Tag.Value == ReparseTag.SYMLINK;
+            }
+        }
+
+        private static JunctionPointInfo? InternalGetTarget(SafeFileHandle handle)  // return structure containing the string and reparse tag enum value
         {
+            JunctionPointInfo info = new JunctionPointInfo();
             int outBufferSize = Marshal.SizeOf(typeof(REPARSE_DATA_BUFFER));
             IntPtr outBuffer = Marshal.AllocHGlobal(outBufferSize);
 
@@ -369,21 +443,28 @@ namespace JunctionPoint
                 REPARSE_DATA_BUFFER reparseDataBuffer = (REPARSE_DATA_BUFFER)
                     Marshal.PtrToStructure(outBuffer, typeof(REPARSE_DATA_BUFFER));
 
-                if (reparseDataBuffer.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT)
-                    return null;
+                info.Tag = null;
+                if (Enum.IsDefined(typeof(ReparseTag), reparseDataBuffer.ReparseTag)) {
+                    info.Tag = (ReparseTag)reparseDataBuffer.ReparseTag;
+                }
 
-                string targetDir = Encoding.Unicode.GetString(reparseDataBuffer.PathBuffer,
-                    reparseDataBuffer.SubstituteNameOffset, reparseDataBuffer.SubstituteNameLength);
+                info.Target = null;
+                if (info.Tag == ReparseTag.MOUNT_POINT) {
+                    string targetDir = Encoding.Unicode.GetString(reparseDataBuffer.PathBuffer,
+                        reparseDataBuffer.SubstituteNameOffset, reparseDataBuffer.SubstituteNameLength);
 
-                if (targetDir.StartsWith(NonInterpretedPathPrefix))
-                    targetDir = targetDir.Substring(NonInterpretedPathPrefix.Length);
+                    if (targetDir.StartsWith(NonInterpretedPathPrefix))
+                        targetDir = targetDir.Substring(NonInterpretedPathPrefix.Length);
 
-                return targetDir;
+                    info.Target = targetDir;
+                }
             }
             finally
             {
                 Marshal.FreeHGlobal(outBuffer);
             }
+
+            return info;
         }
 
         private static SafeFileHandle OpenReparsePoint(string reparsePoint, EFileAccess accessMode)

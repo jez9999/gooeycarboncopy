@@ -196,7 +196,7 @@ namespace CarbonCopy {
 				}
 				catch (Exception ex) {
 					endBackupCleanup();
-					AddMsg(new MsgDisplayInfo(CbErrorMsg, "BACKUP HALTED... Misc. error occurred: " + ex.Message.ToString()));
+					AddMsg(new MsgDisplayInfo(CbErrorMsg, "BACKUP HALTED... Misc. error occurred: " + unwrapExceptionMessages(ex)));
 					return;
 				}
 			}
@@ -246,7 +246,7 @@ namespace CarbonCopy {
 				}
 			}
 			catch (Exception ex) {
-				AddMsg(new MsgDisplayInfo(CbErrorMsg, "Problem creating base backup directory: " + ex.Message.ToString()));
+				AddMsg(new MsgDisplayInfo(CbErrorMsg, "Problem creating base backup directory: " + unwrapExceptionMessages(ex)));
 				throw new StopBackupException();
 			}
 			
@@ -266,7 +266,7 @@ namespace CarbonCopy {
 				
 				if (!(
 					(sourceDir.Attributes & FileAttributes.ReparsePoint) > 0 &&
-					JP.Exists(sourceDir.FullName)
+					JP.IsJunctionPoint(sourceDir.FullName)
 				))
 				{
 					// 3. Not a junction point, so synchronize source directory's child nodes (files AND dirs)
@@ -288,11 +288,11 @@ namespace CarbonCopy {
 			}
 			catch (SynchronizeObjsException ex) {
 				// Oh dear... just output error and move on.
-				AddMsg(new MsgDisplayInfo(CbErrorMsg, ex.Message));
+				AddMsg(new MsgDisplayInfo(CbErrorMsg, unwrapExceptionMessages(ex)));
 			}
 			catch (SynchronizeDirException ex) {
 				// Oh dear... just output error and move on.
-				AddMsg(new MsgDisplayInfo(CbErrorMsg, ex.Message));
+				AddMsg(new MsgDisplayInfo(CbErrorMsg, unwrapExceptionMessages(ex)));
 			}
 		}
 		
@@ -340,7 +340,7 @@ namespace CarbonCopy {
 			}
 			catch (Exception ex) {
 				if (!options.IsDryRun) {
-					throw new SynchronizeObjsException("Couldn't get file or directory list - " + ex.Message);
+					throw new SynchronizeObjsException("Couldn't get file or directory list - " + unwrapExceptionMessages(ex));
 				}
 			}
 			
@@ -371,9 +371,9 @@ namespace CarbonCopy {
 					// listing (symlinks on a Samba share when symlinks aren't being followed by Samba), and in
 					// that case we want to output an error and move on, not abort the whole backup.
 					objectsIdentical = true;
-					bool destObjIsJunctionPoint = destObj is DirectoryInfo && isReparsePoint((DirectoryInfo)destObj) && JP.Exists(((DirectoryInfo)destObj).FullName);
+					bool destObjIsJunctionPoint = destObj is DirectoryInfo && isReparsePoint((DirectoryInfo)destObj) && JP.IsJunctionPoint(((DirectoryInfo)destObj).FullName);
 					if (
-						destObj.Attributes != sourceObjs[foundIndex].Attributes &&
+						(destObj.Attributes != sourceObjs[foundIndex].Attributes && !isSymlinkToRealDir(sourceObjs[foundIndex], destObj)) &&
 						!(destObj is DirectoryInfo && sourceObjs[foundIndex] is DirectoryInfo && notReparsePoint((DirectoryInfo)destObj) && notReparsePoint((DirectoryInfo)sourceObjs[foundIndex]))
 					) {
 						// Attributes (including whether the object is a directory or reparse point)
@@ -431,7 +431,7 @@ namespace CarbonCopy {
 					}
 					else if (
 						destObjIsJunctionPoint &&
-						JP.Exists(((DirectoryInfo)sourceObjs[foundIndex]).FullName) &&
+						JP.IsJunctionPoint(((DirectoryInfo)sourceObjs[foundIndex]).FullName) &&
 						JP.GetTarget(((DirectoryInfo)destObj).FullName) != JP.GetTarget(((DirectoryInfo)sourceObjs[foundIndex]).FullName)
 					) {
 						// Delete dest JP - source and destination objects are junction points but their targets differ
@@ -482,7 +482,7 @@ namespace CarbonCopy {
 						}
 					}
 					catch (Exception ex) {
-						AddMsg(new MsgDisplayInfo(CbErrorMsg, "Problem setting dest dir attributes: " + ex.Message.ToString()));
+						AddMsg(new MsgDisplayInfo(CbErrorMsg, "Problem setting dest dir attributes: " + unwrapExceptionMessages(ex)));
 					}
 					
 					if (objectsIdentical) {
@@ -538,7 +538,7 @@ namespace CarbonCopy {
 							}
 						}
 						catch (Exception ex) {
-							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't copy file " + copyToPath + " - " + ex.Message));
+							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't copy file " + copyToPath + " - " + unwrapExceptionMessages(ex)));
 						}
 					}
 				}
@@ -546,17 +546,23 @@ namespace CarbonCopy {
 				else if (obj is DirectoryInfo) {
 					if ((foundIndex = indexNameXinY(obj, destObjs)) < 0) {
 						// Need to copy
-						bool isJunctionPoint = isReparsePoint((DirectoryInfo)obj) && JP.Exists(((DirectoryInfo)obj).FullName);
-						if (!(isJunctionPoint && dontCreateJunctionPoints)) {
-							try {
-								createPath = destDir.FullName + obj.Name + "\\";
+						bool isJunctionPoint = false;
+						try {
+							createPath = destDir.FullName + obj.Name + "\\";
+							isJunctionPoint = isReparsePoint((DirectoryInfo)obj) && JP.IsJunctionPoint(((DirectoryInfo)obj).FullName);
+							if (!(isJunctionPoint && dontCreateJunctionPoints)) {
 								if (!options.IsDryRun) {
 									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Creating " + (isJunctionPoint ? "junction point " : "directory ") + createPath));
 									if (isJunctionPoint) { JP.Create(createPath, JP.GetTarget(((DirectoryInfo)obj).FullName), false); }
 									else { Directory.CreateDirectory(createPath); }
 									DirectoryInfo justCreated = new DirectoryInfo(createPath);
-									justCreated.CreationTimeUtc = obj.CreationTimeUtc;
-									justCreated.LastWriteTimeUtc = obj.LastWriteTimeUtc;
+									if (isJunctionPoint) {
+										JP.SetCreateModifyTime(createPath, obj.CreationTimeUtc, obj.LastWriteTimeUtc);
+									}
+									else {
+										justCreated.CreationTimeUtc = obj.CreationTimeUtc;
+										justCreated.LastWriteTimeUtc = obj.LastWriteTimeUtc;
+									}
 									justCreated.Attributes = obj.Attributes;
 								
 									// Add to list of objects synchronized
@@ -569,9 +575,9 @@ namespace CarbonCopy {
 									retVal.Add(new DirectoryInfo(createPath));
 								}
 							}
-							catch (Exception ex) {
-								AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't create " + (isJunctionPoint ? "junction point " : "directory ") + createPath + " - " + ex.Message));
-							}
+						}
+						catch (Exception ex) {
+							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't create " + (isJunctionPoint ? "junction point " : "directory ") + createPath + " - " + unwrapExceptionMessages(ex)));
 						}
 					}
 				}
@@ -606,7 +612,7 @@ namespace CarbonCopy {
 			}
 			catch (Exception ex) {
 				if (!options.IsDryRun) {
-					throw new SynchronizeDirException("Couldn't get file list - " + ex.Message);
+					throw new SynchronizeDirException("Couldn't get file list - " + unwrapExceptionMessages(ex));
 				}
 			}
 			try {
@@ -615,7 +621,7 @@ namespace CarbonCopy {
 			}
 			catch (Exception ex) {
 				if (!options.IsDryRun) {
-					throw new SynchronizeDirException("Couldn't get directory list - " + ex.Message);
+					throw new SynchronizeDirException("Couldn't get directory list - " + unwrapExceptionMessages(ex));
 				}
 			}
 			foreach (DirectoryInfo di in srcDirsTemp) {
@@ -662,7 +668,7 @@ namespace CarbonCopy {
 					int foundIndex;
 					if ((foundIndex = indexNameXinY(destObj, srcObjs)) < 0) {
 						// Delete dest object - not found
-						bool destObjIsJunctionPoint = destObj is DirectoryInfo && isReparsePoint((DirectoryInfo)destObj) && JP.Exists(((DirectoryInfo)destObj).FullName);
+						bool destObjIsJunctionPoint = destObj is DirectoryInfo && isReparsePoint((DirectoryInfo)destObj) && JP.IsJunctionPoint(((DirectoryInfo)destObj).FullName);
 						if (!options.IsDryRun) {
 							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - not found in source dir."));
 							forciblyKillObject(destObj);
@@ -758,7 +764,7 @@ namespace CarbonCopy {
 			catch (Exception) { }
 			if (
 				obj is FileInfo ||
-				(obj is DirectoryInfo && (((DirectoryInfo)obj).Attributes & FileAttributes.ReparsePoint) > 0 && JP.Exists(((DirectoryInfo)obj).FullName))
+				(obj is DirectoryInfo && (((DirectoryInfo)obj).Attributes & FileAttributes.ReparsePoint) > 0 && JP.IsJunctionPoint(((DirectoryInfo)obj).FullName))
 			) {
 				obj.Attributes &= ~FileAttributes.ReadOnly;
 			}
@@ -769,7 +775,7 @@ namespace CarbonCopy {
 				((FileInfo)obj).Delete();
 			}
 			else {
-				// Delete dir (recursively if it's a regular dir, not if it's a junction point)
+				// Delete dir (recursively if it's a regular dir, not if it's a reparse point)
 				((DirectoryInfo)obj).Delete(notReparsePoint((DirectoryInfo)obj));
 			}
 		}
@@ -788,7 +794,12 @@ namespace CarbonCopy {
 			
 			DirectoryInfo[] dirSubdirs = dir.GetDirectories();
 			foreach (DirectoryInfo dirSubdir in dirSubdirs) {
-				notReadOnly(dirSubdir);
+				if ((dirSubdir.Attributes & FileAttributes.ReparsePoint) > 0) {
+					dirSubdir.Attributes &= ~FileAttributes.ReadOnly;
+				}
+				else {
+					notReadOnly(dirSubdir);
+				}
 			}
 		}
 
@@ -809,7 +820,42 @@ namespace CarbonCopy {
 		private bool isReparsePoint(DirectoryInfo di) {
 			return !notReparsePoint(di);
 		}
-		
+
+		/// <summary>
+		/// Checks whether the only difference between object attributes is "is reparse point" and the source object
+		/// is a symlink (as we backup symlinks to real directories, we want to ignore this specific difference).
+		/// </summary>
+		/// <param name="sourceObj">The source file system object to check.</param>
+		/// <param name="destObj">The destination file system object to check.</param>
+		/// <returns>If this is a "symlink to real dir" difference, true; otherwise false.</returns>
+		private bool isSymlinkToRealDir(FileSystemInfo sourceObj, FileSystemInfo destObj) {
+			return
+				sourceObj is DirectoryInfo &&
+				destObj is DirectoryInfo &&
+				(sourceObj.Attributes & ~FileAttributes.ReparsePoint) == (destObj.Attributes & ~FileAttributes.ReparsePoint) &&
+				(sourceObj.Attributes & FileAttributes.ReparsePoint) > 0 &&
+				JP.IsSymlink(((DirectoryInfo)sourceObj).FullName);
+		}
+
+		/// <summary>
+		/// Unwraps all an exception's nested messages them concatenated in a string.
+		/// </summary>
+		/// <param name="ex">The exception.</param>
+		/// <returns>The concatenated messages.</returns>
+		private string unwrapExceptionMessages(Exception ex) {
+			StringBuilder sbMessage = new StringBuilder();
+			while (ex != null) {
+				sbMessage.Append(" ||| " + ex.Message);
+				ex = ex.InnerException;
+			}
+
+			string strMessage = sbMessage.ToString();
+			if (string.IsNullOrEmpty(strMessage) || strMessage.Length < 6) {
+				return "(no error message!)";
+			}
+			return strMessage.Substring(5);
+		}
+
 		/// <summary>
 		/// Add a message to the FIFO message queue, then inform the message handling delegate that there's a new message waiting to be displayed.
 		/// </summary>
