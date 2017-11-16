@@ -269,8 +269,10 @@ namespace CarbonCopy {
 					JP.IsJunctionPoint(sourceDir.FullName)
 				))
 				{
-					// 3. Not a junction point, so synchronize source directory's child nodes (files AND dirs)
-					List<DirectoryInfo> childDirs = synchronizeDir(sourceDir, syncedDir);
+					// 3. Not a junction point, so synchronize source directory's child nodes (files AND dirs, but
+					//    no need to create dirs because we'll do that later when we traverse them as parent dirs via
+					//    this traverseDir method)
+					List<DirectoryInfo> childDirs = synchronizeDir(sourceDir, syncedDir, true);
 					syncedDir = null;
 					
 					// Now synchronize source directory's child dirs recursively...
@@ -317,8 +319,9 @@ namespace CarbonCopy {
 		/// <param name="syncDirAttributes">Specifies whether the destination directories that are being synchronized should have their attributes set to match those of the corresponding source directories.</param>
 		/// <param name="outputDryRunDirCreation">Specifies whether, during a dry run, we should output a message when we would create a directory.</param>
 		/// <param name="dontCreateJunctionPoints">If true, doesn't create new junction points.</param>
+		/// <param name="dontCreateDirs">If true, doesn't create new directories.</param>
 		/// <returns>A list of FileSystemInfo objects which are descriptors of the DESTINATION DIR objects that have been synchronized (ie. they'll have the .FullName set to the DESTINATION DIR's path to that FileSystemInfo object).</returns>
-		private List<FileSystemInfo> synchronizeObjs(List<FileSystemInfo> sourceObjs, DirectoryInfo destDir, bool syncDirAttributes, bool outputDryRunDirCreation, bool dontCreateJunctionPoints = false) {
+		private List<FileSystemInfo> synchronizeObjs(List<FileSystemInfo> sourceObjs, DirectoryInfo destDir, bool syncDirAttributes, bool outputDryRunDirCreation, bool dontCreateJunctionPoints = false, bool dontCreateDirs = false) {
 			// Synchronize objects in source objects list into given destination dir
 			// Returns a FileSystemInfo list containing info on each object (file or
 			// directory) that was synchronized.
@@ -380,7 +383,7 @@ namespace CarbonCopy {
 						// different.  If they're both directories we can leave the dest dir object
 						// and simply change its attributes later.  Otherwise, we have to delete the
 						// dest dir object and copy it across later...
-						if (!(destObjIsJunctionPoint && dontCreateJunctionPoints)) {
+						if (!(destObjIsJunctionPoint && dontCreateJunctionPoints) && !(!destObjIsJunctionPoint && dontCreateDirs)) {
 							if (!options.IsDryRun) {
 								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - attributes or type different from that in source dir."));
 								forciblyKillObject(destObj);
@@ -550,7 +553,7 @@ namespace CarbonCopy {
 						try {
 							createPath = destDir.FullName + obj.Name + "\\";
 							isJunctionPoint = isReparsePoint((DirectoryInfo)obj) && JP.IsJunctionPoint(((DirectoryInfo)obj).FullName);
-							if (!(isJunctionPoint && dontCreateJunctionPoints)) {
+							if (!(isJunctionPoint && dontCreateJunctionPoints) && !(!isJunctionPoint && dontCreateDirs)) {
 								if (!options.IsDryRun) {
 									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Creating " + (isJunctionPoint ? "junction point " : "directory ") + createPath));
 									if (isJunctionPoint) { JP.Create(createPath, JP.GetTarget(((DirectoryInfo)obj).FullName), false); }
@@ -587,12 +590,15 @@ namespace CarbonCopy {
 		}
 		
 		/// <summary>
-		/// Synchronizes two specified directories by first deleting objects in the destination dir that don't exist in the source dir (UNLESS we're in incremental backup mode), then synchronizing the two dirs using synchronizeObjs.
+		/// Synchronizes two specified directories by first deleting objects in the destination dir that don't exist in
+		/// the source dir (UNLESS we're in incremental backup mode), then synchronizing the two dirs using
+		/// synchronizeObjs.
 		/// </summary>
 		/// <param name="sourceDir">The dir to be synchronized from.</param>
 		/// <param name="destDir">The dir to be synchronized to.</param>
+		/// <param name="dontCreateDirs">If true, doesn't create new directories.</param>
 		/// <returns>A list of DirectoryInfo objects containing the child directories of the given source directory.</returns>
-		private List<DirectoryInfo> synchronizeDir(DirectoryInfo sourceDir, DirectoryInfo destDir) {
+		private List<DirectoryInfo> synchronizeDir(DirectoryInfo sourceDir, DirectoryInfo destDir, bool dontCreateDirs = false) {
 			if (stopBackup) {
 				throw new StopBackupException();
 			}
@@ -695,7 +701,7 @@ namespace CarbonCopy {
 			// when the directory is later synchronized as a parent directory).  Nor do we create junction
 			// points, which will be created later when traversed as parent directories (they're DirectoryInfo
 			// objects even though they're semantically more like files).
-			synchronizeObjs(srcObjs, destDir, true, false, true);
+			synchronizeObjs(srcObjs, destDir, true, false, true, dontCreateDirs);
 			
 			return childDirs;
 		}
