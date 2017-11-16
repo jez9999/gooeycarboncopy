@@ -389,7 +389,7 @@ namespace CarbonCopy {
 						// different.  If they're both directories we can leave the dest dir object
 						// and simply change its attributes later.  Otherwise, we have to delete the
 						// dest dir object and copy it across later...
-						if (!(destObjIsJunctionPoint && dontCreateJunctionPoints) && !(!destObjIsJunctionPoint && dontCreateDirs)) {
+						if (!(destObjIsJunctionPoint && dontCreateJunctionPoints) && !(!destObjIsJunctionPoint && destObj is DirectoryInfo && dontCreateDirs)) {
 							if (!options.IsDryRun) {
 								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - attributes or type different from that in source dir."));
 								forciblyKillObject(destObj);
