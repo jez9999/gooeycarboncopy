@@ -21,6 +21,8 @@ namespace CarbonCopy {
 		private Object stopBackupLock = new Object();
 		private CCO options;
 		private Queue<MsgDisplayInfo> messages = new Queue<MsgDisplayInfo>();
+		private long fileCopyCount = 0;
+		private long dirCopyCount = 0;
 		#endregion
 
 		#region Public vars
@@ -188,7 +190,8 @@ namespace CarbonCopy {
 				else {
 					AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would synchronize base source directory " + sourceDir.FullName));
 				}
-				
+
+				fileCopyCount = dirCopyCount = 0;
 				try { traverseDir(sourceDir, options.DestDir); }
 				catch (StopBackupException) {
 					endBackupCleanup();
@@ -198,6 +201,9 @@ namespace CarbonCopy {
 					endBackupCleanup();
 					AddMsg(new MsgDisplayInfo(CbErrorMsg, "BACKUP HALTED... Misc. error occurred: " + unwrapExceptionMessages(ex)));
 					return;
+				}
+				finally {
+					AddMsg(new MsgDisplayInfo(CbInfoMsg, "Finished; had to copy " + fileCopyCount + " file" + (fileCopyCount == 1 ? "" : "s") + " and " + dirCopyCount + " director" + (dirCopyCount == 1 ? "y" : "ies") + "."));
 				}
 			}
 			
@@ -517,6 +523,7 @@ namespace CarbonCopy {
 				if (obj is FileInfo) {
 					if ((foundIndex = indexNameXinY(obj, destObjs)) < 0) {
 						// Need to copy
+						fileCopyCount++;
 						try {
 							copyToPath = destDir.FullName + obj.Name;
 							if (!options.IsDryRun) {
@@ -549,6 +556,7 @@ namespace CarbonCopy {
 				else if (obj is DirectoryInfo) {
 					if ((foundIndex = indexNameXinY(obj, destObjs)) < 0) {
 						// Need to copy
+						dirCopyCount++;
 						bool isJunctionPoint = false;
 						try {
 							createPath = destDir.FullName + obj.Name + "\\";
