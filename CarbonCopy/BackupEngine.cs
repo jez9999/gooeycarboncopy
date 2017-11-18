@@ -348,9 +348,7 @@ namespace CarbonCopy {
 				destDirsTemp = destDir.GetDirectories();
 			}
 			catch (Exception ex) {
-				if (!options.IsDryRun) {
-					throw new SynchronizeObjsException("Couldn't get file or directory list - " + unwrapExceptionMessages(ex));
-				}
+				throw new SynchronizeObjsException("Couldn't get file or directory list - " + unwrapExceptionMessages(ex));
 			}
 			
 			List<FileSystemInfo> destObjs = new List<FileSystemInfo>();
@@ -548,7 +546,12 @@ namespace CarbonCopy {
 							}
 						}
 						catch (Exception ex) {
-							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't copy file " + copyToPath + " - " + unwrapExceptionMessages(ex)));
+							if (!options.IsDryRun) {
+								AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't copy file " + copyToPath + " - " + unwrapExceptionMessages(ex)));
+							}
+							else {
+								AddMsg(new MsgDisplayInfo(CbErrorMsg, "Wouldn't be able to copy file " + copyToPath + " - " + unwrapExceptionMessages(ex)));
+							}
 						}
 					}
 				}
@@ -588,7 +591,12 @@ namespace CarbonCopy {
 							}
 						}
 						catch (Exception ex) {
-							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't create " + (isJunctionPoint ? "junction point " : "directory ") + createPath + " - " + unwrapExceptionMessages(ex)));
+							if (!options.IsDryRun) {
+								AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't create " + (isJunctionPoint ? "junction point " : "directory ") + createPath + " - " + unwrapExceptionMessages(ex)));
+							}
+							else {
+								AddMsg(new MsgDisplayInfo(CbErrorMsg, "Wouldn't be able to create " + (isJunctionPoint ? "junction point " : "directory ") + createPath + " - " + unwrapExceptionMessages(ex)));
+							}
 						}
 					}
 				}
@@ -625,18 +633,14 @@ namespace CarbonCopy {
 				destFilesTemp = destDir.GetFiles();
 			}
 			catch (Exception ex) {
-				if (!options.IsDryRun) {
-					throw new SynchronizeDirException("Couldn't get file list - " + unwrapExceptionMessages(ex));
-				}
+				throw new SynchronizeDirException("Couldn't get file list - " + unwrapExceptionMessages(ex));
 			}
 			try {
 				srcDirsTemp = sourceDir.GetDirectories();
 				destDirsTemp = destDir.GetDirectories();
 			}
 			catch (Exception ex) {
-				if (!options.IsDryRun) {
-					throw new SynchronizeDirException("Couldn't get directory list - " + unwrapExceptionMessages(ex));
-				}
+				throw new SynchronizeDirException("Couldn't get directory list - " + unwrapExceptionMessages(ex));
 			}
 			foreach (DirectoryInfo di in srcDirsTemp) {
 				childDirs.Add(slashTerm(di));

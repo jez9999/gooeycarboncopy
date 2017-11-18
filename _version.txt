@@ -1,13 +1,10 @@
 Carbon Copy VERSION
 ===================
 
-This version of Carbon Copy is: 3.3.0.0
-
 Places where we need to update the version number when we're changing the version of our
 build:
-- This file, just above.  :-)
-- In the Carbon Copy project Assembly Information; both 'Assembly Version' and 'File
-  Version' should be the same.
+- In the Carbon Copy project Assembly Information; both 'Assembly Version' and 'File Version'
+  should be the same.  This is the authoritative current version of Carbon Copy.
 - In the Inno Setup install file (install.iss), 'AppVerName' needs to reflect the
   version number.
 
