@@ -348,7 +348,9 @@ namespace CarbonCopy {
 				destDirsTemp = destDir.GetDirectories();
 			}
 			catch (Exception ex) {
-				throw new SynchronizeObjsException("Couldn't get file or directory list - " + unwrapExceptionMessages(ex));
+				if (!options.IsDryRun) {
+					throw new SynchronizeObjsException("Couldn't get file or directory list - " + unwrapExceptionMessages(ex));
+				}
 			}
 			
 			List<FileSystemInfo> destObjs = new List<FileSystemInfo>();
@@ -633,14 +635,18 @@ namespace CarbonCopy {
 				destFilesTemp = destDir.GetFiles();
 			}
 			catch (Exception ex) {
-				throw new SynchronizeDirException("Couldn't get file list - " + unwrapExceptionMessages(ex));
+				if (!options.IsDryRun) {
+					throw new SynchronizeDirException("Couldn't get file list - " + unwrapExceptionMessages(ex));
+				}
 			}
 			try {
 				srcDirsTemp = sourceDir.GetDirectories();
 				destDirsTemp = destDir.GetDirectories();
 			}
 			catch (Exception ex) {
-				throw new SynchronizeDirException("Couldn't get directory list - " + unwrapExceptionMessages(ex));
+				if (!options.IsDryRun) {
+					throw new SynchronizeDirException("Couldn't get directory list - " + unwrapExceptionMessages(ex));
+				}
 			}
 			foreach (DirectoryInfo di in srcDirsTemp) {
 				childDirs.Add(slashTerm(di));
