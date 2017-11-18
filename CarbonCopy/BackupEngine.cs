@@ -169,10 +169,10 @@ namespace CarbonCopy {
 			}
 			
 			if (!options.IsDryRun) {
-				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting backup."));
+				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting backup (type " + (options.Type == CCOTypeOfBackup.Incremental ? "incremental" : options.Type == CCOTypeOfBackup.CarbonCopy ? "carbon copy" : "???") + ")."));
 			}
 			else {
-				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting 'dry run' backup."));
+				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting 'dry run' backup (type " + (options.Type == CCOTypeOfBackup.Incremental ? "incremental" : options.Type == CCOTypeOfBackup.CarbonCopy ? "carbon copy" : "???") + ")."));
 			}
 			
 			foreach (DirectoryInfo sourceDir in options.SourceDirs) {

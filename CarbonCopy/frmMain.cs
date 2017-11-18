@@ -60,7 +60,7 @@ namespace CarbonCopy {
 		
 		private void frmMain_Load(object sender, EventArgs e) {
 			// Set title to version number, etc.
-			this.Text = "Carbon Copy v" + this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString);
+			this.Text = "Carbon Copy v" + this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.MajorMinor);
 			
 			// Automatic label height, but force width to that of the backup dirs list
 			lblDestDir.MinimumSize = new Size(lstSourceDirs.Width, 0);
@@ -257,7 +257,7 @@ namespace CarbonCopy {
 		}
 		
 		private void btnAbout_Click(object sender, EventArgs e) {
-			utils.ShowInfo("Carbon Copy version: " + this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.FullString));
+			utils.ShowInfo("Carbon Copy version: " + this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.MajorMinor));
 		}
 		
 		private void lstSourceDirs_KeyDown(object sender, KeyEventArgs e) {

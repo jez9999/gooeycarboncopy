@@ -9,5 +9,5 @@ build:
   version number.
 
 NOTE:
-Although we display 4 parts to the version number because 'Assembly Version' and 'File
-Version' do, we only use two of them; the last two numbers should always be zero ('0.0').
+Although the version number has 4 parts because 'Assembly Version' and 'File Version' do,
+we only use two of them; the last two numbers should always be zero ('0.0').
