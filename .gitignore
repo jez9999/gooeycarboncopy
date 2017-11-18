@@ -8,7 +8,6 @@
 *.user
 .vs/
 *.dbmdl
-UpgradeLog.htm
 
 # ReSharper stuff
 _ReSharper.*
