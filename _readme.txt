@@ -2,7 +2,7 @@ Carbon Copy README
 ==================
 
 NOTES:
-- Please read _licence.txt for the licence under which this software and source code
+- Please read CarbonCopy\Resources\licence.txt for the licence under which this software and source code
   are distributed.
 - When we update the version, remember to read _version.txt for places where we need to
   update the version number!
@@ -17,8 +17,8 @@ Libraries (generally DLLs) that need to be packaged with the solution should go 
 '_Libs' directory, to be located under 'Solution Items' in the solution explorer,
 and under the directory in which the .sln file resides on the file system.
 
-Carbon Copy is being developed (initially) in Visual Studio 2008, and therefore it's
-recommended that you use VS2008 if you want to modify its code.  However I'd be interested
+Carbon Copy is being developed in Visual Studio 2015, and therefore it's
+recommended that you use VS2015 if you want to modify its code.  However I'd be interested
 to know how well anyone who want to use something like Eclipse gets on (no doubt you'll
 need to use that if you want to get this working on Linux with Mono).
 

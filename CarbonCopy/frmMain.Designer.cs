@@ -365,7 +365,7 @@ namespace CarbonCopy {
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "frmMain";
-			this.Text = "Carbon Copy v?...";
+			this.Text = "Carbon Copy v$ver";
 			this.Load += new System.EventHandler(this.frmMain_Load);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.frmMain_Paint);
 			this.grpBackupDetails.ResumeLayout(false);

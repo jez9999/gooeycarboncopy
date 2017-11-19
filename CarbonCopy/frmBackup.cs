@@ -65,7 +65,7 @@ namespace CarbonCopy {
 		
 		private void frmBackup_Load(object sender, EventArgs e) {
 			// Set title to version number, etc.
-			this.Text = "Carbon Copy v" + this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.MajorMinor) + " - Backing up...";
+			this.Text = this.Text.Replace("$ver", this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.MajorMinor));
 			
 			// Disable form's close button, and make sure it stays disabled when
 			// form is resized.
