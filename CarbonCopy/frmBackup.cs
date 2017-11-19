@@ -11,7 +11,7 @@ using Gooey;
 namespace CarbonCopy {
 	public partial class frmBackup : Form {
 		#region Private vars
-		
+
 		private Gooey.Utilities utils;
 		private CCOFunctions optFunc;
 		private CCOColours ccColour;
@@ -27,21 +27,21 @@ namespace CarbonCopy {
 		private int pictWorkingTopDiff = 0;
 		private bool closeOnStop = false;
 		private bool closeBtnClicked = false;
-		
+
 		#endregion
-		
+
 		#region Constructors
-		
+
 		public frmBackup(CCO passedOptions) {
 			InitializeComponent();
-			
+
 			// Carbon Copy backup options must be passed to this form upon initialization
 			this.backupOptions = passedOptions;
-			
+
 			this.utils = new Gooey.Utilities();
 			this.optFunc = new CCOFunctions();
 			this.ccColour = new CCOColours();
-			
+
 			this.bkpEngine = new BackupEngine(this.backupOptions);
 			bkpEngine.CbBackupFinished += backupFinishedInvoker;
 			bkpEngine.CbDebugMsg += addDebugMsg;
@@ -50,11 +50,11 @@ namespace CarbonCopy {
 			bkpEngine.CbVerboseMsg += addVerboseMsg;
 			bkpEngine.CbDisplayNextMessage += displayNextMsgInvoker;
 		}
-		
+
 		#endregion
-		
+
 		private static Gooey.CloseButtonDisabler cbdFrmBackup = new CloseButtonDisabler();
-		
+
 		private static void handleSizeChanged(object sender, EventArgs e) {
 			cbdFrmBackup.EventSizeChanged();
 		}
@@ -62,21 +62,21 @@ namespace CarbonCopy {
 		private void updateProcessing() {
 			lblProcessing.Text = bkpEngine.CurrentlyProcessing;
 		}
-		
+
 		private void frmBackup_Load(object sender, EventArgs e) {
 			// Set title to version number, etc.
 			this.Text = this.Text.Replace("$ver", this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.MajorMinor));
-			
+
 			// Disable form's close button, and make sure it stays disabled when
 			// form is resized.
 			cbdFrmBackup.InitValues(this);
 			this.SizeChanged += new EventHandler(handleSizeChanged);
 			cbdFrmBackup.ButtonDisabled = true;
-			
+
 			// Move form into position
 			this.Left = Screen.GetWorkingArea(this).Width / 20;
 			this.Top = Screen.GetWorkingArea(this).Height / 20;
-			
+
 			// Record positions of controls on form that we'll need later
 			widthDiff = this.Width - txtBackupOutput.Width;
 			heightDiff = this.Height - txtBackupOutput.Height;
@@ -86,18 +86,18 @@ namespace CarbonCopy {
 			closeTopDiff = this.Height - btnClose.Top;
 			processingTitleTopDiff = this.Height - lblProcessingTitle.Top;
 			pictWorkingTopDiff = this.Height - pictWorking.Top;
-			
+
 			// Position form controls correctly
 			lblProcessing.Text = "";
 			positionFormControls(this, null);
 			this.SizeChanged += new EventHandler(positionFormControls);
-			
+
 			// Disable textbox interaction during backup (window BG goes grey)
 			txtBackupOutput.Enabled = false;
-			
+
 			startBackup();
 		}
-		
+
 		private void positionFormControls(object sender, EventArgs e) {
 			txtBackupOutput.Width = this.Width - this.widthDiff;
 			txtBackupOutput.Height = this.Height - this.heightDiff;
@@ -110,7 +110,7 @@ namespace CarbonCopy {
 			lblProcessing.MaximumSize = new Size(this.Width - this.widthDiff, 26);
 			pictWorking.Top = this.Height - this.pictWorkingTopDiff;
 		}
-		
+
 		// Methods to add text to backup richtextbox
 		private void displayNextMsg(GetNextMessageCallback getNextMsgCb) {
 			MsgDisplayInfo di = getNextMsgCb();
@@ -121,7 +121,7 @@ namespace CarbonCopy {
 			SafeInvoker si = new SafeInvoker(this);
 			si.Invoke(cb, new object[] { getNextMsgCb });
 		}
-		
+
 		/// <summary>
 		/// Add informational message
 		/// </summary>
@@ -141,7 +141,7 @@ namespace CarbonCopy {
 				addTxtboxMsg("Inf: " + msg, ccColour.Black, true);
 			}
 		}
-		
+
 		/// <summary>
 		/// Add error message
 		/// </summary>
@@ -152,7 +152,7 @@ namespace CarbonCopy {
 				case VerbosityLevel.Brief:
 					displayThis = false;
 					break;
-				
+
 				case VerbosityLevel.Normal:
 				case VerbosityLevel.Debug:
 				case VerbosityLevel.Verbose:
@@ -164,7 +164,7 @@ namespace CarbonCopy {
 				addTxtboxMsg("Err: " + msg, ccColour.Red, true);
 			}
 		}
-		
+
 		/// <summary>
 		/// Add debug message
 		/// </summary>
@@ -176,7 +176,7 @@ namespace CarbonCopy {
 				case VerbosityLevel.Normal:
 					displayThis = false;
 					break;
-				
+
 				case VerbosityLevel.Debug:
 				case VerbosityLevel.Verbose:
 				default:
@@ -187,7 +187,7 @@ namespace CarbonCopy {
 				addTxtboxMsg("Dbg: " + msg, ccColour.Green, true);
 			}
 		}
-		
+
 		/// <summary>
 		/// Add verbose message
 		/// </summary>
@@ -200,7 +200,7 @@ namespace CarbonCopy {
 				case VerbosityLevel.Debug:
 					displayThis = false;
 					break;
-				
+
 				case VerbosityLevel.Verbose:
 				default:
 					displayThis = true;
@@ -210,13 +210,13 @@ namespace CarbonCopy {
 				addTxtboxMsg("Ver: " + msg, ccColour.Blue, true);
 			}
 		}
-		
+
 		private void addTxtboxMsg(string msg, Color ccColor, bool useCcColor) {
 			// Try and make this an atomic operation to somewhat reduce scrollbar flicker/'wobbling'
 			lock(txtBackupOutput) {
 				// Get caret to end of text
 				txtBackupOutput.Select(txtBackupOutput.Text.Length, 0);
-				
+
 				// Append message text
 				Color backupColor = txtBackupOutput.SelectionColor;
 				if (useCcColor) { txtBackupOutput.SelectionColor = ccColor; }
@@ -226,18 +226,18 @@ namespace CarbonCopy {
 				txtBackupOutput.Update();
 			}
 		}
-		
+
 		private void btnCancel_Click(object sender, EventArgs e) {
 			btnCancel.Enabled = false;
 			btnCancel.Text = "Cancelling...";
 			bkpEngine.StopBackup();
 		}
-		
+
 		private void btnClose_Click(object sender, EventArgs e) {
 			closeBtnClicked = true;
 			this.Close();
 		}
-		
+
 		private void startBackup() {
 			string errors;
 			if (!optFunc.SanityCheck(this.backupOptions, out errors)) {
@@ -261,7 +261,7 @@ namespace CarbonCopy {
 				tmrProcessing.Start();
 			}
 		}
-		
+
 		private void backupFinished() {
 			tmrProcessing.Stop();
 			tmrPictAnim.Stop();
@@ -271,11 +271,11 @@ namespace CarbonCopy {
 			btnCancel.Enabled = false;
 			btnCancel.Text = "Cancel backup";
 			btnClose.Enabled = true;
-			
+
 			txtBackupOutput.TabStop = true;
 			btnCancel.TabStop = true;
 			btnClose.TabStop = true;
-			
+
 			if (closeOnStop) {
 				this.Close();
 			}
@@ -285,14 +285,14 @@ namespace CarbonCopy {
 			SafeInvoker si = new SafeInvoker(this);
 			si.Invoke(cb, new object[] {  });
 		}
-		
+
 		private void frmBackup_FormClosing(object sender, FormClosingEventArgs e) {
 			// We're not closing this form except via our close button...
 			if (!closeBtnClicked) {
 				e.Cancel = true;
 				return;
 			}
-			
+
 			// Stop backup if it's in progress
 			if (bkpEngine.IsRunningBackup) {
 				bkpEngine.StopBackup();

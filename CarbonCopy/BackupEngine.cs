@@ -32,7 +32,7 @@ namespace CarbonCopy {
 		public event MsgFunctionDelegate CbVerboseMsg;
 		public event DisplayNextMsgCallbackInvoker CbDisplayNextMessage;
 		public event BackupFinishedCallbackInvoker CbBackupFinished;
-		
+
 		public bool IsRunningBackup {
 			get {
 				return (backupWorker != null);
@@ -55,12 +55,12 @@ namespace CarbonCopy {
 		public MsgDisplayInfo GetNextMsg() {
 			return messages.Dequeue();
 		}
-		
+
 		public void StartBackup() {
 			// Only do this if we don't already have a backup worker thread going
 			if (!IsRunningBackup) {
 				checkNecessarySettings();
-				
+
 				// OK; setup new thread to do stuff, then return
 				backupWorker = new Thread(new ThreadStart(backupWorkerGo));
 				backupWorker.Start();
@@ -70,12 +70,12 @@ namespace CarbonCopy {
 			}
 			return;
 		}
-		
+
 		public void StopBackup() {
 			stopBackup = true;
 		}
 		#endregion
-		
+
 		#region Private methods
 		private void checkNecessarySettings() {
 			// Ensure that callbacks allowing us to communicate with the calling
@@ -91,22 +91,22 @@ namespace CarbonCopy {
 				throw new BackupEngineException("All callbacks/delegates must be set before backup can begin.");
 			}
 		}
-		
+
 		private void endBackupCleanup() {
 			lock (endBackupCleanupLock) {
 				if (backupWorker != null) {
 					stopBackup = false;
-					
+
 					// Setting this to null should be the LAST thing we do in the cleanup.  Only
 					// after this may a caller begin another backup, so all cleanup must be done
 					// before this.
 					backupWorker = null;
 				}
 			}
-			
+
 			if (CbBackupFinished != null) { CbBackupFinished(); }
 		}
-		
+
 		/// <summary>
 		/// Initial backup process thread method; begins the actual process of backing up specified files to specified backup directory.
 		/// </summary>
@@ -114,12 +114,12 @@ namespace CarbonCopy {
 			DirectoryInfo fixedPath = null;
 			string errorHolder;
 			CCOFunctions optFunc = new CCOFunctions();
-			
+
 			if (stopBackup) {
 				endBackupCleanup();
 				return;
 			}
-			
+
 			// List directory and configuration information
 			foreach (DirectoryInfo di in options.SourceDirs) {
 				AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Found source backup directory: " + di.FullName));
@@ -127,7 +127,7 @@ namespace CarbonCopy {
 			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Found destination backup directory: " + options.DestDir.FullName));
 			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Type of backup: " + options.Type.ToString()));
 			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Verbosity level: " + options.OutputDetail.ToString()));
-			
+
 			// Ensure that all source backup dirs are valid and 'touch them up'
 			// (setting them to fixedPath fixes their capitalization and terminates
 			// them all with a back or forward slash)
@@ -141,7 +141,7 @@ namespace CarbonCopy {
 					options.SourceDirs[i] = fixedPath;
 				}
 			}
-			
+
 			// Ensure that there are no source backup dir dupes
 			foreach (DirectoryInfo di1 in options.SourceDirs) {
 				// Is it a dupe?
@@ -157,7 +157,7 @@ namespace CarbonCopy {
 					}
 				}
 			}
-			
+
 			// Check that destination backup dir is valid and 'touch it up'
 			if (!optFunc.CheckDirValidity(options.DestDir.FullName, ref fixedPath, out errorHolder)) {
 				AddMsg(new MsgDisplayInfo(CbErrorMsg, errorHolder));
@@ -167,20 +167,20 @@ namespace CarbonCopy {
 			else {
 				options.DestDir = fixedPath;
 			}
-			
+
 			if (!options.IsDryRun) {
 				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting backup (type " + (options.Type == CCOTypeOfBackup.Incremental ? "incremental" : options.Type == CCOTypeOfBackup.CarbonCopy ? "carbon copy" : "???") + ")."));
 			}
 			else {
 				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting 'dry run' backup (type " + (options.Type == CCOTypeOfBackup.Incremental ? "incremental" : options.Type == CCOTypeOfBackup.CarbonCopy ? "carbon copy" : "???") + ")."));
 			}
-			
+
 			foreach (DirectoryInfo sourceDir in options.SourceDirs) {
 				if (stopBackup) {
 					endBackupCleanup();
 					return;
 				}
-				
+
 				// Backup this source directory tree
 				try { currentlyProcessing = sourceDir.FullName; }
 				catch (Exception) { }
@@ -206,18 +206,18 @@ namespace CarbonCopy {
 					AddMsg(new MsgDisplayInfo(CbInfoMsg, "Finished; had to copy " + fileCopyCount + " file" + (fileCopyCount == 1 ? "" : "s") + " and " + dirCopyCount + " director" + (dirCopyCount == 1 ? "y" : "ies") + "."));
 				}
 			}
-			
+
 			// We finished!
 			AddMsg(new MsgDisplayInfo(CbInfoMsg, "Backup finished successfully."));
 			endBackupCleanup();
 			return;
 		}
-		
+
 		private void traverseDir(DirectoryInfo sourceDir, DirectoryInfo baseDestDir) {
 			// Synchronize current source directory
 			try { currentlyProcessing = sourceDir.FullName; }
 			catch (Exception) { }
-			
+
 			// The plan of action is:
 			// 1. Get full dest dir path from base dest dir & source dir path
 			// 2. Synchronize THE source dir to dest dir.  Not its child objects, no
@@ -228,18 +228,18 @@ namespace CarbonCopy {
 			//    to the dest dir.
 			// 4. Set the attributes of the dest dir, as we won't be modifying anything
 			//    underneath it now (so its modified date/time won't change after this).
-			
+
 			// 1. Figure out destination dir path
 			string destDirPath = Regex.Replace(sourceDir.FullName, @"^\\\\", @"\\_unc_\\");
 			destDirPath = baseDestDir.FullName + Regex.Replace(destDirPath, @"\:", @"");
-			
+
 			AddMsg(new MsgDisplayInfo(CbDebugMsg, "Synchronizing " + sourceDir.FullName + " to " + destDirPath));
-			
+
 			// Remove last dir off end; we want to synchronize TO this one
 			// eg. 'X:\backuptest\C\testBackupDir\' becomes 'X:\backuptest\C\'
 			Match destDirTrimmed = Regex.Match(destDirPath, @"^(.*\\).*\\");
 			destDirPath = destDirTrimmed.Groups[1].Value;
-			
+
 			// Get DirectoryInfo for destination dir; create dir if necessary
 			DirectoryInfo destDir = null;
 			try {
@@ -255,11 +255,11 @@ namespace CarbonCopy {
 				AddMsg(new MsgDisplayInfo(CbErrorMsg, "Problem creating base backup directory: " + unwrapExceptionMessages(ex)));
 				throw new StopBackupException();
 			}
-			
+
 			// 2. Synchronize this directory...
 			List<FileSystemInfo> sourceDirInList = new List<FileSystemInfo>();
 			sourceDirInList.Add(sourceDir);
-			
+
 			try {
 				List<FileSystemInfo> syncedDirInList = synchronizeObjs(sourceDirInList, destDir, false, true);
 				// We know the synchronized dest dir is the first entry in the list as it's
@@ -269,7 +269,7 @@ namespace CarbonCopy {
 				}
 				DirectoryInfo syncedDir = ((DirectoryInfo)syncedDirInList[0]);
 				syncedDir = slashTerm(syncedDir);
-				
+
 				if (!(
 					(sourceDir.Attributes & FileAttributes.ReparsePoint) > 0 &&
 					JP.IsJunctionPoint(sourceDir.FullName)
@@ -280,12 +280,12 @@ namespace CarbonCopy {
 					//    this traverseDir method)
 					List<DirectoryInfo> childDirs = synchronizeDir(sourceDir, syncedDir, true);
 					syncedDir = null;
-					
+
 					// Now synchronize source directory's child dirs recursively...
 					foreach (DirectoryInfo childDir in childDirs) {
 						traverseDir(childDir, baseDestDir);
 					}
-				
+
 					// 4. Finally, set this directory's attributes and datetimes correctly; we
 					// didn't do this at the beginning, as the modified datetime was going to
 					// change when we synchronized its contents; therefore, it must be done last.
@@ -303,11 +303,11 @@ namespace CarbonCopy {
 				AddMsg(new MsgDisplayInfo(CbErrorMsg, unwrapExceptionMessages(ex)));
 			}
 		}
-		
+
 		private DirectoryInfo slashTerm(DirectoryInfo inputDir) {
 			// Take the input directory's DirectoryInfo, and return one with the same
 			// path, but whose .FullName is guaranteed to be terminated with a slash.
-			
+
 			if ((inputDir.FullName.Substring(inputDir.FullName.Length-1) != "\\") && (inputDir.FullName.Substring(inputDir.FullName.Length-1) != "/")) {
 				return new DirectoryInfo(inputDir.FullName + "\\");
 			}
@@ -331,18 +331,18 @@ namespace CarbonCopy {
 			// Synchronize objects in source objects list into given destination dir
 			// Returns a FileSystemInfo list containing info on each object (file or
 			// directory) that was synchronized.
-			
+
 			List<FileSystemInfo> retVal = new List<FileSystemInfo>();
-			
+
 			if (stopBackup) {
 				throw new StopBackupException();
 			}
-			
+
 			// Make array list of dest dir's objects; they seem to be in
 			// alphabetical order already...
 			FileInfo[] destFilesTemp = new FileInfo[0];
 			DirectoryInfo[] destDirsTemp = new DirectoryInfo[0];
-			
+
 			try {
 				destFilesTemp = destDir.GetFiles();
 				destDirsTemp = destDir.GetDirectories();
@@ -352,13 +352,13 @@ namespace CarbonCopy {
 					throw new SynchronizeObjsException("Couldn't get file or directory list - " + unwrapExceptionMessages(ex));
 				}
 			}
-			
+
 			List<FileSystemInfo> destObjs = new List<FileSystemInfo>();
 			destObjs.AddRange(destFilesTemp);
 			destObjs.AddRange(destDirsTemp);
-			
+
 			List<FileSystemInfo> newDestObjs = new List<FileSystemInfo>();
-			
+
 			// First, sync objects that already exist in the destination dir and that
 			// are specified in the source objects list.
 			foreach (FileSystemInfo destObj in destObjs) {
@@ -367,7 +367,7 @@ namespace CarbonCopy {
 				if (stopBackup) {
 					throw new StopBackupException();
 				}
-				
+
 				bool objectsIdentical;
 				int foundIndex;
 				// If destination object has the same name as an object in the
@@ -455,7 +455,7 @@ namespace CarbonCopy {
 						}
 						objectsIdentical = false;
 					}
-					
+
 					try {
 						// We may need to change attributes and/or datetimes to make
 						// dirs with the same name identical.
@@ -493,21 +493,21 @@ namespace CarbonCopy {
 					catch (Exception ex) {
 						AddMsg(new MsgDisplayInfo(CbErrorMsg, "Problem setting dest dir attributes: " + unwrapExceptionMessages(ex)));
 					}
-					
+
 					if (objectsIdentical) {
 						// Objects are identical according to all the above tests; we didn't
 						// delete the dest object, so record its continued existance in
 						// our new list.
 						newDestObjs.Add(destObj);
-						
+
 						// Add to list of objects synchronized
 						retVal.Add(destObj);
 					}
 				}
 			}
-			
+
 			destObjs = newDestObjs;
-			
+
 			// Now, copy over source objects that need to be copied.
 			foreach (FileSystemInfo obj in sourceObjs) {
 				try { currentlyProcessing = obj.FullName; }
@@ -515,7 +515,7 @@ namespace CarbonCopy {
 				if (stopBackup) {
 					throw new StopBackupException();
 				}
-				
+
 				int foundIndex;
 				string copyToPath = "???";
 				string createPath = "???";
@@ -538,7 +538,7 @@ namespace CarbonCopy {
 								justCopied.CreationTimeUtc = obj.CreationTimeUtc;
 								justCopied.LastWriteTimeUtc = obj.LastWriteTimeUtc;
 								justCopied.Attributes = obj.Attributes;
-								
+
 								// Add to list of objects synchronized
 								retVal.Add(justCopied);
 							}
@@ -580,7 +580,7 @@ namespace CarbonCopy {
 										justCreated.LastWriteTimeUtc = obj.LastWriteTimeUtc;
 									}
 									justCreated.Attributes = obj.Attributes;
-								
+
 									// Add to list of objects synchronized
 									retVal.Add(justCreated);
 								}
@@ -603,10 +603,10 @@ namespace CarbonCopy {
 					}
 				}
 			}
-			
+
 			return retVal;
 		}
-		
+
 		/// <summary>
 		/// Synchronizes two specified directories by first deleting objects in the destination dir that don't exist in
 		/// the source dir (UNLESS we're in incremental backup mode), then synchronizing the two dirs using
@@ -620,16 +620,16 @@ namespace CarbonCopy {
 			if (stopBackup) {
 				throw new StopBackupException();
 			}
-			
+
 			// Make array list of source and dest dirs' objects; they seem to be in alphabetical order already...
-			
+
 			List<DirectoryInfo> childDirs = new List<DirectoryInfo>();
-			
+
 			FileInfo[] srcFilesTemp = new FileInfo[0];
 			FileInfo[] destFilesTemp = new FileInfo[0];
 			DirectoryInfo[] srcDirsTemp = new DirectoryInfo[0];
 			DirectoryInfo[] destDirsTemp = new DirectoryInfo[0];
-			
+
 			try {
 				srcFilesTemp = sourceDir.GetFiles();
 				destFilesTemp = destDir.GetFiles();
@@ -651,15 +651,15 @@ namespace CarbonCopy {
 			foreach (DirectoryInfo di in srcDirsTemp) {
 				childDirs.Add(slashTerm(di));
 			}
-			
+
 			List<FileSystemInfo> srcObjs = new List<FileSystemInfo>();
 			List<FileSystemInfo> destObjs = new List<FileSystemInfo>();
-			
+
 			srcObjs.AddRange(srcFilesTemp);
 			srcObjs.AddRange(srcDirsTemp);
 			destObjs.AddRange(destFilesTemp);
 			destObjs.AddRange(destDirsTemp);
-			
+
 			// synchronizeObjs will synchronize objects to the destination dir listed
 			// in the 'source objects' FileSystemInfo list passed, but will not remove
 			// objects in the destination dir that don't exist in the source dir.  We
@@ -687,7 +687,7 @@ namespace CarbonCopy {
 					if (stopBackup) {
 						throw new StopBackupException();
 					}
-					
+
 					// Delete obj if it doesn't exist in source directory ('carbon copy' mode)
 					int foundIndex;
 					if ((foundIndex = indexNameXinY(destObj, srcObjs)) < 0) {
@@ -708,10 +708,10 @@ namespace CarbonCopy {
 						newDestObjs.Add(destObj);
 					}
 				}
-				
+
 				destObjs = newDestObjs;
 			}
-			
+
 			// Invalid destination objects have been deleted.  Now synchronize source objects, including
 			// synchronization of directory attributes.  Because any child directories in this list will later
 			// be synchronized again through synchronizeObjs, as parent directories, we don't output 'dry run'
@@ -720,10 +720,10 @@ namespace CarbonCopy {
 			// points, which will be created later when traversed as parent directories (they're DirectoryInfo
 			// objects even though they're semantically more like files).
 			synchronizeObjs(srcObjs, destDir, true, false, true, dontCreateDirs);
-			
+
 			return childDirs;
 		}
-		
+
 		/// <summary>
 		/// Case-sensitive method to check whether one file system object has the same name (not FULLY QUALIFIED name, just short name) as another in a provided list.
 		/// </summary>
@@ -736,7 +736,7 @@ namespace CarbonCopy {
 					return index;
 				}
 			}
-			
+
 			return -1;
 		}
 		private int indexNameXinY(FileInfo XObj, List<FileInfo> YObjs) {
@@ -745,7 +745,7 @@ namespace CarbonCopy {
 					return index;
 				}
 			}
-			
+
 			return -1;
 		}
 		private int indexNameXinY(FileInfo XObj, List<DirectoryInfo> YObjs) {
@@ -754,7 +754,7 @@ namespace CarbonCopy {
 					return index;
 				}
 			}
-			
+
 			return -1;
 		}
 		private int indexNameXinY(DirectoryInfo XObj, List<FileInfo> YObjs) {
@@ -763,7 +763,7 @@ namespace CarbonCopy {
 					return index;
 				}
 			}
-			
+
 			return -1;
 		}
 		private int indexNameXinY(DirectoryInfo XObj, List<DirectoryInfo> YObjs) {
@@ -772,10 +772,10 @@ namespace CarbonCopy {
 					return index;
 				}
 			}
-			
+
 			return -1;
 		}
-		
+
 		/// <summary>
 		/// Check whether this is a file, a dir, or a junction point.  Set the file (or JP) to not readonly, or if it's a dir, set it and its children recursively to not readonly; then, delete it.
 		/// </summary>
@@ -793,7 +793,7 @@ namespace CarbonCopy {
 				obj.Attributes &= ~FileAttributes.ReadOnly;
 			}
 			else { notReadOnly((DirectoryInfo)obj); }
-			
+
 			if (obj is FileInfo) {
 				// Delete file
 				((FileInfo)obj).Delete();
@@ -803,19 +803,19 @@ namespace CarbonCopy {
 				((DirectoryInfo)obj).Delete(notReparsePoint((DirectoryInfo)obj));
 			}
 		}
-		
+
 		/// <summary>
 		/// Recursively set the directory and its contents to NOT readonly.
 		/// </summary>
 		/// <param name="dir">The directory to perform the operation on.</param>
 		private void notReadOnly(DirectoryInfo dir) {
 			dir.Attributes &= ~FileAttributes.ReadOnly;
-			
+
 			FileInfo[] dirFiles = dir.GetFiles();
 			foreach (FileInfo file in dirFiles) {
 				file.Attributes &= ~FileAttributes.ReadOnly;
 			}
-			
+
 			DirectoryInfo[] dirSubdirs = dir.GetDirectories();
 			foreach (DirectoryInfo dirSubdir in dirSubdirs) {
 				if ((dirSubdir.Attributes & FileAttributes.ReparsePoint) > 0) {
@@ -886,13 +886,13 @@ namespace CarbonCopy {
 		/// <param name="msgDisplayInfo">The object that describes various message attributes, and the message itself.</param>
 		private void AddMsg(MsgDisplayInfo msgDisplayInfo) {
 			messages.Enqueue(msgDisplayInfo);
-			
+
 			CbDisplayNextMessage(GetNextMsg);
 		}
 		#endregion
 	}
 	#endregion
-	
+
 	#region Delegates and containers
 	/// <summary>
 	/// A class that holds information on a message that is to be supplied to the calling code.  This will be put in FIFO queue, ready to be pulled out by the calling code's message handler.
@@ -900,24 +900,24 @@ namespace CarbonCopy {
 	public class MsgDisplayInfo {
 		public MsgFunctionDelegate MsgFunction;
 		public string MsgText;
-		
+
 		public MsgDisplayInfo(MsgFunctionDelegate msgFunction, string msgText) {
 			this.MsgFunction = msgFunction;
 			this.MsgText = msgText;
 		}
 	}
-	
+
 	/// <summary>
 	/// Delegate for callbacks to message functions - these functions are to deal with the message supplied (in string format) in a way they see fit, and are to be defined by the calling code.
 	/// </summary>
 	/// <param name="msg">The message to display.</param>
 	public delegate void MsgFunctionDelegate(string msg);
-	
+
 	/// <summary>
 	/// Delegate for callbacks indicating that the GUI thread should retreive the next message from the message queue.
 	/// </summary>
 	public delegate MsgDisplayInfo GetNextMessageCallback();
-	
+
 	// The idea behind the 'invoker' delegate is that the invoker is what is called
 	// by the BackupEngine, and the calling code can do something there that allows
 	// it to avoid some exception it may get in trying to eg. display message (in
@@ -928,25 +928,25 @@ namespace CarbonCopy {
 	// use.
 	public delegate void DisplayNextMsgCallbackInvoker(GetNextMessageCallback getNextMsgCb);
 	public delegate void DisplayNextMsgCallback(GetNextMessageCallback getNextMsgCb);
-	
+
 	// Delegates for callbacks indicating that the backup process has finished.
 	public delegate void BackupFinishedCallbackInvoker();
 	public delegate void BackupFinishedCallback();
 	#endregion
-	
+
 	#region Exceptions
 	public class BackupEngineException : Exception {
 		// General backup engine exception class
-		
+
 		#region Private vars
-		
+
 		private const string defaultMsg = "There was a miscellaneous error with the backup engine.";
 		// ^ As any 'const' is made a compile-time constant, this text will obviously be
 		// available to the constructors before the object has been instantiated, as is
 		// necessary.
-		
+
 		#endregion
-		
+
 		#region Constructors
 		// Note that the 'public ClassName(...): base() {' notation is explicitly telling
 		// the compiler to call this class's base class's empty constructor.  A constructor
@@ -960,39 +960,39 @@ namespace CarbonCopy {
 		// For more information, see:
 		// http://msdn2.microsoft.com/en-us/library/aa645603.aspx
 		// http://www.jaggersoft.com/csharp_standard/17.10.1.htm
-		
+
 		public BackupEngineException(): base(defaultMsg) {
 			// No further implementation
 		}
-		
+
 		public BackupEngineException(string message): base(message) {
 			// No further implementation
 		}
-		
+
 		public BackupEngineException(string message, Exception innerException): base(message, innerException) {
 			// No further implementation
 		}
-		
+
 		protected BackupEngineException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context): base(info, context) {
 			// No further implementation
 		}
-		
+
 		#endregion
 	}
-	
+
 	public class StopBackupException : Exception {
 		// Exception thrown when worker backup thread's code is signaled to stop during
 		// a backup operation
-		
+
 		#region Private vars
-		
+
 		private const string defaultMsg = "Backup stopped.";
 		// ^ As any 'const' is made a compile-time constant, this text will obviously be
 		// available to the constructors before the object has been instantiated, as is
 		// necessary.
-		
+
 		#endregion
-		
+
 		#region Constructors
 		// Note that the 'public ClassName(...): base() {' notation is explicitly telling
 		// the compiler to call this class's base class's empty constructor.  A constructor
@@ -1006,38 +1006,38 @@ namespace CarbonCopy {
 		// For more information, see:
 		// http://msdn2.microsoft.com/en-us/library/aa645603.aspx
 		// http://www.jaggersoft.com/csharp_standard/17.10.1.htm
-		
+
 		public StopBackupException(): base(defaultMsg) {
 			// No further implementation
 		}
-		
+
 		public StopBackupException(string message): base(message) {
 			// No further implementation
 		}
-		
+
 		public StopBackupException(string message, Exception innerException): base(message, innerException) {
 			// No further implementation
 		}
-		
+
 		protected StopBackupException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context): base(info, context) {
 			// No further implementation
 		}
-		
+
 		#endregion
 	}
-	
+
 	public class SynchronizeDirException : Exception {
 		// Exception in synchronizing source dir's directory to dest dir
-		
+
 		#region Private vars
-		
+
 		private const string defaultMsg = "There was a miscellaneous error synchronizing the source dir's directory contents to the destination dir.";
 		// ^ As any 'const' is made a compile-time constant, this text will obviously be
 		// available to the constructors before the object has been instantiated, as is
 		// necessary.
-		
+
 		#endregion
-		
+
 		#region Constructors
 		// Note that the 'public ClassName(...): base() {' notation is explicitly telling
 		// the compiler to call this class's base class's empty constructor.  A constructor
@@ -1051,38 +1051,38 @@ namespace CarbonCopy {
 		// For more information, see:
 		// http://msdn2.microsoft.com/en-us/library/aa645603.aspx
 		// http://www.jaggersoft.com/csharp_standard/17.10.1.htm
-		
+
 		public SynchronizeDirException(): base(defaultMsg) {
 			// No further implementation
 		}
-		
+
 		public SynchronizeDirException(string message): base(message) {
 			// No further implementation
 		}
-		
+
 		public SynchronizeDirException(string message, Exception innerException): base(message, innerException) {
 			// No further implementation
 		}
-		
+
 		protected SynchronizeDirException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context): base(info, context) {
 			// No further implementation
 		}
-		
+
 		#endregion
 	}
-	
+
 	public class SynchronizeObjsException : Exception {
 		// Exception in synchronizing source dir's objects to dest dir
-		
+
 		#region Private vars
-		
+
 		private const string defaultMsg = "There was a miscellaneous error synchronizing the source dir's objects to the destination dir.";
 		// ^ As any 'const' is made a compile-time constant, this text will obviously be
 		// available to the constructors before the object has been instantiated, as is
 		// necessary.
-		
+
 		#endregion
-		
+
 		#region Constructors
 		// Note that the 'public ClassName(...): base() {' notation is explicitly telling
 		// the compiler to call this class's base class's empty constructor.  A constructor
@@ -1096,23 +1096,23 @@ namespace CarbonCopy {
 		// For more information, see:
 		// http://msdn2.microsoft.com/en-us/library/aa645603.aspx
 		// http://www.jaggersoft.com/csharp_standard/17.10.1.htm
-		
+
 		public SynchronizeObjsException(): base(defaultMsg) {
 			// No further implementation
 		}
-		
+
 		public SynchronizeObjsException(string message): base(message) {
 			// No further implementation
 		}
-		
+
 		public SynchronizeObjsException(string message, Exception innerException): base(message, innerException) {
 			// No further implementation
 		}
-		
+
 		protected SynchronizeObjsException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context): base(info, context) {
 			// No further implementation
 		}
-		
+
 		#endregion
 	}
 	#endregion

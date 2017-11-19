@@ -11,7 +11,7 @@ namespace CarbonCopy {
 		CarbonCopy   = 1,
 		Incremental  = 2,
 	}
-	
+
 	/// <summary>
 	/// Enumeration of items indicating how detailed the backup's GUI output should be
 	/// </summary>

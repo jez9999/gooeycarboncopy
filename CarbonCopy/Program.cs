@@ -12,7 +12,7 @@ namespace CarbonCopy {
 		static void Main() {
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			
+
 			// If a file path has been specified, assume it's the path to an XML file
 			// containing settings for a backup profile, which we want to run in batch
 			// mode.
@@ -25,7 +25,7 @@ namespace CarbonCopy {
 			else if (cmdLineArgs.Length == 2) {
 				// Run in batch mode - try to load options, then run straight from
 				// backup form
-				
+
 				// Load profile settings from selected XML file
 				CCOSaveLoad saveloader = new CCOSaveLoad();
 				CCO options;
