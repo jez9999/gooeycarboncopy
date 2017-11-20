@@ -203,7 +203,7 @@ namespace CarbonCopy {
 					return;
 				}
 				finally {
-					AddMsg(new MsgDisplayInfo(CbInfoMsg, "Finished; had to copy " + fileCopyCount + " file" + (fileCopyCount == 1 ? "" : "s") + " and " + dirCopyCount + " director" + (dirCopyCount == 1 ? "y" : "ies") + "."));
+					AddMsg(new MsgDisplayInfo(CbInfoMsg, "Finished; " + (options.IsDryRun ? "would've " : "") + "had to copy " + fileCopyCount + " file" + (fileCopyCount == 1 ? "" : "s") + " and " + dirCopyCount + " director" + (dirCopyCount == 1 ? "y" : "ies") + "."));
 				}
 			}
 
