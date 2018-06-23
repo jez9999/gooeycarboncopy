@@ -302,6 +302,10 @@ namespace CarbonCopy {
 				// Oh dear... just output error and move on.
 				AddMsg(new MsgDisplayInfo(CbErrorMsg, unwrapExceptionMessages(ex)));
 			}
+			catch (SlashTerminateException ex) {
+				// Oh dear... just output error and move on.
+				AddMsg(new MsgDisplayInfo(CbErrorMsg, unwrapExceptionMessages(ex)));
+			}
 		}
 
 		private DirectoryInfo slashTerm(DirectoryInfo inputDir) {
@@ -309,7 +313,12 @@ namespace CarbonCopy {
 			// path, but whose .FullName is guaranteed to be terminated with a slash.
 
 			if ((inputDir.FullName.Substring(inputDir.FullName.Length-1) != "\\") && (inputDir.FullName.Substring(inputDir.FullName.Length-1) != "/")) {
-				return new DirectoryInfo(inputDir.FullName + "\\");
+				try {
+					return new DirectoryInfo(inputDir.FullName + "\\");
+				}
+				catch (PathTooLongException ex) {
+					throw new SlashTerminateException("Error slash-terminating path '" + inputDir.FullName + "': " + ex.Message);
+				}
 			}
 			else { return inputDir; }
 		}
@@ -1110,6 +1119,51 @@ namespace CarbonCopy {
 		}
 
 		protected SynchronizeObjsException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context): base(info, context) {
+			// No further implementation
+		}
+
+		#endregion
+	}
+
+	public class SlashTerminateException : Exception {
+		// Exception in synchronizing source dir's objects to dest dir
+
+		#region Private vars
+
+		private const string defaultMsg = "There was a miscellaneous error slash-terminating the path.";
+		// ^ As any 'const' is made a compile-time constant, this text will obviously be
+		// available to the constructors before the object has been instantiated, as is
+		// necessary.
+
+		#endregion
+
+		#region Constructors
+		// Note that the 'public ClassName(...): base() {' notation is explicitly telling
+		// the compiler to call this class's base class's empty constructor.  A constructor
+		// HAS to call either a base() or this() constructor before its own body, and the
+		// '(...): base()' notation (with the colon) is the way to do it explicitly.  If you
+		// don't use this notation, base() will be implicitly called.  Therefore, this:
+		// public ClassName(...) {...}
+		// is identical to this:
+		// public ClassName(...): base() {...}
+		// 
+		// For more information, see:
+		// http://msdn2.microsoft.com/en-us/library/aa645603.aspx
+		// http://www.jaggersoft.com/csharp_standard/17.10.1.htm
+
+		public SlashTerminateException(): base(defaultMsg) {
+			// No further implementation
+		}
+
+		public SlashTerminateException(string message): base(message) {
+			// No further implementation
+		}
+
+		public SlashTerminateException(string message, Exception innerException): base(message, innerException) {
+			// No further implementation
+		}
+
+		protected SlashTerminateException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context): base(info, context) {
 			// No further implementation
 		}
 
