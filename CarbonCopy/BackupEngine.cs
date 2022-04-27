@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO;
 using JunctionPoint;
+using GooeyUtilities.General;
 
 namespace CarbonCopy {	
 	#region Backup engine
@@ -199,7 +200,7 @@ namespace CarbonCopy {
 				}
 				catch (Exception ex) {
 					endBackupCleanup();
-					AddMsg(new MsgDisplayInfo(CbErrorMsg, "BACKUP HALTED... Misc. error occurred: " + unwrapExceptionMessages(ex)));
+					AddMsg(new MsgDisplayInfo(CbErrorMsg, "BACKUP HALTED... Misc. error occurred: " + ex.GetFormattedExceptionMessages()));
 					return;
 				}
 				finally {
@@ -234,6 +235,8 @@ namespace CarbonCopy {
 			destDirPath = baseDestDir.FullName + Regex.Replace(destDirPath, @"\:", @"");
 
 			AddMsg(new MsgDisplayInfo(CbDebugMsg, "Synchronizing " + sourceDir.FullName + " to " + destDirPath));
+
+			throw new Exception("test exception 1121");
 
 			// Remove last dir off end; we want to synchronize TO this one
 			// eg. 'X:\backuptest\C\testBackupDir\' becomes 'X:\backuptest\C\'
