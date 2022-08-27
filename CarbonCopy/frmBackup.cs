@@ -114,7 +114,7 @@ namespace CarbonCopy {
 		// Methods to add text to backup richtextbox
 		private void displayNextMsg(GetNextMessageCallback getNextMsgCb) {
 			MsgDisplayInfo di = getNextMsgCb();
-			di.MsgFunction(di.MsgText);
+			di.MsgFunction(di.MsgText, di.AlwaysDisplay);
 		}
 		private void displayNextMsgInvoker(GetNextMessageCallback getNextMsgCb) {
 			DisplayNextMsgCallback cb = new DisplayNextMsgCallback(displayNextMsg);
@@ -126,7 +126,8 @@ namespace CarbonCopy {
 		/// Add informational message
 		/// </summary>
 		/// <param name="msg">Message text</param>
-		private void addInfoMsg(string msg) {
+		/// <param name="alwaysDisplay">If true, always display the message no matter what the verbosity level setting.</param>
+		private void addInfoMsg(string msg, bool alwaysDisplay = false) {
 			bool displayThis = true;
 			switch (backupOptions.OutputDetail) {
 				case VerbosityLevel.Info:
@@ -137,7 +138,7 @@ namespace CarbonCopy {
 					displayThis = true;
 					break;
 			}
-			if (displayThis) {
+			if (displayThis || alwaysDisplay) {
 				addTxtboxMsg("Inf: " + msg, ccColour.Black, true);
 			}
 		}
@@ -146,7 +147,8 @@ namespace CarbonCopy {
 		/// Add error message
 		/// </summary>
 		/// <param name="msg">Message text</param>
-		private void addErrorMsg(string msg) {
+		/// <param name="alwaysDisplay">If true, always display the message no matter what the verbosity level setting.</param>
+		private void addErrorMsg(string msg, bool alwaysDisplay = false) {
 			bool displayThis = true;
 			switch (backupOptions.OutputDetail) {
 				case VerbosityLevel.Info:
@@ -160,7 +162,7 @@ namespace CarbonCopy {
 					displayThis = true;
 					break;
 			}
-			if (displayThis) {
+			if (displayThis || alwaysDisplay) {
 				addTxtboxMsg("Err: " + msg, ccColour.Red, true);
 			}
 		}
@@ -169,7 +171,8 @@ namespace CarbonCopy {
 		/// Add debug message
 		/// </summary>
 		/// <param name="msg">Message text</param>
-		private void addDebugMsg(string msg) {
+		/// <param name="alwaysDisplay">If true, always display the message no matter what the verbosity level setting.</param>
+		private void addDebugMsg(string msg, bool alwaysDisplay = false) {
 			bool displayThis = true;
 			switch (backupOptions.OutputDetail) {
 				case VerbosityLevel.Info:
@@ -183,7 +186,7 @@ namespace CarbonCopy {
 					displayThis = true;
 					break;
 			}
-			if (displayThis) {
+			if (displayThis || alwaysDisplay) {
 				addTxtboxMsg("Dbg: " + msg, ccColour.Green, true);
 			}
 		}
@@ -192,7 +195,8 @@ namespace CarbonCopy {
 		/// Add verbose message
 		/// </summary>
 		/// <param name="msg">Message text</param>
-		private void addVerboseMsg(string msg) {
+		/// <param name="alwaysDisplay">If true, always display the message no matter what the verbosity level setting.</param>
+		private void addVerboseMsg(string msg, bool alwaysDisplay = false) {
 			bool displayThis = true;
 			switch (backupOptions.OutputDetail) {
 				case VerbosityLevel.Info:
@@ -206,7 +210,7 @@ namespace CarbonCopy {
 					displayThis = true;
 					break;
 			}
-			if (displayThis) {
+			if (displayThis || alwaysDisplay) {
 				addTxtboxMsg("Ver: " + msg, ccColour.Blue, true);
 			}
 		}
