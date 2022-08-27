@@ -236,8 +236,6 @@ namespace CarbonCopy {
 
 			AddMsg(new MsgDisplayInfo(CbDebugMsg, "Synchronizing " + sourceDir.FullName + " to " + destDirPath));
 
-			throw new Exception("test exception 1121");
-
 			// Remove last dir off end; we want to synchronize TO this one
 			// eg. 'X:\backuptest\C\testBackupDir\' becomes 'X:\backuptest\C\'
 			Match destDirTrimmed = Regex.Match(destDirPath, @"^(.*\\).*\\");
