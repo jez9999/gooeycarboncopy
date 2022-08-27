@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
@@ -25,6 +26,8 @@ namespace CarbonCopy {
 		private long fileCopyCount = 0;
 		private long dirCopyCount = 0;
 		private List<MsgData> recentMessages = new List<MsgData>();
+		private List<OldObjectData> oldestCreateds = new List<OldObjectData>();
+		private List<OldObjectData> oldestModifieds = new List<OldObjectData>();
 		#endregion
 
 		#region Public vars
@@ -345,6 +348,10 @@ namespace CarbonCopy {
 			// Returns a FileSystemInfo list containing info on each object (file or
 			// directory) that was synchronized.
 
+			foreach (var objt in sourceObjs) {
+				updateOldestObjectLists(null, objt);
+			}
+
 			List<FileSystemInfo> retVal = new List<FileSystemInfo>();
 
 			if (stopBackup) {
@@ -630,6 +637,7 @@ namespace CarbonCopy {
 		/// <param name="dontCreateDirs">If true, doesn't create new directories.</param>
 		/// <returns>A list of DirectoryInfo objects containing the child directories of the given source directory.</returns>
 		private List<DirectoryInfo> synchronizeDir(DirectoryInfo sourceDir, DirectoryInfo destDir, bool dontCreateDirs = false) {
+			updateOldestObjectLists(sourceDir, null);
 			if (stopBackup) {
 				throw new StopBackupException();
 			}
@@ -735,6 +743,81 @@ namespace CarbonCopy {
 			synchronizeObjs(srcObjs, destDir, true, false, true, dontCreateDirs);
 
 			return childDirs;
+		}
+
+		private void updateOldestObjectLists(DirectoryInfo sourceDir, FileSystemInfo sourceFile) {
+			DateTime sanityMinDatetime = new DateTime(1988, 1, 1);
+			int maxListSize = 200;
+			if (sourceDir != null) {
+				// Is dir; dirs only have created dates, not modified
+				var isOlder = oldestCreateds.Count < maxListSize;
+				foreach (var oldObj in oldestCreateds) {
+					if (sourceDir.CreationTime < oldObj.Date) {
+						isOlder = true;
+						break;
+					}
+				}
+				if (isOlder && sourceDir.CreationTime > sanityMinDatetime) {
+					oldestCreateds.Add(new OldObjectData {
+						IsDir = true,
+						Date = sourceDir.CreationTime,
+						Path = sourceDir.FullName
+					});
+					oldestCreateds = oldestCreateds.OrderBy(x => x.Date).ToList();
+					if (oldestCreateds.Count > maxListSize) {
+						oldestCreateds.RemoveAt(oldestCreateds.Count - 1);
+					}
+				}
+			}
+			else if ((sourceFile.Attributes & FileAttributes.Directory) == 0) {
+				// Is file; files have created and modified dates
+				var isOlder = oldestCreateds.Count < maxListSize;
+				foreach (var oldObj in oldestCreateds) {
+					if (sourceFile.CreationTime < oldObj.Date) {
+						isOlder = true;
+						break;
+					}
+				}
+				if (isOlder && sourceFile.CreationTime > sanityMinDatetime) {
+					oldestCreateds.Add(new OldObjectData {
+						IsDir = false,
+						Date = sourceFile.CreationTime,
+						Path = sourceFile.FullName
+					});
+					oldestCreateds = oldestCreateds.OrderBy(x => x.Date).ToList();
+					if (oldestCreateds.Count > maxListSize) {
+						oldestCreateds.RemoveAt(oldestCreateds.Count - 1);
+					}
+				}
+
+				isOlder = oldestModifieds.Count < maxListSize;
+				foreach (var oldObj in oldestModifieds) {
+					if (sourceFile.LastWriteTime < oldObj.Date) {
+						isOlder = true;
+						break;
+					}
+				}
+				if (isOlder && sourceFile.LastWriteTime > sanityMinDatetime) {
+					oldestModifieds.Add(new OldObjectData {
+						IsDir = false,
+						Date = sourceFile.LastWriteTime,
+						Path = sourceFile.FullName
+					});
+					oldestModifieds = oldestModifieds.OrderBy(x => x.Date).ToList();
+					if (oldestModifieds.Count > maxListSize) {
+						oldestModifieds.RemoveAt(oldestModifieds.Count - 1);
+					}
+				}
+			}
+		}
+
+		public class OldObjectData {
+			public override string ToString() {
+				return $"{(IsDir ? "Dir" : "File")} {Date} {Path}";
+			}
+			public DateTime Date;
+			public string Path;
+			public bool IsDir;
 		}
 
 		/// <summary>
