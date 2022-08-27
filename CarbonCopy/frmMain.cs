@@ -76,10 +76,10 @@ namespace CarbonCopy {
 
 			// Initialize options information/default selections
 			radCarbon.Checked = true;
-            chkDryRun.Checked = true;
+			chkDryRun.Checked = true;
 
-			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Brief", OutputDetail = VerbosityLevel.Brief });
-			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Normal", OutputDetail = VerbosityLevel.Normal });
+			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Brief", OutputDetail = VerbosityLevel.Info });
+			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Normal", OutputDetail = VerbosityLevel.Error });
 			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Debug", OutputDetail = VerbosityLevel.Debug });
 			lstVerbosity.Items.Add(new VerbosityListItem { Description = "Verbose", OutputDetail = VerbosityLevel.Verbose });
 			lstVerbosity.SelectedIndex = 1;  // Default to Normal
@@ -200,7 +200,7 @@ namespace CarbonCopy {
 			if (radCarbon.Checked) { options.Type = CCOTypeOfBackup.CarbonCopy; }
 			else if (radIncremental.Checked) { options.Type = CCOTypeOfBackup.Incremental; }
 
-            options.IsDryRun = chkDryRun.Checked;
+			options.IsDryRun = chkDryRun.Checked;
 
 			options.OutputDetail = ((VerbosityListItem)lstVerbosity.SelectedItem).OutputDetail;
 
@@ -339,14 +339,14 @@ namespace CarbonCopy {
 
 		private void lstVerbosity_SelectedIndexChanged(object sender, EventArgs ea) {
 			switch (((VerbosityListItem)lstVerbosity.SelectedItem).OutputDetail) {
-				case VerbosityLevel.Brief:
+				case VerbosityLevel.Info:
 					lblInformational.Visible = true;
 					lblError.Visible = false;
 					lblDebug.Visible = false;
 					lblVerbose.Visible = false;
 					break;
 
-				case VerbosityLevel.Normal:
+				case VerbosityLevel.Error:
 					lblInformational.Visible = true;
 					lblError.Visible = true;
 					lblDebug.Visible = false;

@@ -16,9 +16,9 @@ namespace CarbonCopy {
 	/// Enumeration of items indicating how detailed the backup's GUI output should be
 	/// </summary>
 	public enum VerbosityLevel : int {
-		Brief =         0,
-		Normal =        1,
-		Debug =       2,
-		Verbose =  3,
+		Info     = 0,
+		Error    = 1,
+		Debug    = 2,
+		Verbose  = 3,
 	}
 }

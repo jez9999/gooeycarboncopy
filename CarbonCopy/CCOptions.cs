@@ -54,7 +54,7 @@ namespace CarbonCopy {
 		public List<DirectoryInfo> SourceDirs = new List<DirectoryInfo>();
 		public DirectoryInfo DestDir;
 		public CCOTypeOfBackup Type = CCOTypeOfBackup.None;
-		public VerbosityLevel OutputDetail = VerbosityLevel.Normal;
+		public VerbosityLevel OutputDetail = VerbosityLevel.Error;
 		public bool IsDryRun;
 		#endregion
 	}

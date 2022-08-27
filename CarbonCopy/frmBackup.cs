@@ -129,8 +129,8 @@ namespace CarbonCopy {
 		private void addInfoMsg(string msg) {
 			bool displayThis = true;
 			switch (backupOptions.OutputDetail) {
-				case VerbosityLevel.Brief:
-				case VerbosityLevel.Normal:
+				case VerbosityLevel.Info:
+				case VerbosityLevel.Error:
 				case VerbosityLevel.Debug:
 				case VerbosityLevel.Verbose:
 				default:
@@ -149,11 +149,11 @@ namespace CarbonCopy {
 		private void addErrorMsg(string msg) {
 			bool displayThis = true;
 			switch (backupOptions.OutputDetail) {
-				case VerbosityLevel.Brief:
+				case VerbosityLevel.Info:
 					displayThis = false;
 					break;
 
-				case VerbosityLevel.Normal:
+				case VerbosityLevel.Error:
 				case VerbosityLevel.Debug:
 				case VerbosityLevel.Verbose:
 				default:
@@ -172,8 +172,8 @@ namespace CarbonCopy {
 		private void addDebugMsg(string msg) {
 			bool displayThis = true;
 			switch (backupOptions.OutputDetail) {
-				case VerbosityLevel.Brief:
-				case VerbosityLevel.Normal:
+				case VerbosityLevel.Info:
+				case VerbosityLevel.Error:
 					displayThis = false;
 					break;
 
@@ -195,8 +195,8 @@ namespace CarbonCopy {
 		private void addVerboseMsg(string msg) {
 			bool displayThis = true;
 			switch (backupOptions.OutputDetail) {
-				case VerbosityLevel.Brief:
-				case VerbosityLevel.Normal:
+				case VerbosityLevel.Info:
+				case VerbosityLevel.Error:
 				case VerbosityLevel.Debug:
 					displayThis = false;
 					break;

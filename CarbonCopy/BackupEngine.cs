@@ -123,18 +123,18 @@ namespace CarbonCopy {
 
 			// List directory and configuration information
 			foreach (DirectoryInfo di in options.SourceDirs) {
-				AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Found source backup directory: " + di.FullName));
+				AddMsg(VerbosityLevel.Verbose, "Found source backup directory: " + di.FullName);
 			}
-			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Found destination backup directory: " + options.DestDir.FullName));
-			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Type of backup: " + options.Type.ToString()));
-			AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Verbosity level: " + options.OutputDetail.ToString()));
+			AddMsg(VerbosityLevel.Verbose, "Found destination backup directory: " + options.DestDir.FullName);
+			AddMsg(VerbosityLevel.Verbose, "Type of backup: " + options.Type.ToString());
+			AddMsg(VerbosityLevel.Verbose, "Verbosity level: " + options.OutputDetail.ToString());
 
 			// Ensure that all source backup dirs are valid and 'touch them up'
 			// (setting them to fixedPath fixes their capitalization and terminates
 			// them all with a back or forward slash)
 			for (int i=0; i < options.SourceDirs.Count; i++) {
 				if (!optFunc.CheckDirValidity(options.SourceDirs[i].FullName, ref fixedPath, out errorHolder)) {
-					AddMsg(new MsgDisplayInfo(CbErrorMsg, errorHolder));
+					AddMsg(VerbosityLevel.Error, errorHolder);
 					endBackupCleanup();
 					return;
 				}
@@ -151,7 +151,7 @@ namespace CarbonCopy {
 					if (di1.FullName == di2.FullName) {
 						dupeCount++;
 						if (dupeCount > 1) {
-							AddMsg(new MsgDisplayInfo(CbErrorMsg, "Directory '" + di1.FullName + "' is duplicated in the source directories list."));
+							AddMsg(VerbosityLevel.Error, "Directory '" + di1.FullName + "' is duplicated in the source directories list.");
 							endBackupCleanup();
 							return;
 						}
@@ -161,7 +161,7 @@ namespace CarbonCopy {
 
 			// Check that destination backup dir is valid and 'touch it up'
 			if (!optFunc.CheckDirValidity(options.DestDir.FullName, ref fixedPath, out errorHolder)) {
-				AddMsg(new MsgDisplayInfo(CbErrorMsg, errorHolder));
+				AddMsg(VerbosityLevel.Error, errorHolder);
 				endBackupCleanup();
 				return;
 			}
@@ -170,10 +170,10 @@ namespace CarbonCopy {
 			}
 
 			if (!options.IsDryRun) {
-				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting backup (type " + (options.Type == CCOTypeOfBackup.Incremental ? "incremental" : options.Type == CCOTypeOfBackup.CarbonCopy ? "carbon copy" : "???") + ")."));
+				AddMsg(VerbosityLevel.Info, "Starting backup (type " + (options.Type == CCOTypeOfBackup.Incremental ? "incremental" : options.Type == CCOTypeOfBackup.CarbonCopy ? "carbon copy" : "???") + ").");
 			}
 			else {
-				AddMsg(new MsgDisplayInfo(CbInfoMsg, "Starting 'dry run' backup (type " + (options.Type == CCOTypeOfBackup.Incremental ? "incremental" : options.Type == CCOTypeOfBackup.CarbonCopy ? "carbon copy" : "???") + ")."));
+				AddMsg(VerbosityLevel.Info, "Starting 'dry run' backup (type " + (options.Type == CCOTypeOfBackup.Incremental ? "incremental" : options.Type == CCOTypeOfBackup.CarbonCopy ? "carbon copy" : "???") + ").");
 			}
 
 			foreach (DirectoryInfo sourceDir in options.SourceDirs) {
@@ -186,10 +186,10 @@ namespace CarbonCopy {
 				try { currentlyProcessing = sourceDir.FullName; }
 				catch (Exception) { }
 				if (!options.IsDryRun) {
-					AddMsg(new MsgDisplayInfo(CbInfoMsg, "Synchronizing base source directory " + sourceDir.FullName));
+					AddMsg(VerbosityLevel.Info, "Synchronizing base source directory " + sourceDir.FullName);
 				}
 				else {
-					AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would synchronize base source directory " + sourceDir.FullName));
+					AddMsg(VerbosityLevel.Info, "Would synchronize base source directory " + sourceDir.FullName);
 				}
 
 				fileCopyCount = dirCopyCount = 0;
@@ -200,16 +200,16 @@ namespace CarbonCopy {
 				}
 				catch (Exception ex) {
 					endBackupCleanup();
-					AddMsg(new MsgDisplayInfo(CbErrorMsg, "BACKUP HALTED... Misc. error occurred: " + ex.GetFormattedExceptionMessages()));
+					AddMsg(VerbosityLevel.Error, "BACKUP HALTED... Misc. error occurred: " + ex.GetFormattedExceptionMessages());
 					return;
 				}
 				finally {
-					AddMsg(new MsgDisplayInfo(CbInfoMsg, "Finished; " + (options.IsDryRun ? "would've " : "") + "had to copy " + fileCopyCount + " file" + (fileCopyCount == 1 ? "" : "s") + " and " + dirCopyCount + " director" + (dirCopyCount == 1 ? "y" : "ies") + "."));
+					AddMsg(VerbosityLevel.Info, "Finished; " + (options.IsDryRun ? "would've " : "") + "had to copy " + fileCopyCount + " file" + (fileCopyCount == 1 ? "" : "s") + " and " + dirCopyCount + " director" + (dirCopyCount == 1 ? "y" : "ies") + ".");
 				}
 			}
 
 			// We finished!
-			AddMsg(new MsgDisplayInfo(CbInfoMsg, "Backup finished successfully."));
+			AddMsg(VerbosityLevel.Info, "Backup finished successfully.");
 			endBackupCleanup();
 			return;
 		}
@@ -234,7 +234,9 @@ namespace CarbonCopy {
 			string destDirPath = Regex.Replace(sourceDir.FullName, @"^\\\\", @"\\_unc_\\");
 			destDirPath = baseDestDir.FullName + Regex.Replace(destDirPath, @"\:", @"");
 
-			AddMsg(new MsgDisplayInfo(CbDebugMsg, "Synchronizing " + sourceDir.FullName + " to " + destDirPath));
+			AddMsg(VerbosityLevel.Debug, "Synchronizing " + sourceDir.FullName + " to " + destDirPath);
+
+//			throw new Exception("test exception 1121");
 
 			// Remove last dir off end; we want to synchronize TO this one
 			// eg. 'X:\backuptest\C\testBackupDir\' becomes 'X:\backuptest\C\'
@@ -245,7 +247,7 @@ namespace CarbonCopy {
 			DirectoryInfo destDir = null;
 			try {
 				if (options.IsDryRun) {
-					AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Would ensure that destination dir existed: " + destDirPath));
+					AddMsg(VerbosityLevel.Verbose, "Would ensure that destination dir existed: " + destDirPath);
 					destDir = new DirectoryInfo(destDirPath);
 				}
 				else {
@@ -253,7 +255,7 @@ namespace CarbonCopy {
 				}
 			}
 			catch (Exception ex) {
-				AddMsg(new MsgDisplayInfo(CbErrorMsg, "Problem creating base backup directory: " + unwrapExceptionMessages(ex)));
+				AddMsg(VerbosityLevel.Error, "Problem creating base backup directory: " + unwrapExceptionMessages(ex));
 				throw new StopBackupException();
 			}
 
@@ -297,15 +299,15 @@ namespace CarbonCopy {
 			}
 			catch (SynchronizeObjsException ex) {
 				// Oh dear... just output error and move on.
-				AddMsg(new MsgDisplayInfo(CbErrorMsg, unwrapExceptionMessages(ex)));
+				AddMsg(VerbosityLevel.Error, unwrapExceptionMessages(ex));
 			}
 			catch (SynchronizeDirException ex) {
 				// Oh dear... just output error and move on.
-				AddMsg(new MsgDisplayInfo(CbErrorMsg, unwrapExceptionMessages(ex)));
+				AddMsg(VerbosityLevel.Error, unwrapExceptionMessages(ex));
 			}
 			catch (SlashTerminateException ex) {
 				// Oh dear... just output error and move on.
-				AddMsg(new MsgDisplayInfo(CbErrorMsg, unwrapExceptionMessages(ex)));
+				AddMsg(VerbosityLevel.Error, unwrapExceptionMessages(ex));
 			}
 		}
 
@@ -401,11 +403,11 @@ namespace CarbonCopy {
 						// dest dir object and copy it across later...
 						if (!(destObjIsJunctionPoint && dontCreateJunctionPoints) && !(!destObjIsJunctionPoint && destObj is DirectoryInfo && dontCreateDirs)) {
 							if (!options.IsDryRun) {
-								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - attributes or type different from that in source dir."));
+								AddMsg(VerbosityLevel.Verbose, "Deleting " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - attributes or type different from that in source dir.");
 								forciblyKillObject(destObj);
 							}
 							else {
-								AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - attributes or type different from that in source dir."));
+								AddMsg(VerbosityLevel.Info, "Would delete " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - attributes or type different from that in source dir.");
 							}
 						}
 						objectsIdentical = false;
@@ -423,11 +425,11 @@ namespace CarbonCopy {
 
 						if (!(destObjIsJunctionPoint && dontCreateJunctionPoints)) {
 							if (!options.IsDryRun) {
-								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (destObjIsJunctionPoint ? "junction point " : "file ") + destObj.FullName + " - last creation or write time different from that in source dir."));
+								AddMsg(VerbosityLevel.Verbose, "Deleting " + (destObjIsJunctionPoint ? "junction point " : "file ") + destObj.FullName + " - last creation or write time different from that in source dir.");
 								forciblyKillObject(destObj);
 							}
 							else {
-								AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete " + (destObjIsJunctionPoint ? "junction point " : "file ") + destObj.FullName + " - last creation or write time different from that in source dir."));
+								AddMsg(VerbosityLevel.Info, "Would delete " + (destObjIsJunctionPoint ? "junction point " : "file ") + destObj.FullName + " - last creation or write time different from that in source dir.");
 							}
 						}
 						objectsIdentical = false;
@@ -440,11 +442,11 @@ namespace CarbonCopy {
 					) {
 						// Delete dest file - sizes differ
 						if (!options.IsDryRun) {
-							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting file " + destObj.FullName + " - size of file different from that of file in source dir."));
+							AddMsg(VerbosityLevel.Verbose, "Deleting file " + destObj.FullName + " - size of file different from that of file in source dir.");
 							forciblyKillObject(destObj);
 						}
 						else {
-							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete file " + destObj.FullName + " - size of file different from that of file in source dir."));
+							AddMsg(VerbosityLevel.Info, "Would delete file " + destObj.FullName + " - size of file different from that of file in source dir.");
 						}
 						objectsIdentical = false;
 					}
@@ -456,11 +458,11 @@ namespace CarbonCopy {
 						// Delete dest JP - source and destination objects are junction points but their targets differ
 						if (!(destObjIsJunctionPoint && dontCreateJunctionPoints)) {
 							if (!options.IsDryRun) {
-								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting junction point " + destObj.FullName + " - targets differ."));
+								AddMsg(VerbosityLevel.Verbose, "Deleting junction point " + destObj.FullName + " - targets differ.");
 								forciblyKillObject(destObj);
 							}
 							else {
-								AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete junction point " + destObj.FullName + " - targets differ."));
+								AddMsg(VerbosityLevel.Info, "Would delete junction point " + destObj.FullName + " - targets differ.");
 							}
 						}
 						objectsIdentical = false;
@@ -478,11 +480,11 @@ namespace CarbonCopy {
 						) {
 							if (destObj.Attributes != sourceObjs[foundIndex].Attributes) {
 								if (!options.IsDryRun) {
-									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Setting attributes for directory " + destObj.FullName + " - dest dir attributes different from source dir attributes."));
+									AddMsg(VerbosityLevel.Verbose, "Setting attributes for directory " + destObj.FullName + " - dest dir attributes different from source dir attributes.");
 									destObj.Attributes = sourceObjs[foundIndex].Attributes;
 								}
 								else {
-									AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would set attributes for directory " + destObj.FullName + " - dest dir attributes different from source dir attributes."));
+									AddMsg(VerbosityLevel.Info, "Would set attributes for directory " + destObj.FullName + " - dest dir attributes different from source dir attributes.");
 								}
 							}
 							if (
@@ -490,18 +492,18 @@ namespace CarbonCopy {
 								destObj.LastWriteTimeUtc != sourceObjs[foundIndex].LastWriteTimeUtc
 							) {
 								if (!options.IsDryRun) {
-									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Setting created/modified datetimes for directory " + destObj.FullName + " - dest dir datetimes different from source dir datetimes."));
+									AddMsg(VerbosityLevel.Verbose, "Setting created/modified datetimes for directory " + destObj.FullName + " - dest dir datetimes different from source dir datetimes.");
 									destObj.CreationTimeUtc = sourceObjs[foundIndex].CreationTimeUtc;
 									destObj.LastWriteTimeUtc = sourceObjs[foundIndex].LastWriteTimeUtc;
 								}
 								else {
-									AddMsg(new MsgDisplayInfo(CbDebugMsg, "Would set created/modified datetimes for directory " + destObj.FullName + " - dest dir datetimes different from source dir datetimes."));
+									AddMsg(VerbosityLevel.Debug, "Would set created/modified datetimes for directory " + destObj.FullName + " - dest dir datetimes different from source dir datetimes.");
 								}
 							}
 						}
 					}
 					catch (Exception ex) {
-						AddMsg(new MsgDisplayInfo(CbErrorMsg, "Problem setting dest dir attributes: " + unwrapExceptionMessages(ex)));
+						AddMsg(VerbosityLevel.Error, "Problem setting dest dir attributes: " + unwrapExceptionMessages(ex));
 					}
 
 					if (objectsIdentical) {
@@ -539,9 +541,9 @@ namespace CarbonCopy {
 							if (!options.IsDryRun) {
 								// The 'Copying' verbose message tends to result in ENORMOUS
 								// output when dealing with large directories.  This warrants
-								// a warnings in the GUI somewhere around the 'display
+								// a warning in the GUI somewhere around the 'display
 								// verbose messages' checkbox.
-								AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Copying " + obj.FullName + " to " + copyToPath));
+								AddMsg(VerbosityLevel.Verbose, "Copying " + obj.FullName + " to " + copyToPath);
 								((FileInfo)obj).CopyTo(copyToPath);
 								FileInfo justCopied = new FileInfo(copyToPath);
 								justCopied.Attributes &= ~FileAttributes.ReadOnly;
@@ -553,16 +555,16 @@ namespace CarbonCopy {
 								retVal.Add(justCopied);
 							}
 							else {
-								AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would copy " + obj.FullName + " to " + copyToPath));
+								AddMsg(VerbosityLevel.Info, "Would copy " + obj.FullName + " to " + copyToPath);
 								retVal.Add(new FileInfo(copyToPath));
 							}
 						}
 						catch (Exception ex) {
 							if (!options.IsDryRun) {
-								AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't copy file " + copyToPath + " - " + unwrapExceptionMessages(ex)));
+								AddMsg(VerbosityLevel.Error, "Couldn't copy file " + copyToPath + " - " + unwrapExceptionMessages(ex));
 							}
 							else {
-								AddMsg(new MsgDisplayInfo(CbErrorMsg, "Wouldn't be able to copy file " + copyToPath + " - " + unwrapExceptionMessages(ex)));
+								AddMsg(VerbosityLevel.Error, "Wouldn't be able to copy file " + copyToPath + " - " + unwrapExceptionMessages(ex));
 							}
 						}
 					}
@@ -578,7 +580,7 @@ namespace CarbonCopy {
 							isJunctionPoint = isReparsePoint((DirectoryInfo)obj) && JP.IsJunctionPoint(((DirectoryInfo)obj).FullName);
 							if (!(isJunctionPoint && dontCreateJunctionPoints) && !(!isJunctionPoint && dontCreateDirs)) {
 								if (!options.IsDryRun) {
-									AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Creating " + (isJunctionPoint ? "junction point " : "directory ") + createPath));
+									AddMsg(VerbosityLevel.Verbose, "Creating " + (isJunctionPoint ? "junction point " : "directory ") + createPath);
 									if (isJunctionPoint) { JP.Create(createPath, JP.GetTarget(((DirectoryInfo)obj).FullName), false); }
 									else { Directory.CreateDirectory(createPath); }
 									DirectoryInfo justCreated = new DirectoryInfo(createPath);
@@ -596,7 +598,7 @@ namespace CarbonCopy {
 								}
 								else {
 									if (outputDryRunDirCreation) {
-										AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would create " + (isJunctionPoint ? "junction point " : "directory ") + createPath));
+										AddMsg(VerbosityLevel.Info, "Would create " + (isJunctionPoint ? "junction point " : "directory ") + createPath);
 									}
 									retVal.Add(new DirectoryInfo(createPath));
 								}
@@ -604,10 +606,10 @@ namespace CarbonCopy {
 						}
 						catch (Exception ex) {
 							if (!options.IsDryRun) {
-								AddMsg(new MsgDisplayInfo(CbErrorMsg, "Couldn't create " + (isJunctionPoint ? "junction point " : "directory ") + createPath + " - " + unwrapExceptionMessages(ex)));
+								AddMsg(VerbosityLevel.Error, "Couldn't create " + (isJunctionPoint ? "junction point " : "directory ") + createPath + " - " + unwrapExceptionMessages(ex));
 							}
 							else {
-								AddMsg(new MsgDisplayInfo(CbErrorMsg, "Wouldn't be able to create " + (isJunctionPoint ? "junction point " : "directory ") + createPath + " - " + unwrapExceptionMessages(ex)));
+								AddMsg(VerbosityLevel.Error, "Wouldn't be able to create " + (isJunctionPoint ? "junction point " : "directory ") + createPath + " - " + unwrapExceptionMessages(ex));
 							}
 						}
 					}
@@ -704,11 +706,11 @@ namespace CarbonCopy {
 						// Delete dest object - not found
 						bool destObjIsJunctionPoint = destObj is DirectoryInfo && isReparsePoint((DirectoryInfo)destObj) && JP.IsJunctionPoint(((DirectoryInfo)destObj).FullName);
 						if (!options.IsDryRun) {
-							AddMsg(new MsgDisplayInfo(CbVerboseMsg, "Deleting " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - not found in source dir."));
+							AddMsg(VerbosityLevel.Verbose, "Deleting " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - not found in source dir.");
 							forciblyKillObject(destObj);
 						}
 						else {
-							AddMsg(new MsgDisplayInfo(CbInfoMsg, "Would delete " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - not found in source dir."));
+							AddMsg(VerbosityLevel.Info, "Would delete " + (destObj is FileInfo ? "file " : destObjIsJunctionPoint ? "junction point " : "dir ") + destObj.FullName + " - not found in source dir.");
 						}
 					}
 					else {
@@ -893,9 +895,26 @@ namespace CarbonCopy {
 		/// <summary>
 		/// Add a message to the FIFO message queue, then inform the message handling delegate that there's a new message waiting to be displayed.
 		/// </summary>
-		/// <param name="msgDisplayInfo">The object that describes various message attributes, and the message itself.</param>
-		private void AddMsg(MsgDisplayInfo msgDisplayInfo) {
-			messages.Enqueue(msgDisplayInfo);
+		/// <param name="level">The verbosity level of the message.</param>
+		/// <param name="msgText">The message text.</param>
+		private void AddMsg(VerbosityLevel level, string msgText) {
+			switch (level) {
+				case VerbosityLevel.Info:
+					messages.Enqueue(new MsgDisplayInfo(CbInfoMsg, msgText));
+					break;
+
+				case VerbosityLevel.Error:
+					messages.Enqueue(new MsgDisplayInfo(CbErrorMsg, msgText));
+					break;
+
+				case VerbosityLevel.Debug:
+					messages.Enqueue(new MsgDisplayInfo(CbDebugMsg, msgText));
+					break;
+
+				case VerbosityLevel.Verbose:
+					messages.Enqueue(new MsgDisplayInfo(CbVerboseMsg, msgText));
+					break;
+			}
 
 			CbDisplayNextMessage(GetNextMsg);
 		}
