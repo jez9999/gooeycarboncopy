@@ -809,10 +809,12 @@ namespace CarbonCopy {
 
 			if (obj is FileInfo) {
 				// Delete file
+				addMsg(VerbosityLevel.Verbose, $"Deleting file {((FileInfo)obj).Name} ({((FileInfo)obj).FullName})");
 				((FileInfo)obj).Delete();
 			}
 			else {
-				// Delete dir (recursively if it's a regular dir, not if it's a reparse point)
+                // Delete dir (recursively if it's a regular dir, not if it's a reparse point)
+                addMsg(VerbosityLevel.Verbose, $"Deleting dir {((DirectoryInfo)obj).Name} ({((DirectoryInfo)obj).FullName})");
 				((DirectoryInfo)obj).Delete(notReparsePoint((DirectoryInfo)obj));
 			}
 		}
