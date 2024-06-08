@@ -803,7 +803,7 @@ namespace CarbonCopy {
 							while (sr.Read(buffer, 0, bufferSize) > 0) { }
 						}
 						catch (Exception ex) {
-							throw new Exception($"{checkFailedMessage}  Source file is probably CORRUPT; you should investigate urgently, and check the destination backup directory to ensure it's consistent with the source directory (some destination files with uncorrupted source files may have been deleted and need manual re-copying to the backup dir): {destDir.FullName}", ex);
+							throw new Exception($"{checkFailedMessage}  Source file ({fi.FullName}) is probably CORRUPT; you should investigate urgently, and check the destination backup directory to ensure it's consistent with the source directory (some destination files with uncorrupted source files may have been deleted and need manual re-copying to the backup dir): {destDir.FullName}", ex);
 						}
 					}
 				}
@@ -901,7 +901,7 @@ namespace CarbonCopy {
 		}
 
 		/// <summary>
-		/// Unwraps all an exception's nested messages them concatenated in a string.
+		/// Unwraps all an exception's nested messages and concatenates them in a string.
 		/// </summary>
 		/// <param name="ex">The exception.</param>
 		/// <returns>The concatenated messages.</returns>
@@ -916,7 +916,7 @@ namespace CarbonCopy {
 			if (string.IsNullOrEmpty(strMessage) || strMessage.Length < 6) {
 				return "(no error message!)";
 			}
-			return strMessage.Substring(5);
+			return strMessage.Substring(5).TrimEnd();
 		}
 
 		/// <summary>
