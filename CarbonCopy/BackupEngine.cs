@@ -793,17 +793,23 @@ namespace CarbonCopy {
 		}
 
 		private void integrityCheckSourceFile(FileSystemInfo sourceObj, DirectoryInfo destDir) {
-			if (sourceObj is FileInfo fi) {
-				using (StreamReader sr = new StreamReader(fi.OpenRead())) {
-					try {
-						int bufferSize = 10485760; // 10MB read buffer
-						char[] buffer = new char[bufferSize];
-						while (sr.Read(buffer, 0, bufferSize) > 0) { }
-					}
-					catch (Exception ex) {
-						throw new Exception($"INTEGRITY CHECK FOR SOURCE FILE FAILED, WILL NOT DELETE DESTINATION FILE!  Source file is probably CORRUPT; you should investigate urgently, and check the destination backup directory to ensure it's consistent with the source directory (some destination files with uncorrupted source files may have been deleted and need manual re-copying to the backup dir): {destDir.FullName}", ex);
+			string checkFailedMessage = "INTEGRITY CHECK FOR SOURCE FILE FAILED, WILL NOT DELETE DESTINATION FILE!";
+			try {
+				if (sourceObj is FileInfo fi) {
+					using (StreamReader sr = new StreamReader(fi.OpenRead())) {
+						try {
+							int bufferSize = 10485760; // 10MB read buffer
+							char[] buffer = new char[bufferSize];
+							while (sr.Read(buffer, 0, bufferSize) > 0) { }
+						}
+						catch (Exception ex) {
+							throw new Exception($"{checkFailedMessage}  Source file is probably CORRUPT; you should investigate urgently, and check the destination backup directory to ensure it's consistent with the source directory (some destination files with uncorrupted source files may have been deleted and need manual re-copying to the backup dir): {destDir.FullName}", ex);
+						}
 					}
 				}
+			}
+			catch (Exception ex) {
+				if (ex.Message.StartsWith(checkFailedMessage)) { throw; }
 			}
 		}
 
