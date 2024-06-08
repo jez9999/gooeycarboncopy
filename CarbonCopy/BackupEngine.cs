@@ -796,7 +796,7 @@ namespace CarbonCopy {
 			if (sourceObj is FileInfo fi) {
 				using (StreamReader sr = new StreamReader(fi.OpenRead())) {
 					try {
-						int bufferSize = 104857600; // 100MB read buffer
+						int bufferSize = 10485760; // 10MB read buffer
 						char[] buffer = new char[bufferSize];
 						while (sr.Read(buffer, 0, bufferSize) > 0) { }
 					}
