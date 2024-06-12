@@ -798,18 +798,26 @@ namespace CarbonCopy {
 				if (sourceObj is FileInfo fi) {
 					using (StreamReader sr = new StreamReader(fi.OpenRead())) {
 						try {
-							int bufferSize = 10485760; // 10MB read buffer
+							int bufferSize = 104857600; // 100MB read buffer
+							int bytesRead;
 							char[] buffer = new char[bufferSize];
-							while (sr.Read(buffer, 0, bufferSize) > 0) { }
+							while ((bytesRead = sr.Read(buffer, 0, bufferSize)) > 0) {
+								if (stopBackup) {
+									throw new StopBackupException();
+								}
+								addMsg(VerbosityLevel.Verbose, $"Integrity check ({fi.Name}); reading next {bytesRead} bytes...");
+							}
+							addMsg(VerbosityLevel.Verbose, $"Integrity check ({fi.Name}); file OK.");
 						}
 						catch (Exception ex) {
+							if (ex is StopBackupException) { throw; }
 							throw new Exception($"{checkFailedMessage}  Source file ({fi.FullName}) is probably CORRUPT; you should investigate urgently, and check the destination backup directory to ensure it's consistent with the source directory (some destination files with uncorrupted source files may have been deleted and need manual re-copying to the backup dir): {destDir.FullName}", ex);
 						}
 					}
 				}
 			}
 			catch (Exception ex) {
-				if (ex.Message.StartsWith(checkFailedMessage)) { throw; }
+				if (ex is StopBackupException || ex.Message.StartsWith(checkFailedMessage)) { throw; }
 			}
 		}
 
