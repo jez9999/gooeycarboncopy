@@ -796,18 +796,18 @@ namespace CarbonCopy {
 			string checkFailedMessage = "INTEGRITY CHECK FOR SOURCE FILE FAILED, WILL NOT DELETE DESTINATION FILE!";
 			try {
 				if (sourceObj is FileInfo fi) {
-					using (StreamReader sr = new StreamReader(fi.OpenRead())) {
+					using (FileStream fs = fi.OpenRead()) {
 						try {
-							int bufferSize = 104857600; // 100MB read buffer
+							int bufferSize = 65536; // 64KB read buffer
 							int bytesRead;
-							char[] buffer = new char[bufferSize];
-							while ((bytesRead = sr.Read(buffer, 0, bufferSize)) > 0) {
+							byte[] buffer = new byte[bufferSize];
+							addMsg(VerbosityLevel.Verbose, $"Integrity check ({fi.Name}); starting read.");
+							while ((bytesRead = fs.Read(buffer, 0, bufferSize)) > 0) {
 								if (stopBackup) {
 									throw new StopBackupException();
 								}
-								addMsg(VerbosityLevel.Verbose, $"Integrity check ({fi.Name}); reading next {bytesRead} bytes...");
 							}
-							addMsg(VerbosityLevel.Verbose, $"Integrity check ({fi.Name}); file OK.");
+							addMsg(VerbosityLevel.Verbose, $"Integrity check ({fi.Name}); file read OK.");
 						}
 						catch (Exception ex) {
 							if (ex is StopBackupException) { throw; }
