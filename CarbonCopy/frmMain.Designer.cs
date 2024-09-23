@@ -54,10 +54,17 @@ namespace CarbonCopy {
 			this.btnLoad = new System.Windows.Forms.Button();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+			this.grpExclude = new System.Windows.Forms.GroupBox();
+			this.lstExcludeDirs = new System.Windows.Forms.ListBox();
+			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.btnExcludeBrowse = new System.Windows.Forms.Button();
+			this.btnExcludeRemDir = new System.Windows.Forms.Button();
+			this.btnExcludeAddDir = new System.Windows.Forms.Button();
 			this.grpBackupDetails.SuspendLayout();
 			this.grpVerbosity.SuspendLayout();
 			this.grpSource.SuspendLayout();
 			this.grpDest.SuspendLayout();
+			this.grpExclude.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// lstSourceDirs
@@ -110,7 +117,7 @@ namespace CarbonCopy {
 			// 
 			// btnStart
 			// 
-			this.btnStart.Location = new System.Drawing.Point(12, 462);
+			this.btnStart.Location = new System.Drawing.Point(12, 658);
 			this.btnStart.Name = "btnStart";
 			this.btnStart.Size = new System.Drawing.Size(351, 23);
 			this.btnStart.TabIndex = 1000;
@@ -123,7 +130,7 @@ namespace CarbonCopy {
 			this.txtDestDir.Location = new System.Drawing.Point(6, 19);
 			this.txtDestDir.Name = "txtDestDir";
 			this.txtDestDir.Size = new System.Drawing.Size(497, 20);
-			this.txtDestDir.TabIndex = 201;
+			this.txtDestDir.TabIndex = 301;
 			this.txtDestDir.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtDestDir_KeyPress);
 			// 
 			// btnDestBrowse
@@ -131,7 +138,7 @@ namespace CarbonCopy {
 			this.btnDestBrowse.Location = new System.Drawing.Point(509, 19);
 			this.btnDestBrowse.Name = "btnDestBrowse";
 			this.btnDestBrowse.Size = new System.Drawing.Size(63, 23);
-			this.btnDestBrowse.TabIndex = 202;
+			this.btnDestBrowse.TabIndex = 302;
 			this.btnDestBrowse.Text = "Browse...";
 			this.btnDestBrowse.UseVisualStyleBackColor = true;
 			this.btnDestBrowse.Click += new System.EventHandler(this.btnDestBrowse_Click);
@@ -141,10 +148,10 @@ namespace CarbonCopy {
 			this.grpBackupDetails.Controls.Add(this.chkDryRun);
 			this.grpBackupDetails.Controls.Add(this.radIncremental);
 			this.grpBackupDetails.Controls.Add(this.radCarbon);
-			this.grpBackupDetails.Location = new System.Drawing.Point(12, 285);
+			this.grpBackupDetails.Location = new System.Drawing.Point(12, 481);
 			this.grpBackupDetails.Name = "grpBackupDetails";
 			this.grpBackupDetails.Size = new System.Drawing.Size(659, 66);
-			this.grpBackupDetails.TabIndex = 300;
+			this.grpBackupDetails.TabIndex = 400;
 			this.grpBackupDetails.TabStop = false;
 			this.grpBackupDetails.Text = "Backup details";
 			// 
@@ -154,7 +161,7 @@ namespace CarbonCopy {
 			this.chkDryRun.Location = new System.Drawing.Point(11, 39);
 			this.chkDryRun.Name = "chkDryRun";
 			this.chkDryRun.Size = new System.Drawing.Size(358, 17);
-			this.chkDryRun.TabIndex = 303;
+			this.chkDryRun.TabIndex = 403;
 			this.chkDryRun.Text = "Is dry run (doesn\'t modify any files/dirs; just shows what would happen)";
 			this.chkDryRun.UseVisualStyleBackColor = true;
 			// 
@@ -164,7 +171,7 @@ namespace CarbonCopy {
 			this.radIncremental.Location = new System.Drawing.Point(111, 19);
 			this.radIncremental.Name = "radIncremental";
 			this.radIncremental.Size = new System.Drawing.Size(119, 17);
-			this.radIncremental.TabIndex = 302;
+			this.radIncremental.TabIndex = 402;
 			this.radIncremental.TabStop = true;
 			this.radIncremental.Text = "Incremental backup";
 			this.radIncremental.UseVisualStyleBackColor = true;
@@ -175,7 +182,7 @@ namespace CarbonCopy {
 			this.radCarbon.Location = new System.Drawing.Point(11, 19);
 			this.radCarbon.Name = "radCarbon";
 			this.radCarbon.Size = new System.Drawing.Size(85, 17);
-			this.radCarbon.TabIndex = 301;
+			this.radCarbon.TabIndex = 401;
 			this.radCarbon.TabStop = true;
 			this.radCarbon.Text = "Carbon copy";
 			this.radCarbon.UseVisualStyleBackColor = true;
@@ -188,10 +195,10 @@ namespace CarbonCopy {
 			this.grpVerbosity.Controls.Add(this.lblInformational);
 			this.grpVerbosity.Controls.Add(this.lblThisWillDisplay);
 			this.grpVerbosity.Controls.Add(this.lstVerbosity);
-			this.grpVerbosity.Location = new System.Drawing.Point(12, 357);
+			this.grpVerbosity.Location = new System.Drawing.Point(12, 553);
 			this.grpVerbosity.Name = "grpVerbosity";
 			this.grpVerbosity.Size = new System.Drawing.Size(659, 80);
-			this.grpVerbosity.TabIndex = 400;
+			this.grpVerbosity.TabIndex = 500;
 			this.grpVerbosity.TabStop = false;
 			this.grpVerbosity.Text = "Output verbosity";
 			// 
@@ -202,7 +209,7 @@ namespace CarbonCopy {
 			this.lblVerbose.Location = new System.Drawing.Point(260, 58);
 			this.lblVerbose.Name = "lblVerbose";
 			this.lblVerbose.Size = new System.Drawing.Size(251, 13);
-			this.lblVerbose.TabIndex = 1010;
+			this.lblVerbose.TabIndex = 506;
 			this.lblVerbose.Text = "Verbose messages (eg. \"Copying [file1] to [file2] ...\")";
 			// 
 			// lblDebug
@@ -212,7 +219,7 @@ namespace CarbonCopy {
 			this.lblDebug.Location = new System.Drawing.Point(260, 42);
 			this.lblDebug.Name = "lblDebug";
 			this.lblDebug.Size = new System.Drawing.Size(268, 13);
-			this.lblDebug.TabIndex = 1009;
+			this.lblDebug.TabIndex = 505;
 			this.lblDebug.Text = "Debug messages (eg. \"Synchronizing [dir1] to [dir2] ...\")";
 			// 
 			// lblError
@@ -222,7 +229,7 @@ namespace CarbonCopy {
 			this.lblError.Location = new System.Drawing.Point(260, 27);
 			this.lblError.Name = "lblError";
 			this.lblError.Size = new System.Drawing.Size(208, 13);
-			this.lblError.TabIndex = 1008;
+			this.lblError.TabIndex = 504;
 			this.lblError.Text = "Error messages (eg. \"Couldn\'t copy file ...\")";
 			// 
 			// lblInformational
@@ -232,7 +239,7 @@ namespace CarbonCopy {
 			this.lblInformational.Location = new System.Drawing.Point(260, 12);
 			this.lblInformational.Name = "lblInformational";
 			this.lblInformational.Size = new System.Drawing.Size(232, 13);
-			this.lblInformational.TabIndex = 1007;
+			this.lblInformational.TabIndex = 503;
 			this.lblInformational.Text = "Informational messages (eg. \"Starting backup.\")";
 			// 
 			// lblThisWillDisplay
@@ -242,7 +249,7 @@ namespace CarbonCopy {
 			this.lblThisWillDisplay.Location = new System.Drawing.Point(116, 51);
 			this.lblThisWillDisplay.Name = "lblThisWillDisplay";
 			this.lblThisWillDisplay.Size = new System.Drawing.Size(100, 13);
-			this.lblThisWillDisplay.TabIndex = 1006;
+			this.lblThisWillDisplay.TabIndex = 502;
 			this.lblThisWillDisplay.Text = "This will display:";
 			// 
 			// lstVerbosity
@@ -252,7 +259,7 @@ namespace CarbonCopy {
 			this.lstVerbosity.Location = new System.Drawing.Point(9, 19);
 			this.lstVerbosity.Name = "lstVerbosity";
 			this.lstVerbosity.Size = new System.Drawing.Size(207, 21);
-			this.lstVerbosity.TabIndex = 401;
+			this.lstVerbosity.TabIndex = 501;
 			this.lstVerbosity.SelectedIndexChanged += new System.EventHandler(this.lstVerbosity_SelectedIndexChanged);
 			// 
 			// lblDestDir
@@ -261,7 +268,7 @@ namespace CarbonCopy {
 			this.lblDestDir.Location = new System.Drawing.Point(6, 48);
 			this.lblDestDir.Name = "lblDestDir";
 			this.lblDestDir.Size = new System.Drawing.Size(52, 13);
-			this.lblDestDir.TabIndex = 12;
+			this.lblDestDir.TabIndex = 304;
 			this.lblDestDir.Text = "lblDestDir";
 			// 
 			// btnDestSet
@@ -269,14 +276,14 @@ namespace CarbonCopy {
 			this.btnDestSet.Location = new System.Drawing.Point(578, 19);
 			this.btnDestSet.Name = "btnDestSet";
 			this.btnDestSet.Size = new System.Drawing.Size(75, 23);
-			this.btnDestSet.TabIndex = 203;
+			this.btnDestSet.TabIndex = 303;
 			this.btnDestSet.Text = "S&et";
 			this.btnDestSet.UseVisualStyleBackColor = true;
 			this.btnDestSet.Click += new System.EventHandler(this.btnDestSet_Click);
 			// 
 			// btnAbout
 			// 
-			this.btnAbout.Location = new System.Drawing.Point(503, 462);
+			this.btnAbout.Location = new System.Drawing.Point(503, 658);
 			this.btnAbout.Name = "btnAbout";
 			this.btnAbout.Size = new System.Drawing.Size(81, 23);
 			this.btnAbout.TabIndex = 1003;
@@ -304,17 +311,17 @@ namespace CarbonCopy {
 			this.grpDest.Controls.Add(this.btnDestBrowse);
 			this.grpDest.Controls.Add(this.btnDestSet);
 			this.grpDest.Controls.Add(this.lblDestDir);
-			this.grpDest.Location = new System.Drawing.Point(12, 208);
+			this.grpDest.Location = new System.Drawing.Point(12, 404);
 			this.grpDest.Name = "grpDest";
 			this.grpDest.Size = new System.Drawing.Size(659, 71);
-			this.grpDest.TabIndex = 200;
+			this.grpDest.TabIndex = 300;
 			this.grpDest.TabStop = false;
 			this.grpDest.Text = "Backup to this destination";
 			this.grpDest.Paint += new System.Windows.Forms.PaintEventHandler(this.grpDest_Paint);
 			// 
 			// btnExit
 			// 
-			this.btnExit.Location = new System.Drawing.Point(590, 462);
+			this.btnExit.Location = new System.Drawing.Point(590, 658);
 			this.btnExit.Name = "btnExit";
 			this.btnExit.Size = new System.Drawing.Size(81, 23);
 			this.btnExit.TabIndex = 1004;
@@ -324,7 +331,7 @@ namespace CarbonCopy {
 			// 
 			// btnSave
 			// 
-			this.btnSave.Location = new System.Drawing.Point(378, 462);
+			this.btnSave.Location = new System.Drawing.Point(378, 658);
 			this.btnSave.Name = "btnSave";
 			this.btnSave.Size = new System.Drawing.Size(52, 23);
 			this.btnSave.TabIndex = 1001;
@@ -334,7 +341,7 @@ namespace CarbonCopy {
 			// 
 			// btnLoad
 			// 
-			this.btnLoad.Location = new System.Drawing.Point(436, 462);
+			this.btnLoad.Location = new System.Drawing.Point(436, 658);
 			this.btnLoad.Name = "btnLoad";
 			this.btnLoad.Size = new System.Drawing.Size(52, 23);
 			this.btnLoad.TabIndex = 1002;
@@ -346,11 +353,68 @@ namespace CarbonCopy {
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
 			// 
+			// grpExclude
+			// 
+			this.grpExclude.Controls.Add(this.btnExcludeAddDir);
+			this.grpExclude.Controls.Add(this.btnExcludeRemDir);
+			this.grpExclude.Controls.Add(this.btnExcludeBrowse);
+			this.grpExclude.Controls.Add(this.textBox1);
+			this.grpExclude.Controls.Add(this.lstExcludeDirs);
+			this.grpExclude.Location = new System.Drawing.Point(12, 208);
+			this.grpExclude.Name = "grpExclude";
+			this.grpExclude.Size = new System.Drawing.Size(659, 190);
+			this.grpExclude.TabIndex = 200;
+			this.grpExclude.TabStop = false;
+			this.grpExclude.Text = "Exclude these directories";
+			// 
+			// lstExcludeDirs
+			// 
+			this.lstExcludeDirs.FormattingEnabled = true;
+			this.lstExcludeDirs.Location = new System.Drawing.Point(6, 19);
+			this.lstExcludeDirs.Name = "lstExcludeDirs";
+			this.lstExcludeDirs.Size = new System.Drawing.Size(647, 108);
+			this.lstExcludeDirs.TabIndex = 201;
+			// 
+			// textBox1
+			// 
+			this.textBox1.Location = new System.Drawing.Point(6, 133);
+			this.textBox1.Name = "textBox1";
+			this.textBox1.Size = new System.Drawing.Size(578, 20);
+			this.textBox1.TabIndex = 202;
+			// 
+			// btnExcludeBrowse
+			// 
+			this.btnExcludeBrowse.Location = new System.Drawing.Point(590, 133);
+			this.btnExcludeBrowse.Name = "btnExcludeBrowse";
+			this.btnExcludeBrowse.Size = new System.Drawing.Size(63, 23);
+			this.btnExcludeBrowse.TabIndex = 203;
+			this.btnExcludeBrowse.Text = "Browse...";
+			this.btnExcludeBrowse.UseVisualStyleBackColor = true;
+			// 
+			// btnExcludeRemDir
+			// 
+			this.btnExcludeRemDir.Location = new System.Drawing.Point(6, 159);
+			this.btnExcludeRemDir.Name = "btnExcludeRemDir";
+			this.btnExcludeRemDir.Size = new System.Drawing.Size(170, 23);
+			this.btnExcludeRemDir.TabIndex = 204;
+			this.btnExcludeRemDir.Text = "Remove directory";
+			this.btnExcludeRemDir.UseVisualStyleBackColor = true;
+			// 
+			// btnExcludeAddDir
+			// 
+			this.btnExcludeAddDir.Location = new System.Drawing.Point(483, 159);
+			this.btnExcludeAddDir.Name = "btnExcludeAddDir";
+			this.btnExcludeAddDir.Size = new System.Drawing.Size(170, 23);
+			this.btnExcludeAddDir.TabIndex = 205;
+			this.btnExcludeAddDir.Text = "Add directory";
+			this.btnExcludeAddDir.UseVisualStyleBackColor = true;
+			// 
 			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(683, 497);
+			this.ClientSize = new System.Drawing.Size(683, 693);
+			this.Controls.Add(this.grpExclude);
 			this.Controls.Add(this.btnLoad);
 			this.Controls.Add(this.btnSave);
 			this.Controls.Add(this.btnExit);
@@ -376,6 +440,8 @@ namespace CarbonCopy {
 			this.grpSource.PerformLayout();
 			this.grpDest.ResumeLayout(false);
 			this.grpDest.PerformLayout();
+			this.grpExclude.ResumeLayout(false);
+			this.grpExclude.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -412,6 +478,12 @@ namespace CarbonCopy {
 		private System.Windows.Forms.Label lblDebug;
 		private System.Windows.Forms.Label lblError;
         private System.Windows.Forms.CheckBox chkDryRun;
+		private System.Windows.Forms.GroupBox grpExclude;
+		private System.Windows.Forms.Button btnExcludeAddDir;
+		private System.Windows.Forms.Button btnExcludeRemDir;
+		private System.Windows.Forms.Button btnExcludeBrowse;
+		private System.Windows.Forms.TextBox textBox1;
+		private System.Windows.Forms.ListBox lstExcludeDirs;
 	}
 }
 
