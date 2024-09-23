@@ -55,11 +55,11 @@ namespace CarbonCopy {
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.grpExclude = new System.Windows.Forms.GroupBox();
-			this.lstExcludeDirs = new System.Windows.Forms.ListBox();
-			this.textBox1 = new System.Windows.Forms.TextBox();
-			this.btnExcludeBrowse = new System.Windows.Forms.Button();
-			this.btnExcludeRemDir = new System.Windows.Forms.Button();
 			this.btnExcludeAddDir = new System.Windows.Forms.Button();
+			this.btnExcludeRemDir = new System.Windows.Forms.Button();
+			this.btnExcludeBrowse = new System.Windows.Forms.Button();
+			this.txtExcludeDir = new System.Windows.Forms.TextBox();
+			this.lstExcludeDirs = new System.Windows.Forms.ListBox();
 			this.grpBackupDetails.SuspendLayout();
 			this.grpVerbosity.SuspendLayout();
 			this.grpSource.SuspendLayout();
@@ -358,7 +358,7 @@ namespace CarbonCopy {
 			this.grpExclude.Controls.Add(this.btnExcludeAddDir);
 			this.grpExclude.Controls.Add(this.btnExcludeRemDir);
 			this.grpExclude.Controls.Add(this.btnExcludeBrowse);
-			this.grpExclude.Controls.Add(this.textBox1);
+			this.grpExclude.Controls.Add(this.txtExcludeDir);
 			this.grpExclude.Controls.Add(this.lstExcludeDirs);
 			this.grpExclude.Location = new System.Drawing.Point(12, 208);
 			this.grpExclude.Name = "grpExclude";
@@ -366,39 +366,6 @@ namespace CarbonCopy {
 			this.grpExclude.TabIndex = 200;
 			this.grpExclude.TabStop = false;
 			this.grpExclude.Text = "Exclude these directories";
-			// 
-			// lstExcludeDirs
-			// 
-			this.lstExcludeDirs.FormattingEnabled = true;
-			this.lstExcludeDirs.Location = new System.Drawing.Point(6, 19);
-			this.lstExcludeDirs.Name = "lstExcludeDirs";
-			this.lstExcludeDirs.Size = new System.Drawing.Size(647, 108);
-			this.lstExcludeDirs.TabIndex = 201;
-			// 
-			// textBox1
-			// 
-			this.textBox1.Location = new System.Drawing.Point(6, 133);
-			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(578, 20);
-			this.textBox1.TabIndex = 202;
-			// 
-			// btnExcludeBrowse
-			// 
-			this.btnExcludeBrowse.Location = new System.Drawing.Point(590, 133);
-			this.btnExcludeBrowse.Name = "btnExcludeBrowse";
-			this.btnExcludeBrowse.Size = new System.Drawing.Size(63, 23);
-			this.btnExcludeBrowse.TabIndex = 203;
-			this.btnExcludeBrowse.Text = "Browse...";
-			this.btnExcludeBrowse.UseVisualStyleBackColor = true;
-			// 
-			// btnExcludeRemDir
-			// 
-			this.btnExcludeRemDir.Location = new System.Drawing.Point(6, 159);
-			this.btnExcludeRemDir.Name = "btnExcludeRemDir";
-			this.btnExcludeRemDir.Size = new System.Drawing.Size(170, 23);
-			this.btnExcludeRemDir.TabIndex = 204;
-			this.btnExcludeRemDir.Text = "Remove directory";
-			this.btnExcludeRemDir.UseVisualStyleBackColor = true;
 			// 
 			// btnExcludeAddDir
 			// 
@@ -408,6 +375,43 @@ namespace CarbonCopy {
 			this.btnExcludeAddDir.TabIndex = 205;
 			this.btnExcludeAddDir.Text = "Add directory";
 			this.btnExcludeAddDir.UseVisualStyleBackColor = true;
+			this.btnExcludeAddDir.Click += new System.EventHandler(this.btnExcludeAddDir_Click);
+			// 
+			// btnExcludeRemDir
+			// 
+			this.btnExcludeRemDir.Location = new System.Drawing.Point(6, 159);
+			this.btnExcludeRemDir.Name = "btnExcludeRemDir";
+			this.btnExcludeRemDir.Size = new System.Drawing.Size(170, 23);
+			this.btnExcludeRemDir.TabIndex = 204;
+			this.btnExcludeRemDir.Text = "Remove directory";
+			this.btnExcludeRemDir.UseVisualStyleBackColor = true;
+			this.btnExcludeRemDir.Click += new System.EventHandler(this.btnExcludeRemDir_Click);
+			// 
+			// btnExcludeBrowse
+			// 
+			this.btnExcludeBrowse.Location = new System.Drawing.Point(590, 133);
+			this.btnExcludeBrowse.Name = "btnExcludeBrowse";
+			this.btnExcludeBrowse.Size = new System.Drawing.Size(63, 23);
+			this.btnExcludeBrowse.TabIndex = 203;
+			this.btnExcludeBrowse.Text = "Browse...";
+			this.btnExcludeBrowse.UseVisualStyleBackColor = true;
+			this.btnExcludeBrowse.Click += new System.EventHandler(this.btnExcludeBrowse_Click);
+			// 
+			// txtExcludeDir
+			// 
+			this.txtExcludeDir.Location = new System.Drawing.Point(6, 133);
+			this.txtExcludeDir.Name = "txtExcludeDir";
+			this.txtExcludeDir.Size = new System.Drawing.Size(578, 20);
+			this.txtExcludeDir.TabIndex = 202;
+			this.txtExcludeDir.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtExcludeDir_KeyPress);
+			// 
+			// lstExcludeDirs
+			// 
+			this.lstExcludeDirs.FormattingEnabled = true;
+			this.lstExcludeDirs.Location = new System.Drawing.Point(6, 19);
+			this.lstExcludeDirs.Name = "lstExcludeDirs";
+			this.lstExcludeDirs.Size = new System.Drawing.Size(647, 108);
+			this.lstExcludeDirs.TabIndex = 201;
 			// 
 			// frmMain
 			// 
@@ -482,7 +486,7 @@ namespace CarbonCopy {
 		private System.Windows.Forms.Button btnExcludeAddDir;
 		private System.Windows.Forms.Button btnExcludeRemDir;
 		private System.Windows.Forms.Button btnExcludeBrowse;
-		private System.Windows.Forms.TextBox textBox1;
+		private System.Windows.Forms.TextBox txtExcludeDir;
 		private System.Windows.Forms.ListBox lstExcludeDirs;
 	}
 }

@@ -79,7 +79,7 @@ namespace CarbonCopy {
 				return false;
 			}
 
-			// Does specified path exist?
+			// Does specified path exist as directory?
 			if (!System.IO.Directory.Exists(fixedPath)) {
 				errorHolder = "Directory '" + fixedPath + "' does not exist.";
 				return false;

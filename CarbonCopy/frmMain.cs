@@ -58,6 +58,17 @@ namespace CarbonCopy {
 			}
 		}
 
+		private void btnExcludeBrowse_Click(object sender, EventArgs e) {
+			folderBrowserDialog1.Description = "Select a directory to exclude from backup...";
+			string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+			string driveName = utils.GetFragmentFromFileUrl(codeBase, Utilities.FileUrlFragmentPart.DriveName);
+			folderBrowserDialog1.SelectedPath = driveName + ":\\";
+			folderBrowserDialog1.ShowNewFolderButton = false;
+			if (folderBrowserDialog1.ShowDialog() == DialogResult.OK) {
+				txtExcludeDir.Text = folderBrowserDialog1.SelectedPath;
+			}
+		}
+
 		private void frmMain_Load(object sender, EventArgs e) {
 			// Set title to version number, etc.
 			this.Text = this.Text.Replace("$ver", this.utils.GetVersionString(System.Reflection.Assembly.GetExecutingAssembly(), VersionStringType.MajorMinor));
@@ -108,6 +119,29 @@ namespace CarbonCopy {
 			txtSourceDir.Text = "";
 		}
 
+		private void btnExcludeAddDir_Click(object sender, EventArgs e) {
+			DirectoryInfo fixedPath = null;
+			string errorHolder;
+
+			// Is path string valid?
+			if (!optFunc.CheckDirValidity(txtExcludeDir.Text, ref fixedPath, out errorHolder)) {
+				utils.ShowError(errorHolder);
+				return;
+			}
+
+			// Is it a dupe?
+			foreach (CCODirinfoHolder dirPath1 in lstExcludeDirs.Items) {
+				DirectoryInfo dirPath2 = fixedPath;
+				if (dirPath1.ToString().Equals(dirPath2.FullName, StringComparison.CurrentCultureIgnoreCase)) {
+					utils.ShowError("Directory '" + dirPath2.FullName + "' is already in the list.");
+					return;
+				}
+			}
+
+			lstExcludeDirs.Items.Add(new CCODirinfoHolder(fixedPath));
+			txtExcludeDir.Text = "";
+		}
+
 		private void btnDestSet_Click(object sender, EventArgs e) {
 			DirectoryInfo fixedPath = null;
 			string errorHolder;
@@ -130,10 +164,24 @@ namespace CarbonCopy {
 				if (lstSourceDirs.Items.Count-1 >= oldIndex) {
 					lstSourceDirs.SelectedIndex = oldIndex;
 				}
-				else {
-					if (lstSourceDirs.Items.Count > 0) {
-						lstSourceDirs.SelectedIndex = lstSourceDirs.Items.Count-1;
-					}
+				else if (lstSourceDirs.Items.Count > 0) {
+					lstSourceDirs.SelectedIndex = lstSourceDirs.Items.Count-1;
+				}
+			}
+			else {
+				System.Media.SystemSounds.Beep.Play();
+			}
+		}
+
+		private void btnExcludeRemDir_Click(object sender, EventArgs e) {
+			if (lstExcludeDirs.SelectedIndex >= 0) {
+				int oldIndex = lstExcludeDirs.SelectedIndex;
+				lstExcludeDirs.Items.RemoveAt(lstExcludeDirs.SelectedIndex);
+				if (lstExcludeDirs.Items.Count-1 >= oldIndex) {
+					lstExcludeDirs.SelectedIndex = oldIndex;
+				}
+				else if (lstExcludeDirs.Items.Count > 0) {
+					lstExcludeDirs.SelectedIndex = lstExcludeDirs.Items.Count-1;
 				}
 			}
 			else {
@@ -241,15 +289,23 @@ namespace CarbonCopy {
 		}
 
 		private void txtSourceDir_KeyPress(object sender, KeyPressEventArgs e) {
-			if ((int)e.KeyChar == 13) {
+			if (e.KeyChar == 13) {
 				// Default action: Add source directory
 				btnAddDir_Click(sender, e);
 				e.Handled = true;
 			}
 		}
 
+		private void txtExcludeDir_KeyPress(object sender, KeyPressEventArgs e) {
+			if (e.KeyChar == 13) {
+				// Default action: Exclude directory
+				btnExcludeAddDir_Click(sender, e);
+				e.Handled = true;
+			}
+		}
+
 		private void txtDestDir_KeyPress(object sender, KeyPressEventArgs e) {
-			if ((int)e.KeyChar == 13) {
+			if (e.KeyChar == 13) {
 				// Default action: Set destination directory
 				btnDestSet_Click(sender, e);
 				e.Handled = true;
