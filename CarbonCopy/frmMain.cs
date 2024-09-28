@@ -243,6 +243,10 @@ namespace CarbonCopy {
 				options.SourceDirs.Add(dirInfoHolder.DirInfo);
 			}
 
+			foreach (CCODirinfoHolder dirInfoHolder in lstExcludeDirs.Items) {
+				options.ExcludeDirs.Add(dirInfoHolder.DirInfo);
+			}
+
 			options.DestDir = (DirectoryInfo)lblDestDir.Tag;
 
 			if (radCarbon.Checked) { options.Type = CCOTypeOfBackup.CarbonCopy; }
@@ -261,6 +265,12 @@ namespace CarbonCopy {
 			lstSourceDirs.Items.Clear();
 			foreach (DirectoryInfo di in options.SourceDirs) {
 				lstSourceDirs.Items.Add(new CCODirinfoHolder(di));
+			}
+
+			// Setup exclude dir(s)
+			lstExcludeDirs.Items.Clear();
+			foreach (DirectoryInfo di in options.ExcludeDirs) {
+				lstExcludeDirs.Items.Add(new CCODirinfoHolder(di));
 			}
 
 			// Setup dest dir

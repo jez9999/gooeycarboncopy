@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -7,7 +8,7 @@ using System.IO;
 using JunctionPoint;
 using GooeyUtilities.General;
 
-namespace CarbonCopy {	
+namespace CarbonCopy {
 	#region Backup engine
 	/// <summary>
 	/// A class that implements a backup engine, which will backup certain directories that are to be specified by the calling code, either by synchronizing them with another set in another location, or by performing an incremental backup in another location.
@@ -37,7 +38,7 @@ namespace CarbonCopy {
 		public bool IsRunningBackup {
 			get {
 				return (backupWorker != null);
-			}		
+			}
 		}
 		public string CurrentlyProcessing {
 			get {
@@ -259,11 +260,11 @@ namespace CarbonCopy {
 				throw new StopBackupException();
 			}
 
-			// 2. Synchronize this directory...
 			List<FileSystemInfo> sourceDirInList = new List<FileSystemInfo>();
 			sourceDirInList.Add(sourceDir);
 
 			try {
+				// 2. Synchronize this directory (NOT its contents, mind...)
 				List<FileSystemInfo> syncedDirInList = synchronizeObjs(sourceDirInList, destDir, false, true);
 				// We know the synchronized dest dir is the first entry in the list as it's
 				// the only object we passed to be synchronized!
@@ -622,6 +623,23 @@ namespace CarbonCopy {
 			return retVal;
 		}
 
+		private bool isSameDirOrSubDir(List<DirectoryInfo> dirs, DirectoryInfo dir) {
+			// Normalize the path of the directory we're checking
+			string dirPath = dir.FullName.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+
+			foreach (var parentDir in dirs) {
+				// Normalize the parent directory's path
+				string parentDirPath = parentDir.FullName.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+
+				// Check whether dir is the same as parentDir or a subdirectory of parentDir
+				if (dirPath.Equals(parentDirPath) || dirPath.StartsWith(parentDirPath)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// Synchronizes two specified directories by first deleting objects in the destination dir that don't exist in
 		/// the source dir (UNLESS we're in incremental backup mode), then synchronizing the two dirs using
@@ -663,15 +681,36 @@ namespace CarbonCopy {
 					throw new SynchronizeDirException("Couldn't get directory list - " + unwrapExceptionMessages(ex));
 				}
 			}
-			foreach (DirectoryInfo di in srcDirsTemp) {
-				childDirs.Add(slashTerm(di));
-			}
 
 			List<FileSystemInfo> srcObjs = new List<FileSystemInfo>();
 			List<FileSystemInfo> destObjs = new List<FileSystemInfo>();
 
-			srcObjs.AddRange(srcFilesTemp);
-			srcObjs.AddRange(srcDirsTemp);
+			List<DirectoryInfo> srcDirsTempFiltered = new List<DirectoryInfo>();
+			if (isSameDirOrSubDir(options.ExcludeDirs, sourceDir)) {
+				// Scenario 1: sourceDir ITSELF is excluded; dir will exist in backup but will be empty
+				// (we do this in case the base-level directory is excluded; it's much more work to
+				// actually remove this directory so just clearing it out on the backup side is good enough)
+				addMsg(VerbosityLevel.Info, "Excluding directory: " + sourceDir.FullName);
+			}
+			else {
+				srcObjs.AddRange(srcFilesTemp);
+
+				foreach (var srcDirTemp in srcDirsTemp) {
+					if (isSameDirOrSubDir(options.ExcludeDirs, srcDirTemp)) {
+						// Scenario 2: sourceDir is NOT excluded, but a dir underneath it is; that dir
+						// won't exist in backup
+						addMsg(VerbosityLevel.Info, "Excluding directory: " + srcDirTemp.FullName);
+					}
+					else {
+						srcDirsTempFiltered.Add(srcDirTemp);
+					}
+				}
+				srcObjs.AddRange(srcDirsTempFiltered);
+			}
+			foreach (DirectoryInfo di in srcDirsTempFiltered) {
+				childDirs.Add(slashTerm(di));
+			}
+
 			destObjs.AddRange(destFilesTemp);
 			destObjs.AddRange(destDirsTemp);
 
@@ -844,8 +883,8 @@ namespace CarbonCopy {
 				((FileInfo)obj).Delete();
 			}
 			else {
-                // Delete dir (recursively if it's a regular dir, not if it's a reparse point)
-                addMsg(VerbosityLevel.Verbose, $"Deleting dir {((DirectoryInfo)obj).Name} ({((DirectoryInfo)obj).FullName})");
+				// Delete dir (recursively if it's a regular dir, not if it's a reparse point)
+				addMsg(VerbosityLevel.Verbose, $"Deleting dir {((DirectoryInfo)obj).Name} ({((DirectoryInfo)obj).FullName})");
 				((DirectoryInfo)obj).Delete(notReparsePoint((DirectoryInfo)obj));
 			}
 		}
@@ -1047,7 +1086,7 @@ namespace CarbonCopy {
 		// public ClassName(...) {...}
 		// is identical to this:
 		// public ClassName(...): base() {...}
-		// 
+		//
 		// For more information, see:
 		// http://msdn2.microsoft.com/en-us/library/aa645603.aspx
 		// http://www.jaggersoft.com/csharp_standard/17.10.1.htm
@@ -1093,7 +1132,7 @@ namespace CarbonCopy {
 		// public ClassName(...) {...}
 		// is identical to this:
 		// public ClassName(...): base() {...}
-		// 
+		//
 		// For more information, see:
 		// http://msdn2.microsoft.com/en-us/library/aa645603.aspx
 		// http://www.jaggersoft.com/csharp_standard/17.10.1.htm
@@ -1138,7 +1177,7 @@ namespace CarbonCopy {
 		// public ClassName(...) {...}
 		// is identical to this:
 		// public ClassName(...): base() {...}
-		// 
+		//
 		// For more information, see:
 		// http://msdn2.microsoft.com/en-us/library/aa645603.aspx
 		// http://www.jaggersoft.com/csharp_standard/17.10.1.htm
@@ -1183,7 +1222,7 @@ namespace CarbonCopy {
 		// public ClassName(...) {...}
 		// is identical to this:
 		// public ClassName(...): base() {...}
-		// 
+		//
 		// For more information, see:
 		// http://msdn2.microsoft.com/en-us/library/aa645603.aspx
 		// http://www.jaggersoft.com/csharp_standard/17.10.1.htm
@@ -1228,7 +1267,7 @@ namespace CarbonCopy {
 		// public ClassName(...) {...}
 		// is identical to this:
 		// public ClassName(...): base() {...}
-		// 
+		//
 		// For more information, see:
 		// http://msdn2.microsoft.com/en-us/library/aa645603.aspx
 		// http://www.jaggersoft.com/csharp_standard/17.10.1.htm

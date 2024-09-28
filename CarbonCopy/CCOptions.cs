@@ -52,6 +52,7 @@ namespace CarbonCopy {
 	public class CCO {
 		#region Public vars
 		public List<DirectoryInfo> SourceDirs = new List<DirectoryInfo>();
+		public List<DirectoryInfo> ExcludeDirs = new List<DirectoryInfo>();
 		public DirectoryInfo DestDir;
 		public CCOTypeOfBackup Type = CCOTypeOfBackup.None;
 		public VerbosityLevel OutputDetail = VerbosityLevel.Error;
@@ -64,11 +65,14 @@ namespace CarbonCopy {
 	/// </summary>
 	public class CCOFunctions {
 		#region Public methods
-		public bool CheckDirValidity(string inputPath, ref DirectoryInfo outputPath, out string errorHolder) {
+		public bool CheckDirValidity(string inputPath, ref DirectoryInfo outputPath, out string errorHolder, bool mustExist = true) {
 			string fixedPath = "";
 
 			// Is path string valid?
 			try {
+				if (!inputPath.EndsWith($"{Path.DirectorySeparatorChar}") && !inputPath.EndsWith($"{Path.AltDirectorySeparatorChar}")) {
+					inputPath += Path.DirectorySeparatorChar;
+				}
 				fixedPath = Path.GetFullPath(inputPath);
 			}
 			catch (Exception) {
@@ -80,7 +84,8 @@ namespace CarbonCopy {
 			}
 
 			// Does specified path exist as directory?
-			if (!System.IO.Directory.Exists(fixedPath)) {
+			bool doesExist = System.IO.Directory.Exists(fixedPath);
+			if (mustExist && !doesExist) {
 				errorHolder = "Directory '" + fixedPath + "' does not exist.";
 				return false;
 			}
@@ -93,7 +98,9 @@ namespace CarbonCopy {
 			fixedPath = Regex.Replace(fixedPath, @"^([A-Za-z]+)(\:)", new MatchEvaluator(replaceDrivenameCapitalized));
 
 			outputPath = new DirectoryInfo(fixedPath);
-			fixCapitalization(ref outputPath);
+			if (mustExist || doesExist) {
+				fixCapitalization(ref outputPath);
+			}
 			fixedPath = outputPath.FullName;
 
 			// Ensure that path ends in a backslash (directory separator)
@@ -135,6 +142,11 @@ namespace CarbonCopy {
 				foundErrors = true;
 			}
 
+			if (toCheck.ExcludeDirs == null) {
+				errors += "- Exclude directories list is null.\r\n";
+				foundErrors = true;
+			}
+
 			if (toCheck.DestDir == null || toCheck.DestDir.FullName.Length == 0) {
 				errors += "- Destination directory is required.\r\n";
 				foundErrors = true;
@@ -149,6 +161,21 @@ namespace CarbonCopy {
 						dupeCount++;
 						if (dupeCount > 1) {
 							errors += "- Found duplicate source directory in source dirs list: " + di1.FullName + "\r\n";
+							foundErrors = true;
+						}
+					}
+				}
+			}
+
+			// Check whether there are exclude backup dir dupes
+			foreach (DirectoryInfo di1 in toCheck.ExcludeDirs) {
+				// Is it a dupe?
+				int dupeCount = 0;
+				foreach (DirectoryInfo di2 in toCheck.ExcludeDirs) {
+					if (di1.FullName == di2.FullName) {
+						dupeCount++;
+						if (dupeCount > 1) {
+							errors += "- Found duplicate exclude directory in exclude dirs list: " + di1.FullName + "\r\n";
 							foundErrors = true;
 						}
 					}
@@ -249,6 +276,15 @@ namespace CarbonCopy {
 				}
 				rootElement.AppendChild(srcElement);
 
+				XmlElement excludeElement = doc.CreateElement("excludeDirs");
+				foreach (DirectoryInfo di in options.ExcludeDirs) {
+					XmlText dirTxt = doc.CreateTextNode(di.FullName);
+					XmlElement excludeDir = doc.CreateElement("dir");
+					excludeDir.AppendChild(dirTxt);
+					excludeElement.AppendChild(excludeDir);
+				}
+				rootElement.AppendChild(excludeElement);
+
 				XmlElement destElement = doc.CreateElement("destDir");
 				destElement.SetAttribute("value", options.DestDir.FullName);
 				rootElement.AppendChild(destElement);
@@ -335,6 +371,21 @@ namespace CarbonCopy {
 						throw new Exception(errorHolder);
 					}
 					options.SourceDirs.Add(fixedPath);
+				}
+
+				// Exclude dirs
+				options.ExcludeDirs = new List<DirectoryInfo>();
+				XPathNodeIterator excludeIter = nav.Select("/carbonCopyOptions/excludeDirs/dir");
+				while (excludeIter.MoveNext()) {
+					string pathString = excludeIter.Current.Value;
+					string errorHolder;
+					DirectoryInfo fixedPath = null;
+
+					// Is path string valid?
+					if (!optFunc.CheckDirValidity(pathString, ref fixedPath, out errorHolder, false)) {
+						throw new Exception(errorHolder);
+					}
+					options.ExcludeDirs.Add(fixedPath);
 				}
 
 				// Dest dir
