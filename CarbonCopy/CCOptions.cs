@@ -70,6 +70,7 @@ namespace CarbonCopy {
 
 			// Is path string valid?
 			try {
+				if (inputPath.Trim() == "") { throw new Exception("Empty path!"); }
 				if (!inputPath.EndsWith($"{Path.DirectorySeparatorChar}") && !inputPath.EndsWith($"{Path.AltDirectorySeparatorChar}")) {
 					inputPath += Path.DirectorySeparatorChar;
 				}
