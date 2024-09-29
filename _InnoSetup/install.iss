@@ -8,7 +8,7 @@
 AppName=Carbon Copy
 AppVerName={#VersionString}
 DefaultDirName={commonpf}\Carbon Copy
-MinVersion=6.1
+MinVersion=6.1sp1
 PrivilegesRequired=admin
 UninstallDisplayIcon={app}\CarbCopy.exe
 ;Default group under Start Menu Programs
@@ -27,17 +27,17 @@ var
   NetFrameWorkInstalled : Boolean;
   QueryResult : Integer;
 begin
-  NetFrameWorkInstalled := IsDotNetInstalled(net481, 0);
+  NetFrameWorkInstalled := IsDotNetInstalled(net48, 0); // NOTE: we should require 4.8 and NOT 4.8.1, which is not compatible with some older OSes...
   if NetFrameWorkInstalled then
   begin
-    // .NET 4.8.1 installed; OK.
+    // .NET 4.8 installed; OK.
     Result := true;
   end
   else begin
-    // .NET 4.8.1 not installed; prompt to install.
+    // .NET 4.8 not installed; prompt to install.
     // (note: MB_DEFBUTTON1 flag defaults the selected button to the first button in the dialog)
     QueryResult := MsgBox(
-      'This application requires the .NET Framework 4.8.1.  Please download and install the .NET Framework 4.8.1 and run this setup again.  Do you want to download the framework now (clicking on No will continue the setup anyway without installing the framework, clicking on Cancel will abort the setup completely)?',
+      'This application requires the .NET Framework 4.8.  Please download and install the .NET Framework 4.8 and run this setup again.  Do you want to download the framework now (clicking on No will continue the setup anyway without installing the framework, clicking on Cancel will abort the setup completely)?',
       mbConfirmation,
       MB_YESNOCANCEL or MB_DEFBUTTON1
     );
@@ -52,10 +52,10 @@ begin
 
       if QueryResult = IDYES then
       begin
-        // Yes clicked; go to .NET Framework 4.8.1 download page.
+        // Yes clicked; go to .NET Framework 4.8 download page.
         ShellExec(
           'open',
-          'https://dotnet.microsoft.com/en-us/download/dotnet-framework/net481',
+          'https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48',
           '',
           '',
           SW_SHOWNORMAL,
