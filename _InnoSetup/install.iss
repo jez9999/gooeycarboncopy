@@ -1,15 +1,15 @@
 ;Carbon Copy install script (Inno Setup)
 
 #dim Version[4]
-#expr ParseVersion("..\CarbonCopy\bin\Release\CarbCopy.exe", Version[0], Version[1], Version[2], Version[3])
+#expr GetVersionComponents("..\CarbonCopy\bin\Release\CarbCopy.exe", Version[0], Version[1], Version[2], Version[3])
 #define VersionString Str("Carbon Copy v") + Str(Version[0]) + Str(".") + Str(Version[1])
 
 [Setup]
 AppName=Carbon Copy
 AppVerName={#VersionString}
-DefaultDirName={pf}\Carbon Copy
-MinVersion=5.0
-PrivilegesRequired=none
+DefaultDirName={commonpf}\Carbon Copy
+MinVersion=6.1
+PrivilegesRequired=admin
 UninstallDisplayIcon={app}\CarbCopy.exe
 ;Default group under Start Menu Programs
 DefaultGroupName=Carbon Copy
@@ -27,17 +27,17 @@ var
   NetFrameWorkInstalled : Boolean;
   QueryResult : Integer;
 begin
-  NetFrameWorkInstalled := RegKeyExists(HKLM, 'SOFTWARE\Microsoft\.NETFramework\policy\v4.0');
+  NetFrameWorkInstalled := IsDotNetInstalled(net481, 0);
   if NetFrameWorkInstalled then
   begin
-    // .NET 4.0 installed; OK.
+    // .NET 4.8.1 installed; OK.
     Result := true;
   end
   else begin
-    // .NET 4.0 not installed; prompt to install.
+    // .NET 4.8.1 not installed; prompt to install.
     // (note: MB_DEFBUTTON1 flag defaults the selected button to the first button in the dialog)
     QueryResult := MsgBox(
-      'This application requires the .NET Framework 4.0.  Please download and install the .NET Framework 4.0 and run this setup again.  Do you want to download the framework now (clicking on No will continue the setup anyway without installing the framework, clicking on Cancel will abort the setup completely)?',
+      'This application requires the .NET Framework 4.8.1.  Please download and install the .NET Framework 4.8.1 and run this setup again.  Do you want to download the framework now (clicking on No will continue the setup anyway without installing the framework, clicking on Cancel will abort the setup completely)?',
       mbConfirmation,
       MB_YESNOCANCEL or MB_DEFBUTTON1
     );
@@ -52,10 +52,10 @@ begin
 
       if QueryResult = IDYES then
       begin
-        // Yes clicked; go to .NET Framework 4.0 download page.
+        // Yes clicked; go to .NET Framework 4.8.1 download page.
         ShellExec(
           'open',
-          'https://www.microsoft.com/net/download/windows',
+          'https://dotnet.microsoft.com/en-us/download/dotnet-framework/net481',
           '',
           '',
           SW_SHOWNORMAL,
