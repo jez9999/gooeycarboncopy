@@ -541,7 +541,7 @@ namespace CarbonCopy {
 						// Need to copy
 						fileCopyCount++;
 						try {
-							copyToPath = destDir.FullName + obj.Name;
+							copyToPath = destDir.FullName + Regex.Replace(obj.Name ,@"\:", @"");
 							if (!options.IsDryRun) {
 								// The 'Copying' verbose message tends to result in ENORMOUS
 								// output when dealing with large directories.  This warrants
@@ -580,7 +580,7 @@ namespace CarbonCopy {
 						dirCopyCount++;
 						bool isJunctionPoint = false;
 						try {
-							createPath = destDir.FullName + obj.Name + "\\";
+							createPath = destDir.FullName + Regex.Replace(obj.Name ,@"\:", @"") + "\\";
 							isJunctionPoint = isReparsePoint((DirectoryInfo)obj) && JP.IsJunctionPoint(((DirectoryInfo)obj).FullName);
 							if (!(isJunctionPoint && dontCreateJunctionPoints) && !(!isJunctionPoint && dontCreateDirs)) {
 								if (!options.IsDryRun) {
